@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pathways</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f4ff;
+  --s1: #ffffff;
+  --s2: #e8eeff;
+  --s3: #dce4ff;
+  --blue: #2355f5;
+  --pink: #e0185e;
+  --text: #0a0a1a;
+  --sub: #5a6080;
+  --border: rgba(35,85,245,0.12);
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 36px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:center;justify-content:center;font-family:'Cabinet Grotesk',sans-serif;overflow:hidden}
+
+.phone{width:min(390px,100vw);height:min(844px,100dvh);background:var(--bg);border-radius:min(48px,5vw);overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 0 0 1px rgba(35,85,245,0.12),0 40px 80px rgba(35,85,245,0.18)}
+
+.status{display:flex;justify-content:space-between;align-items:center;padding:14px 26px 0;font-size:12px;font-weight:600;color:var(--sub);flex-shrink:0}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 22px 10px;flex-shrink:0}
+.wordmark{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;color:var(--text)}
+.wordmark em{color:var(--blue);font-style:normal}
+.icon-btn{width:38px;height:38px;background:var(--s1);border:1px solid var(--border);border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--sub);transition:all .2s;position:relative}
+.badge{position:absolute;top:5px;right:5px;width:8px;height:8px;background:var(--blue);border-radius:50%;border:2px solid var(--bg)}
+.topbar-group{display:flex;gap:10px}
+
+.mode-toggle{display:flex;margin:0 22px 12px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:4px;flex-shrink:0}
+.mode-btn{flex:1;padding:9px;border-radius:10px;font-family:'Cabinet Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--sub);transition:all .2s}
+.mode-btn.on{background:var(--blue);color:#fff}
+
+.chips{display:flex;gap:8px;padding:0 22px 14px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{padding:7px 15px;border-radius:100px;border:1px solid var(--border);background:var(--s1);color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;transition:all .2s;font-family:'Cabinet Grotesk',sans-serif}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.stack{flex:1;position:relative;padding:0 14px;overflow:hidden;touch-action:none}
+.empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;text-align:center;padding:40px}
+.empty-state.show{display:flex}
+.empty-icon{font-size:56px}
+.empty-title{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:600}
+.empty-sub{color:var(--sub);font-size:14px;line-height:1.6}
+.btn-refill{background:var(--blue);color:#fff;border:none;padding:13px 28px;border-radius:16px;font-family:'Clash Display',sans-serif;font-weight:600;font-size:15px;cursor:pointer;margin-top:6px}
+
+.jcard{position:absolute;width:calc(100% - 28px);height:100%;border-radius:var(--r-xl);overflow:hidden;cursor:grab;user-select:none;will-change:transform;transform-origin:center 90%}
+.jcard:active{cursor:grabbing}
+.jcard-bg{position:absolute;inset:0}
+.jcard-overlay{position:absolute;inset:0;background:linear-gradient(175deg,transparent 0%,transparent 20%,rgba(200,215,255,0.5) 55%,rgba(190,210,255,0.97) 100%)}
+.jcard-top{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:flex-start}
+.jcard-tag{background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border:1px solid rgba(35,85,245,0.2);padding:6px 12px;border-radius:100px;font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px}
+.match-pill{background:var(--blue);color:#fff;padding:6px 12px;border-radius:100px;font-family:'Clash Display',sans-serif;font-size:13px;font-weight:700}
+.stamp{position:absolute;top:28px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:28px;letter-spacing:3px;padding:8px 16px;border-radius:10px;border:3px solid;opacity:0;pointer-events:none}
+.stamp-skip{left:20px;color:var(--pink);border-color:var(--pink);transform:rotate(-12deg)}
+.stamp-apply{right:20px;color:var(--blue);border-color:var(--blue);transform:rotate(12deg)}
+.jcard-body{position:absolute;bottom:0;left:0;right:0;padding:24px}
+.co-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.co-logo{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid rgba(35,85,245,0.15)}
+.co-name{font-size:14px;font-weight:600;color:rgba(10,10,26,0.75)}
+.co-dot{width:3px;height:3px;border-radius:50%;background:var(--sub)}
+.co-loc{font-size:13px;color:rgba(10,10,26,0.5)}
+.jcard-title{font-family:'Clash Display',sans-serif;font-size:28px;font-weight:600;line-height:1.1;letter-spacing:-0.5px;margin-bottom:12px;color:var(--text)}
+.jcard-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.skill-tag{background:rgba(35,85,245,0.1);border:1px solid rgba(35,85,245,0.2);padding:5px 11px;border-radius:8px;font-size:12px;font-weight:500;color:var(--blue)}
+.salary-row{display:flex;justify-content:space-between;align-items:center}
+.salary{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;color:var(--blue)}
+.work-type{background:rgba(35,85,245,0.1);color:var(--blue);border:1px solid rgba(35,85,245,0.25);padding:6px 12px;border-radius:10px;font-size:13px;font-weight:600}
+
+.actions{display:flex;justify-content:center;align-items:center;gap:14px;padding:14px 22px 10px;flex-shrink:0}
+.act{border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:18px;transition:transform .15s;font-size:20px}
+.act:active{transform:scale(0.88)}
+.act-skip{width:56px;height:56px;background:rgba(224,24,94,0.1);border:1.5px solid rgba(224,24,94,0.3);color:var(--pink);border-radius:18px}
+.act-save{width:50px;height:50px;background:rgba(35,85,245,0.1);border:1.5px solid rgba(35,85,245,0.25);color:var(--blue);border-radius:16px}
+.act-go{width:68px;height:68px;background:var(--blue);color:#fff;border-radius:22px;font-size:26px;font-weight:800;box-shadow:0 8px 30px rgba(35,85,245,0.35)}
+.act-info{width:50px;height:50px;background:var(--s1);border:1.5px solid var(--border);color:var(--sub);border-radius:16px;font-size:17px}
+.act-undo{width:56px;height:56px;background:var(--s1);border:1.5px solid var(--border);color:var(--sub);border-radius:18px;font-size:18px}
+
+.bnav{display:flex;justify-content:space-around;padding:10px 10px 22px;background:#fff;border-top:1px solid var(--border);flex-shrink:0}
+.bni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 10px;border-radius:14px;transition:color .2s;color:var(--sub);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.bni .ico{font-size:19px}
+.bni.on{color:var(--blue)}
+
+.pane{position:absolute;inset:0;background:var(--bg);transform:translateX(102%);transition:transform 0.38s cubic-bezier(0.32,0.72,0,1);z-index:20;display:flex;flex-direction:column;overflow:hidden}
+.pane.open{transform:translateX(0)}
+.pane-head{display:flex;align-items:center;gap:14px;padding:52px 22px 16px;flex-shrink:0}
+.back-btn{width:38px;height:38px;background:var(--s1);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:18px;color:var(--text);display:flex;align-items:center;justify-content:center}
+.pane-title{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:600}
+.pane-body{flex:1;overflow-y:auto;padding:0 20px 24px}
+.pane-body::-webkit-scrollbar{width:0}
+
+.icard{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px}
+.icard-title{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:14px;color:var(--sub);text-transform:uppercase;letter-spacing:0.8px}
+
+.match-row{display:flex;align-items:center;gap:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--r-md);padding:15px;margin-bottom:11px;cursor:pointer;transition:border-color .2s}
+.match-row:hover{border-color:rgba(35,85,245,0.3)}
+.match-logo{width:48px;height:48px;border-radius:14px;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.match-info{flex:1}
+.match-job{font-weight:700;font-size:15px}
+.match-co{font-size:13px;color:var(--sub);margin-top:2px}
+.match-score{background:rgba(35,85,245,0.08);color:var(--blue);border:1px solid rgba(35,85,245,0.2);font-family:'Clash Display',sans-serif;font-weight:700;font-size:14px;padding:6px 11px;border-radius:10px}
+.match-stage{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:3px 8px;border-radius:6px;margin-top:4px;display:inline-block}
+.stage-applied{background:rgba(35,85,245,0.1);color:var(--blue)}
+.stage-viewed{background:rgba(35,85,245,0.08);color:var(--blue)}
+.stage-interview{background:rgba(224,24,94,0.1);color:var(--pink)}
+
+.path-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px}
+.path-hero{height:90px;display:flex;align-items:flex-end;padding:16px}
+.path-person{display:flex;align-items:center;gap:12px}
+.path-avatar{width:48px;height:48px;border-radius:14px;font-size:22px;display:flex;align-items:center;justify-content:center;border:2px solid rgba(35,85,245,0.15)}
+.path-name{font-weight:700;font-size:15px}
+.path-role{font-size:12px;color:var(--sub);margin-top:2px}
+.path-body{padding:16px 18px 18px}
+.tl{position:relative;padding-left:18px}
+.tl::before{content:'';position:absolute;left:4px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--blue),#6a8fff);border-radius:2px}
+.tl-item{margin-bottom:14px;position:relative}
+.tl-item::before{content:'';position:absolute;left:-19px;top:6px;width:8px;height:8px;background:var(--blue);border-radius:50%;border:2px solid #fff}
+.tl-year{font-size:11px;color:var(--blue);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.tl-role{font-weight:700;font-size:14px}
+.tl-co{font-size:13px;color:var(--sub)}
+
+.profile-hero{background:linear-gradient(135deg,#e8eeff 0%,#d4dfff 100%);margin:0 0 14px;padding:24px 20px;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;flex-shrink:0}
+.profile-av{width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,var(--blue),#6a8fff);font-size:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.profile-name{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:600}
+.profile-sub{font-size:13px;color:var(--sub);margin-top:3px}
+.edit-trigger{margin-left:auto;background:var(--s1);border:1px solid var(--border);color:var(--sub);padding:8px 14px;border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;transition:all .2s}
+
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-box{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 10px;text-align:center}
+.stat-n{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;color:var(--blue)}
+.stat-l{font-size:11px;color:var(--sub);margin-top:3px;font-weight:600}
+
+.pill-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.skill-pill{background:rgba(35,85,245,0.08);border:1px solid rgba(35,85,245,0.2);color:var(--blue);padding:6px 13px;border-radius:100px;font-size:13px;font-weight:500}
+.skill-pill.removable{cursor:pointer}
+.skill-pill.removable::after{content:' ×';opacity:0.6}
+
+.pref-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.pref-row:last-child{border-bottom:none}
+.pref-label{font-size:14px;color:var(--sub)}
+.pref-val{font-size:14px;font-weight:600}
+
+.form-group{margin-bottom:18px}
+.form-label{font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;display:block}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:13px 16px;color:var(--text);font-family:'Cabinet Grotesk',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:rgba(35,85,245,0.4)}
+.form-textarea{resize:none;height:90px;line-height:1.5}
+.form-select{cursor:pointer}
+.form-select option{background:#fff}
+.save-btn{width:100%;background:var(--blue);color:#fff;border:none;padding:16px;border-radius:16px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;cursor:pointer;margin-top:8px;transition:opacity .2s,transform .1s}
+.save-btn:active{transform:scale(0.98)}
+.skill-input-row{display:flex;gap:8px}
+.skill-input-row .form-input{flex:1}
+.add-skill-btn{background:#2355f5;color:#fff;border:none;padding:13px 16px;border-radius:14px;font-size:18px;cursor:pointer}
+
+.emp-body{flex:1;overflow-y:auto;padding:0 20px 20px}
+.emp-body::-webkit-scrollbar{width:0}
+.emp-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.emp-stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-md);padding:18px}
+.emp-stat-n{font-family:'Clash Display',sans-serif;font-size:32px;font-weight:700;color:var(--blue)}
+.emp-stat-l{font-size:13px;color:var(--sub);margin-top:4px}
+.emp-stat-d{font-size:11px;color:rgba(35,85,245,0.7);margin-top:6px;font-weight:600}
+.listing-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:12px}
+.listing-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.listing-title{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:600}
+.listing-status{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:4px 10px;border-radius:8px}
+.ls-active{background:rgba(35,85,245,0.1);color:var(--blue)}
+.ls-paused{background:rgba(0,0,0,0.06);color:var(--sub)}
+.listing-meta{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.listing-meta span{font-size:13px;color:var(--sub)}
+.listing-bar{display:flex;gap:8px}
+.lb-item{flex:1;background:var(--s2);border-radius:10px;padding:10px;text-align:center}
+.lb-n{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700}
+.lb-l{font-size:11px;color:var(--sub);margin-top:2px}
+.listing-actions{display:flex;gap:8px;margin-top:12px}
+.la-btn{flex:1;padding:10px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:'Cabinet Grotesk',sans-serif}
+.la-primary{background:var(--blue);color:#fff}
+.la-sec{background:var(--s2);border:1px solid var(--border);color:var(--sub)}
+
+.detail-hero{height:200px;position:relative;flex-shrink:0}
+.detail-hero-bg{position:absolute;inset:0}
+.detail-hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,var(--bg) 100%)}
+.detail-hero-content{position:absolute;bottom:20px;left:22px;right:22px}
+.detail-co{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.detail-co-logo{width:40px;height:40px;border-radius:12px;font-size:20px;display:flex;align-items:center;justify-content:center}
+.detail-co-name{font-size:14px;font-weight:600}
+.detail-title{font-family:'Clash Display',sans-serif;font-size:26px;font-weight:600;line-height:1.1}
+.detail-salary{color:var(--blue);font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;margin-top:6px}
+.detail-body{flex:1;overflow-y:auto;padding:10px 20px 20px}
+.detail-body::-webkit-scrollbar{width:0}
+.section-head{font-family:'Clash Display',sans-serif;font-size:13px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin:18px 0 10px}
+.detail-desc{font-size:14px;line-height:1.7;color:var(--sub)}
+.req-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.req-list li{font-size:14px;color:var(--sub);display:flex;gap:10px}
+.req-list li::before{content:'→';color:var(--blue);flex-shrink:0}
+.apply-full-btn{width:100%;background:var(--blue);color:#fff;border:none;padding:17px;border-radius:18px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;cursor:pointer;margin-top:20px;box-shadow:0 8px 24px rgba(35,85,245,0.2)}
+
+.toast{position:absolute;top:90px;left:50%;transform:translateX(-50%) translateY(-10px);background:#fff;border:1px solid rgba(35,85,245,0.2);color:var(--text);padding:11px 20px;border-radius:100px;font-size:14px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;z-index:999;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 4px 20px rgba(35,85,245,0.15)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.ai-spinner{width:48px;height:48px;border:3px solid #dce4ff;border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes newCardPulse{0%,100%{box-shadow:0 0 0 3px rgba(35,85,245,0.5)}50%{box-shadow:0 0 0 6px rgba(35,85,245,0.1)}}
+
+/* AUTH */
+#authScreen{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;background:var(--bg);transition:opacity 0.5s,transform 0.5s cubic-bezier(0.32,0.72,0,1)}
+#authScreen.hidden{opacity:0;transform:scale(0.96) translateY(20px);pointer-events:none}
+.auth-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px 20px;position:relative;overflow:hidden}
+.auth-glow{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(35,85,245,0.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
+.auth-logo-big{font-family:'Clash Display',sans-serif;font-size:42px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;text-align:center}
+.auth-logo-big em{color:var(--blue);font-style:normal}
+.auth-tagline{font-size:15px;color:var(--sub);text-align:center;line-height:1.6;max-width:260px;margin-bottom:36px}
+.auth-cards-preview{display:flex;gap:10px}
+.auth-mini-card{width:100px;height:130px;border-radius:18px;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;font-size:11px;font-weight:600;flex-shrink:0;border:1px solid rgba(35,85,245,0.15);animation:float 3s ease-in-out infinite}
+.auth-mini-card:nth-child(2){animation-delay:0.5s;transform:translateY(-8px)}
+.auth-mini-card:nth-child(3){animation-delay:1s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.amc-co{font-size:18px;margin-bottom:4px}
+.amc-role{font-size:10px;color:rgba(10,10,26,0.6);line-height:1.3}
+.amc-sal{color:var(--blue);font-family:'Clash Display',sans-serif;font-size:12px;font-weight:700;margin-top:4px}
+.auth-bottom{padding:20px 24px 32px;display:flex;flex-direction:column;gap:11px}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:2px 0}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-divider span{font-size:12px;color:var(--sub);font-weight:600}
+.sso-btn{width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--border);background:var(--s1);color:var(--text);font-family:'Cabinet Grotesk',sans-serif;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:all .2s}
+.sso-btn:hover{border-color:rgba(35,85,245,0.4);background:var(--s2)}
+.sso-btn:active{transform:scale(0.98)}
+.sso-icon{font-size:20px;width:24px;text-align:center;flex-shrink:0}
+.email-auth-form{display:none;flex-direction:column;gap:11px}
+.email-auth-form.show{display:flex}
+.email-toggle{text-align:center;font-size:13px;color:var(--sub);cursor:pointer;padding:4px}
+.email-toggle span{color:var(--blue);font-weight:600}
+.auth-submit{width:100%;background:var(--blue);color:#fff;border:none;padding:15px;border-radius:16px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;cursor:pointer}
+.auth-terms{text-align:center;font-size:11px;color:var(--sub);line-height:1.5;padding:0 10px}
+.auth-terms a{color:var(--blue);text-decoration:none}
+
+/* NEWS */
+.news-hero-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px;cursor:pointer;transition:border-color .2s}
+.news-hero-card:hover{border-color:rgba(35,85,245,0.3)}
+.news-hero-img{height:140px;display:flex;align-items:flex-end;padding:16px;position:relative}
+.news-hero-img-grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(190,210,255,0.95) 100%)}
+.news-cat{background:var(--blue);color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:4px 10px;border-radius:6px;position:absolute;top:14px;left:14px}
+.news-hero-title{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:600;line-height:1.25;position:relative;z-index:1;color:var(--text)}
+.news-hero-body{padding:14px 16px 16px}
+.news-meta{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.news-source{font-size:12px;font-weight:700;color:var(--blue)}
+.news-time{font-size:12px;color:var(--sub)}
+.news-excerpt{font-size:13px;color:var(--sub);line-height:1.6}
+.news-row{display:flex;gap:12px;align-items:flex-start;background:var(--s1);border:1px solid var(--border);border-radius:var(--r-md);padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .2s}
+.news-row:hover{border-color:rgba(35,85,245,0.3)}
+.news-row-icon{width:52px;height:52px;border-radius:12px;font-size:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.news-row-content{flex:1}
+.news-row-title{font-weight:700;font-size:14px;line-height:1.3;margin-bottom:4px;color:var(--text)}
+.news-row-meta{display:flex;gap:8px;align-items:center}
+.news-row-source{font-size:11px;font-weight:700;color:var(--blue)}
+.news-row-time{font-size:11px;color:var(--sub)}
+.news-tabs{display:flex;gap:0;padding:0 20px 14px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.news-tabs::-webkit-scrollbar{display:none}
+.news-tab{padding:7px 16px;border-radius:100px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--sub);transition:all .2s;font-family:'Cabinet Grotesk',sans-serif;border:none;background:none}
+.news-tab.on{background:var(--blue);color:#fff}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+<div class="status"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>▲▲▲</span><span>WiFi</span><span>⬛</span></div></div>
+
+<!-- DISCOVER -->
+<div id="discoverScreen" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+  <div class="topbar">
+    <div class="wordmark">path<em>ways</em></div>
+    <div class="topbar-group">
+      <div class="icon-btn" onclick="showToast('🔔 2 new matches!')"><span>🔔</span><div class="badge"></div></div>
+      <div class="icon-btn" onclick="openPane('profilePane')">👤</div>
+    </div>
+  </div>
+  <div class="mode-toggle">
+    <button class="mode-btn on" onclick="setMode(this,'seeker')">👤 Job Seeker</button>
+    <button class="mode-btn" onclick="setMode(this,'employer')">🏢 Employer</button>
+  </div>
+  <div class="chips" id="chipRow">
+    <div class="chip on" onclick="setChip(this,'all')">✦ For You</div>
+    <div class="chip" onclick="setChip(this,'tech')">💻 Tech</div>
+    <div class="chip" onclick="setChip(this,'design')">🎨 Design</div>
+    <div class="chip" onclick="setChip(this,'finance')">📈 Finance</div>
+    <div class="chip" onclick="setChip(this,'remote')">🌍 Remote</div>
+  </div>
+  <div class="stack" id="stack">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">✨</div>
+      <div class="empty-title">All caught up!</div>
+      <div class="empty-sub">You've seen every role. New jobs added daily.</div>
+      <button class="btn-refill" onclick="initCards()">↺ Refresh Jobs</button>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="act act-undo" onclick="undoLast()">↩</button>
+    <button class="act act-skip" onclick="triggerSwipe('left')">✕</button>
+    <button class="act act-go"   onclick="triggerSwipe('right')">⚡</button>
+    <button class="act act-save" onclick="triggerSwipe('up')">★</button>
+    <button class="act act-info" onclick="openDetail()">◈</button>
+  </div>
+  <div class="bnav">
+    <div class="bni on"  onclick="bnavClick(this)"><span class="ico">⚡</span>Discover</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('matchesPane')"><span class="ico">💬</span>Matches</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('newsPane');renderNews('all')"><span class="ico">📰</span>News</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('pathsPane')"><span class="ico">◈</span>Pathways</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('profilePane')"><span class="ico">👤</span>Profile</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MATCHES -->
+<div class="pane" id="matchesPane">
+  <div class="pane-head"><div class="back-btn" onclick="closePane('matchesPane')">←</div><div class="pane-title">Your Matches</div></div>
+  <div class="pane-body" id="matchesList"><div style="text-align:center;padding:50px 20px;color:var(--sub);"><div style="font-size:44px;margin-bottom:12px;">⚡</div><div style="font-size:15px;">Swipe right to start matching</div></div></div>
+</div>
+
+<!-- NEWS -->
+<div class="pane" id="newsPane">
+  <div style="display:flex;align-items:center;gap:12px;padding:52px 20px 8px;flex-shrink:0;">
+    <div class="back-btn" onclick="closePane('newsPane')">←</div>
+    <div class="pane-title">Career News</div>
+  </div>
+  <div class="news-tabs" id="newsTabs">
+    <button class="news-tab on" onclick="setNewsTab(this,'all')">All</button>
+    <button class="news-tab" onclick="setNewsTab(this,'market')">Job Market</button>
+    <button class="news-tab" onclick="setNewsTab(this,'salary')">Salaries</button>
+    <button class="news-tab" onclick="setNewsTab(this,'skills')">Skills</button>
+    <button class="news-tab" onclick="setNewsTab(this,'ai')">AI & Work</button>
+  </div>
+  <div class="pane-body" id="newsBody"></div>
+</div>
+
+<!-- PATHWAYS -->
+<div class="pane" id="pathsPane">
+  <div class="pane-head"><div class="back-btn" onclick="closePane('pathsPane')">←</div><div class="pane-title">Career Pathways</div></div>
+  <div style="padding:0 20px 8px;color:var(--sub);font-size:14px;flex-shrink:0;">Real stories · How they got there</div>
+  <div class="pane-body">
+    <div class="path-card">
+      <div class="path-hero" style="background:linear-gradient(135deg,#dce8ff,#c8d8f8);">
+        <div class="path-person"><div class="path-avatar" style="background:rgba(35,85,245,0.15);">👩‍💻</div><div><div class="path-name">Sarah K.</div><div class="path-role">Senior Product Designer · Figma</div></div></div>
+      </div>
+      <div class="path-body">
+        <div class="tl">
+          <div class="tl-item"><div class="tl-year">2018</div><div class="tl-role">Graphic Design Intern</div><div class="tl-co">Creative Agency</div></div>
+          <div class="tl-item"><div class="tl-year">2019</div><div class="tl-role">Junior UX Designer</div><div class="tl-co">Series A Startup</div></div>
+          <div class="tl-item"><div class="tl-year">2021</div><div class="tl-role">Product Designer</div><div class="tl-co">Spotify</div></div>
+          <div class="tl-item"><div class="tl-year">2024</div><div class="tl-role">Senior Product Designer</div><div class="tl-co">Figma ✦ Now</div></div>
+        </div>
+        <div style="margin-top:12px;padding:12px;background:rgba(35,85,245,0.05);border:1px solid rgba(35,85,245,0.12);border-radius:12px;font-size:13px;color:var(--sub);line-height:1.6;">💬 "The biggest jump was going from agency to startup. You learn fast when there's no one else to do the work."</div>
+      </div>
+    </div>
+    <div class="path-card">
+      <div class="path-hero" style="background:linear-gradient(135deg,#d8eeff,#c5dff5);">
+        <div class="path-person"><div class="path-avatar" style="background:rgba(35,85,245,0.1);">👨‍💼</div><div><div class="path-name">Marcus T.</div><div class="path-role">Engineering Manager · Stripe</div></div></div>
+      </div>
+      <div class="path-body">
+        <div class="tl">
+          <div class="tl-item"><div class="tl-year">2016</div><div class="tl-role">CS Graduate</div><div class="tl-co">Imperial College London</div></div>
+          <div class="tl-item"><div class="tl-year">2016</div><div class="tl-role">Software Engineer</div><div class="tl-co">Goldman Sachs</div></div>
+          <div class="tl-item"><div class="tl-year">2019</div><div class="tl-role">Senior SWE</div><div class="tl-co">Monzo</div></div>
+          <div class="tl-item"><div class="tl-year">2023</div><div class="tl-role">Engineering Manager</div><div class="tl-co">Stripe ✦ Now</div></div>
+        </div>
+        <div style="margin-top:12px;padding:12px;background:rgba(35,85,245,0.05);border:1px solid rgba(35,85,245,0.12);border-radius:12px;font-size:13px;color:var(--sub);line-height:1.6;">💬 "Moving from finance to fintech felt risky. Best decision I made."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE VIEW -->
+<div class="pane" id="profilePane">
+  <div style="flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:14px;padding:52px 22px 0;">
+      <div class="back-btn" onclick="closePane('profilePane')">←</div>
+      <div class="pane-title">My Profile</div>
+      <button class="edit-trigger" onclick="openPane('editPane')">✎ Edit</button>
+    </div>
+    <div class="profile-hero" style="margin-top:16px;">
+      <div class="profile-av">🧑</div>
+      <div>
+        <div class="profile-name" id="dispName">Alex Johnson</div>
+        <div class="profile-sub" id="dispRole">Product Designer · London</div>
+        <div style="background:rgba(35,85,245,0.08);color:var(--blue);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;display:inline-block;margin-top:8px;border:1px solid rgba(35,85,245,0.2);">Profile 87% complete</div>
+      </div>
+    </div>
+  </div>
+  <div class="pane-body">
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-n" id="statApplied">0</div><div class="stat-l">Applied</div></div>
+      <div class="stat-box"><div class="stat-n" id="statSaved">0</div><div class="stat-l">Saved</div></div>
+      <div class="stat-box"><div class="stat-n">89%</div><div class="stat-l">Avg Match</div></div>
+    </div>
+    <div class="icard">
+      <div class="icard-title">Skills</div>
+      <div class="pill-wrap" id="dispSkills">
+        <span class="skill-pill">Figma</span><span class="skill-pill">UX Research</span><span class="skill-pill">Design Systems</span><span class="skill-pill">Prototyping</span><span class="skill-pill">React</span>
+      </div>
+    </div>
+    <div class="icard">
+      <div class="icard-title">Preferences</div>
+      <div class="pref-row"><span class="pref-label">💰 Salary</span><span class="pref-val" id="dispSalary">$65k – $95k</span></div>
+      <div class="pref-row"><span class="pref-label">📍 Location</span><span class="pref-val" id="dispLocation">London / Remote</span></div>
+      <div class="pref-row"><span class="pref-label">🏢 Company</span><span class="pref-val" id="dispCompany">Scale-up</span></div>
+      <div class="pref-row"><span class="pref-label">⏰ Type</span><span class="pref-val" id="dispType">Full-time</span></div>
+    </div>
+    <div class="icard">
+      <div class="icard-title">About</div>
+      <div style="font-size:14px;line-height:1.7;color:var(--sub);" id="dispBio">Product designer with 5 years experience crafting digital products used by millions. Passionate about design systems and user research.</div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PROFILE -->
+<div class="pane" id="editPane">
+  <div class="pane-head"><div class="back-btn" onclick="closePane('editPane')">←</div><div class="pane-title">Edit Profile</div></div>
+  <div class="pane-body">
+    <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="editName" value="Alex Johnson"></div>
+    <div class="form-group"><label class="form-label">Current Role</label><input class="form-input" id="editRole" value="Product Designer"></div>
+    <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="editLoc" value="London"></div>
+    <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" id="editBio">Product designer with 5 years experience crafting digital products used by millions. Passionate about design systems and user research.</textarea></div>
+    <div class="form-group">
+      <label class="form-label">Skills</label>
+      <div class="skill-input-row"><input class="form-input" id="editSkillInput" placeholder="Add a skill…"><button class="add-skill-btn" onclick="addSkill()">+</button></div>
+      <div class="pill-wrap" id="editSkillList" style="margin-top:10px;">
+        <span class="skill-pill removable" onclick="removeSkill(this)">Figma</span>
+        <span class="skill-pill removable" onclick="removeSkill(this)">UX Research</span>
+        <span class="skill-pill removable" onclick="removeSkill(this)">Design Systems</span>
+        <span class="skill-pill removable" onclick="removeSkill(this)">Prototyping</span>
+        <span class="skill-pill removable" onclick="removeSkill(this)">React</span>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Salary Expectation</label>
+      <select class="form-select" id="editSalary">
+        <option>$40k – $55k</option><option>$55k – $70k</option><option selected>$65k – $95k</option><option>$90k – $120k</option><option>$120k+</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Company Size</label>
+      <select class="form-select" id="editCompany"><option>Early-stage startup</option><option selected>Scale-up</option><option>Enterprise</option><option>Any</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Work Type</label>
+      <select class="form-select" id="editWorkType"><option selected>Full-time</option><option>Part-time</option><option>Contract</option><option>Freelance</option></select>
+    </div>
+    <button class="save-btn" onclick="saveProfile()">Save Profile</button>
+  </div>
+</div>
+
+<!-- JOB DETAIL -->
+<div class="pane" id="detailPane">
+  <div class="detail-hero">
+    <div class="detail-hero-bg" id="detailBg"></div>
+    <div class="detail-hero-grad"></div>
+    <div style="position:absolute;top:52px;left:22px;"><div class="back-btn" onclick="closePane('detailPane')">←</div></div>
+    <div class="detail-hero-content">
+      <div class="detail-co"><div class="detail-co-logo" id="detailLogo"></div><div class="detail-co-name" id="detailCo"></div></div>
+      <div class="detail-title" id="detailTitle"></div>
+      <div class="detail-salary" id="detailSalary"></div>
+    </div>
+  </div>
+  <div class="detail-body">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <div class="work-type" id="detailType"></div>
+      <div class="work-type" id="detailLocation" style="background:rgba(35,85,245,0.1);color:var(--blue);"></div>
+      <div class="match-pill" id="detailMatch"></div>
+    </div>
+    <div class="section-head">About the Role</div>
+    <div class="detail-desc" id="detailDesc"></div>
+    <div class="section-head">Requirements</div>
+    <ul class="req-list" id="detailReqs"></ul>
+    <div class="section-head">Skills</div>
+    <div class="pill-wrap" id="detailSkills"></div>
+    <button class="apply-full-btn" onclick="applyFromDetail()">⚡ Apply Now</button>
+  </div>
+</div>
+
+<!-- EMPLOYER -->
+<div class="pane" id="employerPane">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:52px 22px 12px;flex-shrink:0;">
+    <div><div style="font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Employer Dashboard</div><div style="font-family:'Clash Display',sans-serif;font-size:20px;font-weight:600;">TechCorp Ltd.</div></div>
+    <button style="background:var(--blue);color:#fff;border:none;padding:9px 16px;border-radius:12px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:13px;cursor:pointer;" onclick="openPane('postJobPane')">+ Post Job</button>
+  </div>
+  <div class="emp-body" id="empBody">
+    <div class="emp-stat-row">
+      <div class="emp-stat"><div class="emp-stat-n">247</div><div class="emp-stat-l">Total Applicants</div><div class="emp-stat-d">↑ 18% this week</div></div>
+      <div class="emp-stat"><div class="emp-stat-n" id="empListingCount">4</div><div class="emp-stat-l">Active Listings</div><div class="emp-stat-d">2 expiring soon</div></div>
+      <div class="emp-stat"><div class="emp-stat-n">89%</div><div class="emp-stat-l">Avg Match Score</div><div class="emp-stat-d">↑ top 10%</div></div>
+      <div class="emp-stat"><div class="emp-stat-n">12</div><div class="emp-stat-l">Interviews Set</div><div class="emp-stat-d">3 this week</div></div>
+    </div>
+    <div style="font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:12px;">Active Listings</div>
+    <div id="listingsContainer">
+      <div class="listing-card">
+        <div class="listing-head"><div><div class="listing-title">Senior Product Designer</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">Posted 3 days ago</div></div><div class="listing-status ls-active">Active</div></div>
+        <div class="listing-meta"><span>📍 London / Remote</span><span>💰 $75k–$90k</span></div>
+        <div class="listing-bar">
+          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">84</div><div class="lb-l">Applied</div></div>
+          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">23</div><div class="lb-l">Shortlisted</div></div>
+          <div class="lb-item"><div class="lb-n" style="color:var(--pink);">6</div><div class="lb-l">Interviews</div></div>
+        </div>
+        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('📋 Opening applicants…')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
+      </div>
+      <div class="listing-card">
+        <div class="listing-head"><div><div class="listing-title">Frontend Engineer</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">Posted 1 week ago</div></div><div class="listing-status ls-active">Active</div></div>
+        <div class="listing-meta"><span>📍 Remote</span><span>💰 $90k–$110k</span></div>
+        <div class="listing-bar">
+          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">112</div><div class="lb-l">Applied</div></div>
+          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">31</div><div class="lb-l">Shortlisted</div></div>
+          <div class="lb-item"><div class="lb-n" style="color:var(--pink);">8</div><div class="lb-l">Interviews</div></div>
+        </div>
+        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('📋 Opening applicants…')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bni" onclick="closePane('employerPane');bnavReset()"><span class="ico">←</span>Back</div>
+    <div class="bni on"><span class="ico">📊</span>Dashboard</div>
+    <div class="bni" onclick="openPane('postJobPane')"><span class="ico">+</span>Post Job</div>
+    <div class="bni"><span class="ico">👥</span>Candidates</div>
+  </div>
+</div>
+
+<!-- POST JOB -->
+<div class="pane" id="postJobPane">
+  <div class="pane-head"><div class="back-btn" onclick="closePane('postJobPane')">←</div><div class="pane-title">Post a Job</div></div>
+  <div class="pane-body">
+    <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="pjCompany" value="TechCorp Ltd."></div>
+    <div class="form-group"><label class="form-label">Job Title</label><input class="form-input" id="pjTitle" placeholder="e.g. Senior Product Designer"></div>
+    <div class="form-group"><label class="form-label">Department</label>
+      <select class="form-select" id="pjDept"><option value="design">Design</option><option value="tech">Engineering</option><option value="tech">Product</option><option value="finance">Finance</option><option value="tech">Operations</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Salary Range</label>
+      <select class="form-select" id="pjSalary"><option>$40k – $55k</option><option>$55k – $70k</option><option>$70k – $90k</option><option>$90k – $120k</option><option>$120k+</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Work Type</label>
+      <select class="form-select" id="pjType"><option>Hybrid</option><option>Remote</option><option>On-site</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="pjLocation" placeholder="e.g. New York, NY"></div>
+    <div class="form-group"><label class="form-label">Key Skills (comma separated)</label><input class="form-input" id="pjSkills" placeholder="e.g. React, Figma, Python"></div>
+    <div class="form-group"><label class="form-label">Job Description</label><textarea class="form-textarea" id="pjDesc" placeholder="Describe the role…"></textarea></div>
+    <div class="form-group"><label class="form-label">Requirements</label><textarea class="form-textarea" id="pjReqs" placeholder="One requirement per line…"></textarea></div>
+    <button class="save-btn" onclick="postJob()">🚀 Post Job</button>
+  </div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen">
+  <div class="status" style="flex-shrink:0;"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>▲▲▲</span><span>WiFi</span><span>⬛</span></div></div>
+  <div class="auth-hero">
+    <div class="auth-glow"></div>
+    <div class="auth-logo-big">path<em>ways</em></div>
+    <div class="auth-tagline">Swipe your way to the career you actually want</div>
+    <div class="auth-cards-preview">
+      <div class="auth-mini-card" style="background:linear-gradient(145deg,#dce8ff,#c8d8ff);"><div class="amc-co">🔲</div><div class="amc-role">Product Designer</div><div class="amc-sal">$80k</div></div>
+      <div class="auth-mini-card" style="background:linear-gradient(145deg,#d8eeff,#c5e0ff);transform:translateY(-8px);"><div class="amc-co">🎵</div><div class="amc-role">UX Researcher</div><div class="amc-sal">$75k</div></div>
+      <div class="auth-mini-card" style="background:linear-gradient(145deg,#e0e8ff,#ccd8ff);"><div class="amc-co">⚡</div><div class="amc-role">Frontend Eng.</div><div class="amc-sal">$120k</div></div>
+    </div>
+  </div>
+  <div class="auth-bottom">
+    <button class="sso-btn" onclick="doLogin('Google', this)"><span class="sso-icon">🇬</span> Continue with Google</button>
+    <button class="sso-btn" onclick="doLogin('LinkedIn', this)"><span class="sso-icon">💼</span> Continue with LinkedIn</button>
+    <button class="sso-btn" onclick="doLogin('Meta', this)"><span class="sso-icon">🔵</span> Continue with Meta</button>
+    <div class="auth-divider"><span>or</span></div>
+    <div class="email-auth-form" id="emailForm">
+      <input class="form-input" id="authEmail" placeholder="Email address" type="email">
+      <input class="form-input" id="authPass" placeholder="Password" type="password">
+      <button class="auth-submit" onclick="doLogin('Email', this)">Continue with Email</button>
+    </div>
+    <div class="email-toggle" onclick="toggleEmailForm()">Use email instead <span id="emailToggleLabel">↓ Show</span></div>
+    <div class="auth-terms">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
+  </div>
+</div>
+
+</div><!-- /phone -->
+<script>
+const JOBS = [
+  {id:1,title:"Senior Product Designer",company:"Notion",logo:"🔲",logoBg:"#dce4ff",salary:"$80k",location:"New York",type:"Hybrid",match:94,tag:"design",bg:"linear-gradient(145deg,#dce8ff,#c8d8ff,#b8ccff)",skills:["Figma","Design Systems","UX Research","Prototyping"],desc:"Lead design for Notion's core editing experience. Work closely with PM and engineering to ship product used by 30M+ people.",reqs:["5+ years product design","Figma expert","Experience with design systems","Strong portfolio"]},
+  {id:2,title:"UX Researcher",company:"Spotify",logo:"🎵",logoBg:"#d8f0ff",salary:"$75k",location:"Remote",type:"Remote",match:88,tag:"design",bg:"linear-gradient(145deg,#d8eeff,#c5e4ff,#b0d8ff)",skills:["User Testing","Qual Research","Surveys","Figma"],desc:"Shape Spotify's understanding of listeners through rigorous user research across mobile and desktop.",reqs:["3+ years UX research","Mixed methods","Strong storytelling","Data analysis"]},
+  {id:3,title:"Frontend Engineer",company:"Stripe",logo:"⚡",logoBg:"#e0e8ff",salary:"$120k",location:"San Francisco",type:"Hybrid",match:76,tag:"tech",bg:"linear-gradient(145deg,#e0e8ff,#ccd8ff,#b8caff)",skills:["React","TypeScript","CSS","GraphQL"],desc:"Build the interfaces that power payments for millions of businesses. Work on the dashboard and developer tools.",reqs:["4+ years frontend","React expert","TypeScript","Eye for design"]},
+  {id:4,title:"Product Manager",company:"Monzo",logo:"🏦",logoBg:"#dce8ff",salary:"$95k",location:"New York",type:"Office",match:82,tag:"finance",bg:"linear-gradient(145deg,#d8e4ff,#c4d4ff,#b0c4ff)",skills:["Product Strategy","SQL","A/B Testing","Roadmapping"],desc:"Own the lending product at Monzo. Define the roadmap, work with design and engineering, and grow a product customers love.",reqs:["4+ years PM","Fintech preferred","SQL basics","Analytical thinking"]},
+  {id:5,title:"Brand Designer",company:"Figma",logo:"🎨",logoBg:"#dde8ff",salary:"$85k",location:"Remote",type:"Remote",match:91,tag:"design",bg:"linear-gradient(145deg,#dce8ff,#c8d6ff,#b4c8ff)",skills:["Branding","Motion Design","Figma","Illustration"],desc:"Define how Figma looks to the world. Lead brand campaigns and maintain our visual identity.",reqs:["5+ years brand design","Motion skills a plus","Portfolio required","Figma native"]},
+  {id:6,title:"ML Engineer",company:"DeepMind",logo:"🧠",logoBg:"#e4eaff",salary:"$140k",location:"San Francisco",type:"Hybrid",match:71,tag:"tech",bg:"linear-gradient(145deg,#e8eeff,#d4e0ff,#c0d2ff)",skills:["Python","PyTorch","MLOps","Research"],desc:"Work on foundational AI models that push the boundary of what's possible. Collaborate with world-class researchers.",reqs:["PhD or equiv exp","PyTorch / JAX","Research publications preferred","Strong maths"]}
+];
+
+let cards=[],history=[],matches=[],savedCount=0,appliedCount=0,currentFilter='all';
+
+function getJobs(){
+  if(currentFilter==='all') return JOBS;
+  if(currentFilter==='remote') return JOBS.filter(j=>j.type==='Remote');
+  return JOBS.filter(j=>j.tag===currentFilter);
+}
+
+function setChip(el,filter){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on'); currentFilter=filter; initCards();
+}
+
+function initCards(){
+  const stack=document.getElementById('stack');
+  stack.querySelectorAll('.jcard').forEach(c=>c.remove());
+  cards=[]; history=[];
+  document.getElementById('emptyState').classList.remove('show');
+  const jobs=getJobs();
+  if(!jobs.length){document.getElementById('emptyState').classList.add('show');return;}
+  jobs.slice().reverse().forEach((job,ri)=>{
+    const card=makeCard(job);
+    stack.appendChild(card);
+    cards.unshift(card);
+  });
+  refreshPositions();
+  attachDrag(cards[0]);
+}
+
+function makeCard(job){
+  const d=document.createElement('div');
+  d.className='jcard'; d.dataset.id=job.id;
+  d.innerHTML=`<div class="jcard-bg" style="background:${job.bg}"></div><div class="jcard-overlay"></div><div class="jcard-top"><div class="jcard-tag">${job.type}</div><div class="match-pill">${job.match}% match</div></div><div class="stamp stamp-skip">SKIP</div><div class="stamp stamp-apply">APPLY</div><div class="jcard-body"><div class="co-row"><div class="co-logo" style="background:${job.logoBg}">${job.logo}</div><span class="co-name">${job.company}</span><span class="co-dot"></span><span class="co-loc">${job.location}</span></div><div class="jcard-title">${job.title}</div><div class="jcard-tags">${job.skills.slice(0,3).map(s=>'<span class="skill-tag">'+s+'</span>').join('')}</div><div class="salary-row"><div class="salary">${job.salary}</div><div class="work-type">${job.type}</div></div></div>`;
+  return d;
+}
+
+function refreshPositions(){
+  cards.forEach((c,i)=>{
+    c.style.transition='transform 0.36s cubic-bezier(0.32,0.72,0,1),opacity 0.36s';
+    c.style.zIndex=cards.length-i;
+    if(i===0){c.style.transform='scale(1) translateY(0)';c.style.opacity='1';}
+    else if(i===1){c.style.transform='scale(0.95) translateY(18px)';c.style.opacity='0.8';}
+    else{c.style.transform='scale(0.90) translateY(34px)';c.style.opacity='0.55';}
+  });
+}
+
+function attachDrag(card){
+  if(!card) return;
+  let sx=0,sy=0,dragging=false,dx=0,dy=0,velX=0,lastX=0,lastTime=0;
+  const start=e=>{
+    dragging=true;
+    const p=e.touches?e.touches[0]:e;
+    sx=p.clientX; sy=p.clientY; lastX=p.clientX; lastTime=Date.now();
+    card.style.transition='none';
+    document.addEventListener('mousemove',move);
+    document.addEventListener('mouseup',end);
+    document.addEventListener('touchmove',move,{passive:false});
+    document.addEventListener('touchend',end);
+  };
+  const move=e=>{
+    if(!dragging) return;
+    if(e.cancelable) e.preventDefault();
+    const p=e.touches?e.touches[0]:e;
+    dx=p.clientX-sx; dy=p.clientY-sy;
+    const now=Date.now();
+    velX=(p.clientX-lastX)/Math.max(1,now-lastTime);
+    lastX=p.clientX; lastTime=now;
+    card.style.transform=`translateX(${dx}px) translateY(${dy*0.25}px) rotate(${dx*0.07}deg)`;
+    const ratio=Math.min(Math.abs(dx)/80,1);
+    card.querySelector('.stamp-skip').style.opacity=dx<-20?ratio:0;
+    card.querySelector('.stamp-apply').style.opacity=dx>20?ratio:0;
+    if(cards[1]){
+      cards[1].style.transition='none';
+      cards[1].style.transform=`scale(${0.95+ratio*0.05}) translateY(${18-ratio*18}px)`;
+      cards[1].style.opacity=String(0.8+ratio*0.2);
+    }
+  };
+  const end=()=>{
+    if(!dragging) return;
+    dragging=false;
+    document.removeEventListener('mousemove',move);
+    document.removeEventListener('mouseup',end);
+    document.removeEventListener('touchmove',move);
+    document.removeEventListener('touchend',end);
+    const fling=Math.abs(velX)>0.4;
+    if(dx>70||(fling&&velX>0)) dismiss('right');
+    else if(dx<-70||(fling&&velX<0)) dismiss('left');
+    else{
+      card.style.transition='transform 0.45s cubic-bezier(0.34,1.56,0.64,1)';
+      card.style.transform='scale(1) translateY(0) rotate(0)';
+      card.querySelector('.stamp-skip').style.opacity=0;
+      card.querySelector('.stamp-apply').style.opacity=0;
+      refreshPositions();
+    }
+    dx=0; dy=0; velX=0;
+  };
+  card.addEventListener('mousedown',start);
+  card.addEventListener('touchstart',start,{passive:true});
+}
+
+function dismiss(dir){
+  if(!cards.length) return;
+  const card=cards[0];
+  const job=JOBS.find(j=>j.id===parseInt(card.dataset.id));
+  card.style.transition='transform 0.42s cubic-bezier(0.32,0.72,0,1),opacity 0.42s';
+  if(dir==='right'){card.style.transform='translateX(160%) rotate(28deg)';appliedCount++;if(job)matches.push(job);updateMatchesList();document.getElementById('statApplied').textContent=appliedCount;if(job)showToast('⚡ Applied to '+job.company+'!');}
+  else if(dir==='up'){card.style.transform='translateY(-160%) scale(0.9)';card.style.opacity='0';savedCount++;document.getElementById('statSaved').textContent=savedCount;showToast('★ Saved for later');}
+  else{card.style.transform='translateX(-160%) rotate(-28deg)';card.style.opacity='0.2';}
+  history.push({card,dir,job});
+  cards.shift();
+  setTimeout(()=>{card.remove();if(cards.length>0){refreshPositions();attachDrag(cards[0]);}else document.getElementById('emptyState').classList.add('show');},430);
+}
+
+function triggerSwipe(dir){if(!cards.length)return;dismiss(dir);}
+
+function undoLast(){
+  const last=history.pop();
+  if(!last){showToast('Nothing to undo');return;}
+  document.getElementById('emptyState').classList.remove('show');
+  const{card,dir,job}=last;
+  card.style.transition='transform 0.42s cubic-bezier(0.34,1.56,0.64,1),opacity 0.4s';
+  card.style.transform='scale(1) translateY(0) rotate(0)';
+  card.style.opacity='1';
+  card.querySelector('.stamp-skip').style.opacity=0;
+  card.querySelector('.stamp-apply').style.opacity=0;
+  document.getElementById('stack').appendChild(card);
+  cards.unshift(card);
+  if(dir==='right'){appliedCount=Math.max(0,appliedCount-1);matches.pop();document.getElementById('statApplied').textContent=appliedCount;updateMatchesList();}
+  if(dir==='up'){savedCount=Math.max(0,savedCount-1);document.getElementById('statSaved').textContent=savedCount;}
+  refreshPositions();
+  attachDrag(card);
+  showToast('↩ Undone');
+}
+
+function openDetail(){
+  if(!cards.length) return;
+  const job=JOBS.find(j=>j.id===parseInt(cards[0].dataset.id));
+  if(!job) return;
+  document.getElementById('detailBg').style.background=job.bg;
+  document.getElementById('detailLogo').textContent=job.logo;
+  document.getElementById('detailCo').textContent=job.company;
+  document.getElementById('detailTitle').textContent=job.title;
+  document.getElementById('detailSalary').textContent=job.salary;
+  document.getElementById('detailType').textContent=job.type;
+  document.getElementById('detailLocation').textContent='📍 '+job.location;
+  document.getElementById('detailMatch').textContent=job.match+'% match';
+  document.getElementById('detailDesc').textContent=job.desc;
+  document.getElementById('detailReqs').innerHTML=job.reqs.map(r=>'<li>'+r+'</li>').join('');
+  document.getElementById('detailSkills').innerHTML=job.skills.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
+  openPane('detailPane');
+}
+
+function applyFromDetail(){closePane('detailPane');triggerSwipe('right');}
+
+function updateMatchesList(){
+  const el=document.getElementById('matchesList');
+  if(!matches.length){el.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);"><div style="font-size:44px;margin-bottom:12px;">⚡</div><div style="font-size:15px;">Swipe right to start matching</div></div>';return;}
+  const stages=['Applied','Applied','Viewed','Interview'];
+  const cls=['stage-applied','stage-applied','stage-viewed','stage-interview'];
+  el.innerHTML=matches.map((j,i)=>{const si=Math.min(i,stages.length-1);return'<div class="match-row"><div class="match-logo" style="background:'+j.logoBg+'">'+j.logo+'</div><div class="match-info"><div class="match-job">'+j.title+'</div><div class="match-co">'+j.company+' · '+j.location+'</div><span class="match-stage '+cls[si]+'">'+stages[si]+'</span></div><div class="match-score">'+j.match+'%</div></div>';}).join('');
+}
+
+function openPane(id){document.getElementById(id).classList.add('open');}
+function closePane(id){document.getElementById(id).classList.remove('open');}
+
+function setMode(btn,mode){
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(mode==='employer') openPane('employerPane');
+  else closePane('employerPane');
+}
+
+function bnavClick(el){document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
+function bnavReset(){document.querySelectorAll('#discoverScreen .bni').forEach((b,i)=>{b.classList.toggle('on',i===0);});}
+
+function saveProfile(){
+  const name=document.getElementById('editName').value.trim();
+  const role=document.getElementById('editRole').value.trim();
+  const loc=document.getElementById('editLoc').value.trim();
+  const bio=document.getElementById('editBio').value.trim();
+  const salary=document.getElementById('editSalary').value;
+  const co=document.getElementById('editCompany').value;
+  const wt=document.getElementById('editWorkType').value;
+  const skills=[...document.querySelectorAll('#editSkillList .skill-pill')].map(s=>s.textContent.replace(' ×','').trim());
+  document.getElementById('dispName').textContent=name;
+  document.getElementById('dispRole').textContent=role+' · '+loc;
+  document.getElementById('dispBio').textContent=bio;
+  document.getElementById('dispSalary').textContent=salary;
+  document.getElementById('dispLocation').textContent=loc;
+  document.getElementById('dispCompany').textContent=co;
+  document.getElementById('dispType').textContent=wt;
+  document.getElementById('dispSkills').innerHTML=skills.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
+  closePane('editPane');
+  showToast('✅ Profile saved!');
+}
+
+function addSkill(){
+  const inp=document.getElementById('editSkillInput');
+  const val=inp.value.trim();
+  if(!val) return;
+  const span=document.createElement('span');
+  span.className='skill-pill removable';
+  span.textContent=val;
+  span.onclick=()=>removeSkill(span);
+  document.getElementById('editSkillList').appendChild(span);
+  inp.value='';
+}
+document.getElementById('editSkillInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addSkill();}});
+function removeSkill(el){el.remove();}
+
+function postJob(){
+  const title=document.getElementById('pjTitle').value.trim();
+  const company=document.getElementById('pjCompany').value.trim()||'TechCorp Ltd.';
+  const salary=document.getElementById('pjSalary').value;
+  const type=document.getElementById('pjType').value;
+  const location=document.getElementById('pjLocation').value.trim()||'New York';
+  const desc=document.getElementById('pjDesc').value.trim();
+  const reqsRaw=document.getElementById('pjReqs').value.trim();
+  const skillsRaw=document.getElementById('pjSkills').value.trim();
+  const deptEl=document.getElementById('pjDept');
+  const tag=deptEl.options[deptEl.selectedIndex].value||'tech';
+  if(!title){showToast('⚠ Add a job title first');return;}
+  const skills=skillsRaw?skillsRaw.split(',').map(s=>s.trim()).filter(Boolean).slice(0,4):['Team Player','Communication'];
+  const reqs=reqsRaw?reqsRaw.split('\n').map(r=>r.trim()).filter(Boolean).slice(0,4):['See job description'];
+  const salDisplay=salary.split('–')[0].trim();
+  const palettes=['linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)','linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)','linear-gradient(145deg,#e0eaff,#ccdaff,#b8ccff)'];
+  const logos=['🏢','🚀','💡','🌟'];
+  const newId=Date.now();
+  const newJob={id:newId,title,company,logo:logos[JOBS.length%logos.length],logoBg:'#dce4ff',salary:salDisplay,location,type:type==='On-site'?'Office':type,match:Math.floor(Math.random()*20)+75,tag,bg:palettes[JOBS.length%palettes.length],skills,desc:desc||title+' role at '+company,reqs,isNew:true};
+  JOBS.unshift(newJob);
+  const stack=document.getElementById('stack');
+  document.getElementById('emptyState').classList.remove('show');
+  const card=makeCard(newJob);
+  card.style.boxShadow='0 0 0 3px #2355f5,0 8px 32px rgba(35,85,245,0.25)';
+  setTimeout(()=>{card.style.transition='box-shadow 0.6s';card.style.boxShadow='none';},1800);
+  stack.appendChild(card);
+  cards.unshift(card);
+  refreshPositions();
+  attachDrag(cards[0]);
+  // Add to employer dashboard
+  const count=document.getElementById('empListingCount');
+  if(count) count.textContent=parseInt(count.textContent)+1;
+  const lc=document.getElementById('listingsContainer');
+  if(lc){
+    const card2=document.createElement('div');
+    card2.className='listing-card';
+    card2.style.borderColor='rgba(35,85,245,0.4)';
+    card2.innerHTML='<div class="listing-head"><div><div class="listing-title">'+title+'</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">'+company+' · Just posted</div></div><div class="listing-status ls-active">Active</div></div><div class="listing-meta"><span>📍 '+location+'</span><span>💰 '+salary+'</span><span>🏢 '+type+'</span></div><div class="listing-bar"><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Applied</div></div><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Shortlisted</div></div><div class="lb-item"><div class="lb-n" style="color:var(--pink);">0</div><div class="lb-l">Interviews</div></div></div><div class="listing-actions"><button class="la-btn la-primary" onclick="showToast(\'📋 No applicants yet\')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>';
+    lc.prepend(card2);
+  }
+  ['pjTitle','pjLocation','pjSkills','pjDesc','pjReqs'].forEach(id=>{document.getElementById(id).value='';});
+  closePane('postJobPane');
+  closePane('employerPane');
+  showToast('🚀 "'+title+'" is now live in the feed!');
+}
+
+// NEWS
+const NEWS=[
+  {id:1,cat:'market',catLabel:'Job Market',emoji:'📊',bg:'linear-gradient(135deg,#c8d8ff,#b5caff)',title:'Tech hiring surges 34% in Q1 2026 as AI roles dominate demand',source:'TechCrunch',time:'2h ago',featured:true,excerpt:'Demand for AI engineers and ML ops has driven the strongest quarter for tech hiring since 2021, with salaries up 18% year-on-year.'},
+  {id:2,cat:'salary',catLabel:'Salaries',emoji:'💰',bg:'linear-gradient(135deg,#c8e8ff,#b5daff)',title:'Product designers now earning $15k more than 2024 average',source:'Glassdoor',time:'4h ago',featured:false,excerpt:'A new salary benchmark report shows design compensation hitting record highs, driven by competition from US tech giants.'},
+  {id:3,cat:'ai',catLabel:'AI & Work',emoji:'🤖',bg:'linear-gradient(135deg,#d5ddff,#c0ccff)',title:'LinkedIn reports 60% of job seekers now use AI to write CVs',source:'LinkedIn News',time:'6h ago',featured:false,excerpt:'A major shift in how candidates present themselves is forcing recruiters to update screening processes.'},
+  {id:4,cat:'skills',catLabel:'Skills',emoji:'🎓',bg:'linear-gradient(135deg,#ccd8ff,#b8c8ff)',title:'The 10 skills employers want most in 2026',source:'Pathways Editorial',time:'1d ago',featured:false,excerpt:'From AI literacy to systems thinking, we break down what hiring managers are really looking for.'},
+  {id:5,cat:'market',catLabel:'Job Market',emoji:'📈',bg:'linear-gradient(135deg,#d0dcff,#bdd0ff)',title:'Remote work rebounds: 48% of new tech roles now fully remote',source:'BBC Worklife',time:'1d ago',featured:false,excerpt:'After two years of return-to-office pressure, data shows a clear shift back towards remote-first hiring.'},
+  {id:6,cat:'ai',catLabel:'AI & Work',emoji:'⚡',bg:'linear-gradient(135deg,#d8e0ff,#c4d2ff)',title:'How Figma, Notion and Stripe are restructuring teams around AI',source:'The Verge',time:'2d ago',featured:false,excerpt:'Three of the most talent-competitive companies share how they\'re reshaping job roles as AI tools become standard.'}
+];
+
+let currentNewsFilter='all';
+function renderNews(filter){
+  currentNewsFilter=filter;
+  const body=document.getElementById('newsBody');
+  const items=filter==='all'?NEWS:NEWS.filter(n=>n.cat===filter);
+  if(!items.length){body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">No news in this category yet</div>';return;}
+  let html='';
+  const featured=filter==='all'?items.find(n=>n.featured):null;
+  if(featured){
+    html+='<div class="news-hero-card" onclick="showToast(\'📰 Opening article…\')"><div class="news-hero-img" style="background:'+featured.bg+'"><div class="news-hero-img-grad"></div><div class="news-cat">'+featured.catLabel+'</div><div class="news-hero-title">'+featured.title+'</div></div><div class="news-hero-body"><div class="news-meta"><span class="news-source">'+featured.source+'</span><span class="news-time">'+featured.time+'</span></div><div class="news-excerpt">'+featured.excerpt+'</div></div></div>';
+  }
+  const rest=featured?items.filter(n=>!n.featured):items;
+  rest.forEach(item=>{html+='<div class="news-row" onclick="showToast(\'📰 Opening article…\')"><div class="news-row-icon" style="background:'+item.bg+'">'+item.emoji+'</div><div class="news-row-content"><div class="news-row-title">'+item.title+'</div><div class="news-row-meta"><span class="news-row-source">'+item.source+'</span><span class="news-row-time">'+item.time+'</span></div></div></div>';});
+  body.innerHTML=html;
+}
+function setNewsTab(btn,filter){
+  document.querySelectorAll('.news-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderNews(filter);
+}
+
+// AUTH
+function doLogin(provider, btn) {
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span style="opacity:0.7;font-size:14px;">Connecting…</span>';
+  btn.style.opacity = '0.7';
+  btn.disabled = true;
+  setTimeout(function() {
+    document.getElementById('authScreen').classList.add('hidden');
+    showToast('👋 Welcome! Signed in with ' + provider);
+  }, 900);
+}
+function toggleEmailForm(){
+  const form=document.getElementById('emailForm');
+  const label=document.getElementById('emailToggleLabel');
+  const showing=form.classList.toggle('show');
+  label.textContent=showing?'↑ Hide':'↓ Show';
+}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+initCards();
+</script>
+</body>
+</html>
