@@ -965,6 +965,7 @@ function showToast(msg){
 async function loadAndInit() {
   try {
     const { data, error } = await db.from('jobs').select('*');
+    console.log('Supabase jobs response:', data, error);
     if(!error && data && data.length > 0) {
       data.forEach(job => {
         const exists = JOBS.find(j => j.title === job.title && j.company === job.company);
@@ -989,6 +990,7 @@ async function loadAndInit() {
       });
     }
   } catch(e) {
+    console.log('Jobs from Supabase:', data);
     console.log('Could not load jobs:', e);
   }
   initCards();
