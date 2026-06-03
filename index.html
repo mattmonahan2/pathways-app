@@ -580,6 +580,11 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 </div><!-- /phone -->
 <script>
+ // Supabase setup
+const SUPABASE_URL = 'https://fvvpopakwamakicyocbq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dnBvcGFrd2FtYWtpY3lvY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMDc4OTgsImV4cCI6MjA5NTY4Mzg5OH0.R5cYecMaiYpHr-tY19yY8K7HkPLEOBbHRBL9qB428zw';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log('Supabase ready'); 
 const JOBS = [
   {id:1,title:"Senior Product Designer",company:"Notion",logo:"🔲",logoBg:"#dce4ff",salary:"$80k",location:"New York",type:"Hybrid",match:94,tag:"design",bg:"linear-gradient(145deg,#dce8ff,#c8d8ff,#b8ccff)",skills:["Figma","Design Systems","UX Research","Prototyping"],desc:"Lead design for Notion's core editing experience. Work closely with PM and engineering to ship product used by 30M+ people.",reqs:["5+ years product design","Figma expert","Experience with design systems","Strong portfolio"]},
   {id:2,title:"UX Researcher",company:"Spotify",logo:"🎵",logoBg:"#d8f0ff",salary:"$75k",location:"Remote",type:"Remote",match:88,tag:"design",bg:"linear-gradient(145deg,#d8eeff,#c5e4ff,#b0d8ff)",skills:["User Testing","Qual Research","Surveys","Figma"],desc:"Shape Spotify's understanding of listeners through rigorous user research across mobile and desktop.",reqs:["3+ years UX research","Mixed methods","Strong storytelling","Data analysis"]},
@@ -939,12 +944,7 @@ function showToast(msg){
   toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
 }
 
-initCards();
-// Supabase setup
-const SUPABASE_URL = 'https://fvvpopakwamakicyocbq.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dnBvcGFrd2FtYWtpY3lvY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMDc4OTgsImV4cCI6MjA5NTY4Mzg5OH0.R5cYecMaiYpHr-tY19yY8K7HkPLEOBbHRBL9qB428zw';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-console.log('Supabase ready'); 
+ 
 </script>
 </body>
 </html>
