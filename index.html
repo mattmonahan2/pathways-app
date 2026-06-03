@@ -877,22 +877,58 @@ function setNewsTab(btn,filter){
 }
 
 // AUTH
-function doLogin(provider, btn) {
+async function doLogin(provider, btn) {
   const orig = btn.innerHTML;
   btn.innerHTML = '<span style="opacity:0.7;font-size:14px;">Connecting…</span>';
   btn.style.opacity = '0.7';
   btn.disabled = true;
-  setTimeout(function() {
-    document.getElementById('authScreen').classList.add('hidden');
-    showToast('👋 Welcome! Signed in with ' + provider);
-  }, 900);
+  try {
+    if(provider === 'Google') {
+      const { error } = await db.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: 'https://usepathways.app' }
+      });
+      if(error) throw error;
+    } else if(provider === 'Email') {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPass').value.trim();
+      if(!email || !password){ showToast('⚠ Enter email and password'); btn.innerHTML=orig; btn.style.opacity='1'; btn.disabled=false; return; }
+      const { error } = await db.auth.signInWithPassword({ email, password });
+      if(error){
+        const { error: signUpError } = await db.auth.signUp({ email, password });
+        if(signUpError) throw signUpError;
+      }
+      document.getElementById('authScreen').classList.add('hidden');
+      showToast('👋 Welcome to Pathways!');
+    } else {
+      btn.innerHTML = orig;
+      btn.style.opacity = '1';
+      btn.disabled = false;
+      showToast('Coming soon — use Google or Email for now');
+    }
+  } catch(err) {
+    btn.innerHTML = orig;
+    btn.style.opacity = '1';
+    btn.disabled = false;
+    showToast('⚠ Login failed — try again');
+    console.error(err);
+  }
 }
+
 function toggleEmailForm(){
   const form=document.getElementById('emailForm');
   const label=document.getElementById('emailToggleLabel');
   const showing=form.classList.toggle('show');
   label.textContent=showing?'↑ Hide':'↓ Show';
 }
+
+// Check if user is already logged in
+db.auth.getSession().then(({ data: { session } }) => {
+  if(session) {
+    document.getElementById('authScreen').classList.add('hidden');
+    showToast('👋 Welcome back, ' + (session.user.email || 'friend') + '!');
+  }
+});
 
 let toastTimer;
 function showToast(msg){
