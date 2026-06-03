@@ -965,32 +965,28 @@ function showToast(msg){
 async function loadAndInit() {
   try {
     const { data, error } = await db.from('jobs').select('*');
-    console.log('Supabase jobs response:', data, error);
+    console.log('Jobs loaded:', data, 'Error:', error);
     if(!error && data && data.length > 0) {
       data.forEach(job => {
-        const exists = JOBS.find(j => j.title === job.title && j.company === job.company);
-        if(!exists) {
-          JOBS.unshift({
-            id: job.id,
-            title: job.title,
-            company: job.company || 'Company',
-            logo: '🏢',
-            logoBg: '#dce4ff',
-            salary: job.salary || '$0k',
-            location: job.location || 'Remote',
-            type: job.type || 'Full-time',
-            match: Math.floor(Math.random()*20)+75,
-            tag: job.tag || 'tech',
-            bg: 'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
-            skills: job.skills ? job.skills.split(',') : ['Skills'],
-            desc: job.description || '',
-            reqs: ['See job description']
-          });
-        }
+        JOBS.unshift({
+          id: job.id,
+          title: job.title || 'Untitled',
+          company: job.company || 'Company',
+          logo: '🏢',
+          logoBg: '#dce4ff',
+          salary: job.salary || '$0k',
+          location: job.location || 'Remote',
+          type: job.type || 'Full-time',
+          match: Math.floor(Math.random()*20)+75,
+          tag: job.tag || 'tech',
+          bg: 'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
+          skills: job.skills ? job.skills.split(',') : ['Skills'],
+          desc: job.description || '',
+          reqs: ['See job description']
+        });
       });
     }
   } catch(e) {
-    console.log('Jobs from Supabase:', data);
     console.log('Could not load jobs:', e);
   }
   initCards();
