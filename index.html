@@ -848,23 +848,25 @@ function postJob(){
   closePane('postJobPane');
   closePane('employerPane');
   showToast('🚀 "'+title+'" is now live in the feed!');
-  // Save job to Supabase
-if(window.db) {
-  db.from('jobs').insert({
-    title: title,
-    company: company,
-    salary: salDisplay,
-    location: location,
-    type: type,
-    tag: tag,
-    match: String(newJob.match),
-    description: newJob.desc,
-    skills: skills.join(','),
-    source: 'employer'
-  }).then(({ error }) => {
-    if(error) console.error('Job save error:', error);
-    else console.log('Job saved to database');
-  });
+// Save job to Supabase
+db.from('jobs').insert({
+  title: title,
+  company: company,
+  salary: salDisplay,
+  location: location,
+  type: type,
+  tag: tag,
+  match: String(newJob.match),
+  description: newJob.desc,
+  skills: skills.join(','),
+  source: 'employer'
+}).then(({ data, error }) => {
+  if(error) {
+    console.error('Job save error:', error);
+  } else {
+    console.log('Job saved successfully', data);
+  }
+});
 }
 }
 
