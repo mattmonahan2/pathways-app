@@ -726,6 +726,12 @@ function attachDrag(card){
     }
     dx=0; dy=0; velX=0; velY=0;
   };
+  // Store reference so closePane can safely re-attach without stacking listeners
+  if(card._dragStart){
+    card.removeEventListener('mousedown',card._dragStart);
+    card.removeEventListener('touchstart',card._dragStart);
+  }
+  card._dragStart=start;
   card.addEventListener('mousedown',start);
   card.addEventListener('touchstart',start,{passive:true});
 }
@@ -811,8 +817,10 @@ function updateMatchesList(){
 function openPane(id){document.getElementById(id).classList.add('open');}
 function closePane(id){
   document.getElementById(id).classList.remove('open');
-  // After the slide-out transition, re-sync card positions so nothing is stale
-  setTimeout(()=>{ if(cards.length) refreshPositions(); }, 400);
+  // Immediately reset card positions so they're visible as the pane slides away
+  if(cards.length) refreshPositions();
+  // After the slide-out transition, re-attach drag with a fresh closure
+  setTimeout(()=>{ if(cards.length){ refreshPositions(); attachDrag(cards[0]); } }, 420);
 }
 
 function setMode(btn,mode){
