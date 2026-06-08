@@ -587,17 +587,10 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Adzuna API credentials — fill these in to enable real US job listings
-const ADZUNA_APP_ID = 'YOUR_APP_ID';
-const ADZUNA_APP_KEY = 'YOUR_APP_KEY';
+const ADZUNA_APP_ID = '2547550c';
+const ADZUNA_APP_KEY = '5c96ef5c34daa80e04458c145cd617c9';
 
-const JOBS = [
-  {id:1,title:"Senior Product Designer",company:"Notion",logo:"🔲",logoBg:"#dce4ff",salary:"$80k",location:"New York",type:"Hybrid",match:94,tag:"design",bg:"linear-gradient(145deg,#dce8ff,#c8d8ff,#b8ccff)",skills:["Figma","Design Systems","UX Research","Prototyping"],desc:"Lead design for Notion's core editing experience. Work closely with PM and engineering to ship product used by 30M+ people.",reqs:["5+ years product design","Figma expert","Experience with design systems","Strong portfolio"]},
-  {id:2,title:"UX Researcher",company:"Spotify",logo:"🎵",logoBg:"#d8f0ff",salary:"$75k",location:"Remote",type:"Remote",match:88,tag:"design",bg:"linear-gradient(145deg,#d8eeff,#c5e4ff,#b0d8ff)",skills:["User Testing","Qual Research","Surveys","Figma"],desc:"Shape Spotify's understanding of listeners through rigorous user research across mobile and desktop.",reqs:["3+ years UX research","Mixed methods","Strong storytelling","Data analysis"]},
-  {id:3,title:"Frontend Engineer",company:"Stripe",logo:"⚡",logoBg:"#e0e8ff",salary:"$120k",location:"San Francisco",type:"Hybrid",match:76,tag:"tech",bg:"linear-gradient(145deg,#e0e8ff,#ccd8ff,#b8caff)",skills:["React","TypeScript","CSS","GraphQL"],desc:"Build the interfaces that power payments for millions of businesses. Work on the dashboard and developer tools.",reqs:["4+ years frontend","React expert","TypeScript","Eye for design"]},
-  {id:4,title:"Product Manager",company:"Monzo",logo:"🏦",logoBg:"#dce8ff",salary:"$95k",location:"New York",type:"Office",match:82,tag:"finance",bg:"linear-gradient(145deg,#d8e4ff,#c4d4ff,#b0c4ff)",skills:["Product Strategy","SQL","A/B Testing","Roadmapping"],desc:"Own the lending product at Monzo. Define the roadmap, work with design and engineering, and grow a product customers love.",reqs:["4+ years PM","Fintech preferred","SQL basics","Analytical thinking"]},
-  {id:5,title:"Brand Designer",company:"Figma",logo:"🎨",logoBg:"#dde8ff",salary:"$85k",location:"Remote",type:"Remote",match:91,tag:"design",bg:"linear-gradient(145deg,#dce8ff,#c8d6ff,#b4c8ff)",skills:["Branding","Motion Design","Figma","Illustration"],desc:"Define how Figma looks to the world. Lead brand campaigns and maintain our visual identity.",reqs:["5+ years brand design","Motion skills a plus","Portfolio required","Figma native"]},
-  {id:6,title:"ML Engineer",company:"DeepMind",logo:"🧠",logoBg:"#e4eaff",salary:"$140k",location:"San Francisco",type:"Hybrid",match:71,tag:"tech",bg:"linear-gradient(145deg,#e8eeff,#d4e0ff,#c0d2ff)",skills:["Python","PyTorch","MLOps","Research"],desc:"Work on foundational AI models that push the boundary of what's possible. Collaborate with world-class researchers.",reqs:["PhD or equiv exp","PyTorch / JAX","Research publications preferred","Strong maths"]}
-];
+const JOBS = [];
 
 let cards=[],history=[],matches=[],savedCount=0,appliedCount=0,currentFilter='all';
 
@@ -969,8 +962,7 @@ async function saveSwipe(jobId, direction) {
 
 // Fetch real US jobs from Adzuna
 async function fetchAdzunaJobs() {
-  if(ADZUNA_APP_ID === 'YOUR_APP_ID') return;
-  const palettes = [
+const palettes = [
     'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
     'linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)',
     'linear-gradient(145deg,#e0eaff,#ccdaff,#b8ccff)',
