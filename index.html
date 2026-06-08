@@ -479,6 +479,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <ul class="req-list" id="detailReqs"></ul>
     <div class="section-head">Skills</div>
     <div class="pill-wrap" id="detailSkills"></div>
+    <button id="viewListingBtn" class="apply-full-btn" onclick="if(currentDetailJob&&currentDetailJob.url)window.open(currentDetailJob.url,'_blank')" style="background:var(--s1);color:var(--blue);border:1.5px solid rgba(35,85,245,0.3);box-shadow:none;display:none;">↗ View Full Listing</button>
     <button class="apply-full-btn" onclick="applyFromDetail()">⚡ Apply Now</button>
   </div>
 </div>
@@ -592,7 +593,7 @@ const ADZUNA_APP_KEY = '5c96ef5c34daa80e04458c145cd617c9';
 
 const JOBS = [];
 
-let cards=[],history=[],matches=[],savedCount=0,appliedCount=0,currentFilter='all';
+let cards=[],history=[],matches=[],savedCount=0,appliedCount=0,currentFilter='all',currentDetailJob=null;
 
 function getJobs(){
   if(currentFilter==='all') return JOBS;
@@ -742,10 +743,16 @@ function openDetail(){
   document.getElementById('detailDesc').textContent=job.desc;
   document.getElementById('detailReqs').innerHTML=job.reqs.map(r=>'<li>'+r+'</li>').join('');
   document.getElementById('detailSkills').innerHTML=job.skills.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
+  currentDetailJob=job;
+  document.getElementById('viewListingBtn').style.display=job.url?'block':'none';
   openPane('detailPane');
 }
 
-function applyFromDetail(){closePane('detailPane');triggerSwipe('right');}
+function applyFromDetail(){
+  if(currentDetailJob&&currentDetailJob.url) window.open(currentDetailJob.url,'_blank');
+  closePane('detailPane');
+  triggerSwipe('right');
+}
 
 function updateMatchesList(){
   const el=document.getElementById('matchesList');
