@@ -380,10 +380,11 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 <!-- PROFILE VIEW -->
 <div class="pane" id="profilePane">
   <div style="flex-shrink:0;">
-    <div style="display:flex;align-items:center;gap:14px;padding:52px 22px 0;">
+    <div style="display:flex;align-items:center;gap:10px;padding:52px 22px 0;flex-wrap:wrap;">
       <div class="back-btn" onclick="closePane('profilePane')">←</div>
       <div class="pane-title">My Profile</div>
-      <button class="edit-trigger" onclick="openPane('editPane')">✎ Edit</button>
+      <button class="edit-trigger" onclick="openPane('editPane')" style="margin-left:auto;">✎ Edit</button>
+      <button class="edit-trigger" onclick="doLogout()" style="background:rgba(224,24,94,0.08);border-color:rgba(224,24,94,0.25);color:var(--pink);">↪ Log Out</button>
     </div>
     <div class="profile-hero" style="margin-top:16px;">
       <div class="profile-av">🧑</div>
@@ -580,11 +581,15 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 </div><!-- /phone -->
 <script>
- // Supabase setup
+// Supabase setup
 const SUPABASE_URL = 'https://fvvpopakwamakicyocbq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dnBvcGFrd2FtYWtpY3lvY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMDc4OTgsImV4cCI6MjA5NTY4Mzg5OH0.R5cYecMaiYpHr-tY19yY8K7HkPLEOBbHRBL9qB428zw';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-console.log('Supabase ready'); 
+
+// Adzuna API credentials — fill these in to enable real US job listings
+const ADZUNA_APP_ID = 'YOUR_APP_ID';
+const ADZUNA_APP_KEY = 'YOUR_APP_KEY';
+
 const JOBS = [
   {id:1,title:"Senior Product Designer",company:"Notion",logo:"🔲",logoBg:"#dce4ff",salary:"$80k",location:"New York",type:"Hybrid",match:94,tag:"design",bg:"linear-gradient(145deg,#dce8ff,#c8d8ff,#b8ccff)",skills:["Figma","Design Systems","UX Research","Prototyping"],desc:"Lead design for Notion's core editing experience. Work closely with PM and engineering to ship product used by 30M+ people.",reqs:["5+ years product design","Figma expert","Experience with design systems","Strong portfolio"]},
   {id:2,title:"UX Researcher",company:"Spotify",logo:"🎵",logoBg:"#d8f0ff",salary:"$75k",location:"Remote",type:"Remote",match:88,tag:"design",bg:"linear-gradient(145deg,#d8eeff,#c5e4ff,#b0d8ff)",skills:["User Testing","Qual Research","Surveys","Figma"],desc:"Shape Spotify's understanding of listeners through rigorous user research across mobile and desktop.",reqs:["3+ years UX research","Mixed methods","Strong storytelling","Data analysis"]},
@@ -625,7 +630,7 @@ function initCards(){
 
 function makeCard(job){
   const d=document.createElement('div');
-  d.className='jcard'; d.dataset.id=job.id;
+  d.className='jcard'; d.dataset.id=String(job.id);
   d.innerHTML=`<div class="jcard-bg" style="background:${job.bg}"></div><div class="jcard-overlay"></div><div class="jcard-top"><div class="jcard-tag">${job.type}</div><div class="match-pill">${job.match}% match</div></div><div class="stamp stamp-skip">SKIP</div><div class="stamp stamp-apply">APPLY</div><div class="jcard-body"><div class="co-row"><div class="co-logo" style="background:${job.logoBg}">${job.logo}</div><span class="co-name">${job.company}</span><span class="co-dot"></span><span class="co-loc">${job.location}</span></div><div class="jcard-title">${job.title}</div><div class="jcard-tags">${job.skills.slice(0,3).map(s=>'<span class="skill-tag">'+s+'</span>').join('')}</div><div class="salary-row"><div class="salary">${job.salary}</div><div class="work-type">${job.type}</div></div></div>`;
   return d;
 }
@@ -697,11 +702,12 @@ function attachDrag(card){
 function dismiss(dir){
   if(!cards.length) return;
   const card=cards[0];
-  const job=JOBS.find(j=>j.id===parseInt(card.dataset.id));
+  const job=JOBS.find(j=>String(j.id)===card.dataset.id);
   card.style.transition='transform 0.42s cubic-bezier(0.32,0.72,0,1),opacity 0.42s';
   if(dir==='right'){card.style.transform='translateX(160%) rotate(28deg)';appliedCount++;if(job)matches.push(job);updateMatchesList();document.getElementById('statApplied').textContent=appliedCount;if(job)showToast('⚡ Applied to '+job.company+'!');}
   else if(dir==='up'){card.style.transform='translateY(-160%) scale(0.9)';card.style.opacity='0';savedCount++;document.getElementById('statSaved').textContent=savedCount;showToast('★ Saved for later');}
   else{card.style.transform='translateX(-160%) rotate(-28deg)';card.style.opacity='0.2';}
+  saveSwipe(card.dataset.id, dir);
   history.push({card,dir,job});
   cards.shift();
   setTimeout(()=>{card.remove();if(cards.length>0){refreshPositions();attachDrag(cards[0]);}else document.getElementById('emptyState').classList.add('show');},430);
@@ -730,7 +736,7 @@ function undoLast(){
 
 function openDetail(){
   if(!cards.length) return;
-  const job=JOBS.find(j=>j.id===parseInt(cards[0].dataset.id));
+  const job=JOBS.find(j=>String(j.id)===cards[0].dataset.id);
   if(!job) return;
   document.getElementById('detailBg').style.background=job.bg;
   document.getElementById('detailLogo').textContent=job.logo;
@@ -821,7 +827,7 @@ function postJob(){
   const salDisplay=salary.split('–')[0].trim();
   const palettes=['linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)','linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)','linear-gradient(145deg,#e0eaff,#ccdaff,#b8ccff)'];
   const logos=['🏢','🚀','💡','🌟'];
-  const newId=Date.now();
+  const newId='emp_'+Date.now();
   const newJob={id:newId,title,company,logo:logos[JOBS.length%logos.length],logoBg:'#dce4ff',salary:salDisplay,location,type:type==='On-site'?'Office':type,match:Math.floor(Math.random()*20)+75,tag,bg:palettes[JOBS.length%palettes.length],skills,desc:desc||title+' role at '+company,reqs,isNew:true};
   JOBS.unshift(newJob);
   const stack=document.getElementById('stack');
@@ -833,7 +839,6 @@ function postJob(){
   cards.unshift(card);
   refreshPositions();
   attachDrag(cards[0]);
-  // Add to employer dashboard
   const count=document.getElementById('empListingCount');
   if(count) count.textContent=parseInt(count.textContent)+1;
   const lc=document.getElementById('listingsContainer');
@@ -848,26 +853,13 @@ function postJob(){
   closePane('postJobPane');
   closePane('employerPane');
   showToast('🚀 "'+title+'" is now live in the feed!');
-// Save job to Supabase
-db.from('jobs').insert({
-  title: title,
-  company: company,
-  salary: salDisplay,
-  location: location,
-  type: type,
-  tag: tag,
-  match: String(newJob.match),
-  description: newJob.desc,
-  skills: skills.join(','),
-  source: 'employer'
-}).then(({ data, error }) => {
-  if(error) {
-    console.error('Job save error:', error);
-  } else {
-    console.log('Job saved successfully', data);
-  }
-});
+  db.from('jobs').insert({
+    title,company,salary:salDisplay,location,type,tag,
+    match:String(newJob.match),description:newJob.desc,
+    skills:skills.join(','),source:'employer'
+  }).then(({error})=>{if(error) console.error('Job save error:',error);});
 }
+
 // NEWS
 const NEWS=[
   {id:1,cat:'market',catLabel:'Job Market',emoji:'📊',bg:'linear-gradient(135deg,#c8d8ff,#b5caff)',title:'Tech hiring surges 34% in Q1 2026 as AI roles dominate demand',source:'TechCrunch',time:'2h ago',featured:true,excerpt:'Demand for AI engineers and ML ops has driven the strongest quarter for tech hiring since 2021, with salaries up 18% year-on-year.'},
@@ -938,11 +930,86 @@ async function doLogin(provider, btn) {
   }
 }
 
+async function doLogout() {
+  await db.auth.signOut();
+  matches = []; appliedCount = 0; savedCount = 0;
+  document.getElementById('statApplied').textContent = '0';
+  document.getElementById('statSaved').textContent = '0';
+  updateMatchesList();
+  closePane('profilePane');
+  document.getElementById('authScreen').classList.remove('hidden');
+  showToast('👋 Logged out successfully');
+}
+
 function toggleEmailForm(){
   const form=document.getElementById('emailForm');
   const label=document.getElementById('emailToggleLabel');
   const showing=form.classList.toggle('show');
   label.textContent=showing?'↑ Hide':'↓ Show';
+}
+
+// Save a swipe to Supabase (fire-and-forget)
+async function saveSwipe(jobId, direction) {
+  try {
+    const { data: { session } } = await db.auth.getSession();
+    if(!session) return;
+    db.from('swipes').insert({
+      user_id: session.user.id,
+      job_id: String(jobId),
+      direction,
+      swiped_at: new Date().toISOString()
+    });
+  } catch(e) {
+    console.log('Swipe save failed:', e);
+  }
+}
+
+// Fetch real US jobs from Adzuna
+async function fetchAdzunaJobs() {
+  if(ADZUNA_APP_ID === 'YOUR_APP_ID') return;
+  const palettes = [
+    'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
+    'linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)',
+    'linear-gradient(145deg,#e0eaff,#ccdaff,#b8ccff)',
+    'linear-gradient(145deg,#d4e4ff,#bcccff,#a8bcff)'
+  ];
+  try {
+    const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=20&sort_by=date&content-type=application/json`;
+    const res = await fetch(url);
+    const json = await res.json();
+    if(json.results && json.results.length) {
+      json.results.forEach((r, i) => {
+        const salMin = r.salary_min ? Math.round(r.salary_min / 1000) : null;
+        const salMax = r.salary_max ? Math.round(r.salary_max / 1000) : null;
+        const salary = salMin && salMax ? '$'+salMin+'k–$'+salMax+'k' : salMin ? '$'+salMin+'k+' : 'Competitive';
+        const catLabel = r.category ? r.category.label : '';
+        const tag = catLabel.toLowerCase().includes('it') || catLabel.toLowerCase().includes('engineer') ? 'tech'
+          : catLabel.toLowerCase().includes('design') ? 'design'
+          : catLabel.toLowerCase().includes('financ') || catLabel.toLowerCase().includes('account') ? 'finance'
+          : 'tech';
+        JOBS.push({
+          id: 'az_' + r.id,
+          title: r.title,
+          company: r.company ? r.company.display_name : 'Company',
+          logo: '🏢',
+          logoBg: '#dce4ff',
+          salary,
+          location: r.location ? r.location.display_name : 'USA',
+          type: r.contract_time === 'part_time' ? 'Part-time' : 'Full-time',
+          match: Math.floor(Math.random() * 20) + 70,
+          tag,
+          bg: palettes[i % palettes.length],
+          skills: ['See listing'],
+          desc: r.description ? r.description.replace(/<[^>]*>/g,'').substring(0, 400) + '…' : '',
+          reqs: ['See full job listing'],
+          url: r.redirect_url
+        });
+      });
+      console.log('Adzuna: loaded', json.results.length, 'jobs');
+    }
+  } catch(e) {
+    console.log('Adzuna fetch failed:', e);
+  }
 }
 
 // Check if user is already logged in
@@ -961,34 +1028,40 @@ function showToast(msg){
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
 }
-// Load jobs from Supabase then init
+
+// Load jobs from Supabase + Adzuna, then render
 async function loadAndInit() {
   try {
-    const { data, error } = await db.from('jobs').select('*');
-    console.log('Jobs loaded:', data, 'Error:', error);
-    if(!error && data && data.length > 0) {
+    const { data, error } = await db.from('jobs').select('*').order('created_at', { ascending: false }).limit(50);
+    if(error) {
+      console.error('Supabase jobs error:', error.message, error.hint || '');
+    } else if(data && data.length > 0) {
+      console.log('Supabase: loaded', data.length, 'jobs');
       data.forEach(job => {
-        JOBS.unshift({
-          id: job.id,
+        JOBS.push({
+          id: String(job.id),
           title: job.title || 'Untitled',
           company: job.company || 'Company',
           logo: '🏢',
           logoBg: '#dce4ff',
-          salary: job.salary || '$0k',
+          salary: job.salary || 'Competitive',
           location: job.location || 'Remote',
           type: job.type || 'Full-time',
-          match: Math.floor(Math.random()*20)+75,
+          match: Math.floor(Math.random() * 20) + 75,
           tag: job.tag || 'tech',
           bg: 'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
-          skills: job.skills ? job.skills.split(',') : ['Skills'],
+          skills: job.skills ? job.skills.split(',').map(s => s.trim()) : ['See listing'],
           desc: job.description || '',
           reqs: ['See job description']
         });
       });
+    } else {
+      console.log('Supabase: no jobs found (table may be empty or RLS is blocking reads)');
     }
   } catch(e) {
-    console.log('Could not load jobs:', e);
+    console.log('Supabase load failed:', e);
   }
+  await fetchAdzunaJobs();
   initCards();
 }
 
