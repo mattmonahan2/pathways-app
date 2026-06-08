@@ -52,27 +52,23 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .empty-sub{color:var(--sub);font-size:14px;line-height:1.6}
 .btn-refill{background:var(--blue);color:#fff;border:none;padding:13px 28px;border-radius:16px;font-family:'Clash Display',sans-serif;font-weight:600;font-size:15px;cursor:pointer;margin-top:6px}
 
-.jcard{position:absolute;width:calc(100% - 28px);height:100%;border-radius:var(--r-xl);overflow:hidden;cursor:grab;user-select:none;will-change:transform;transform-origin:center 90%}
+.jcard{position:absolute;width:calc(100% - 28px);height:100%;border-radius:var(--r-xl);overflow:hidden;cursor:grab;user-select:none;will-change:transform;transform-origin:center 90%;background:#fff;border:1px solid rgba(35,85,245,0.1);box-shadow:0 2px 20px rgba(35,85,245,0.08);display:flex;flex-direction:column}
 .jcard:active{cursor:grabbing}
-.jcard-bg{position:absolute;inset:0}
-.jcard-overlay{position:absolute;inset:0;background:linear-gradient(175deg,transparent 0%,transparent 20%,rgba(200,215,255,0.5) 55%,rgba(190,210,255,0.97) 100%)}
-.jcard-top{position:absolute;top:18px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:flex-start}
-.jcard-tag{background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border:1px solid rgba(35,85,245,0.2);padding:6px 12px;border-radius:100px;font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.8px}
-.match-pill{background:var(--blue);color:#fff;padding:6px 12px;border-radius:100px;font-family:'Clash Display',sans-serif;font-size:13px;font-weight:700}
-.stamp{position:absolute;top:28px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:28px;letter-spacing:3px;padding:8px 16px;border-radius:10px;border:3px solid;opacity:0;pointer-events:none}
-.stamp-skip{left:20px;color:var(--pink);border-color:var(--pink);transform:rotate(-12deg)}
-.stamp-apply{right:20px;color:var(--blue);border-color:var(--blue);transform:rotate(12deg)}
-.jcard-body{position:absolute;bottom:0;left:0;right:0;padding:24px}
-.co-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.co-logo{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:1px solid rgba(35,85,245,0.15)}
-.co-name{font-size:14px;font-weight:600;color:rgba(10,10,26,0.75)}
-.co-dot{width:3px;height:3px;border-radius:50%;background:var(--sub)}
-.co-loc{font-size:13px;color:rgba(10,10,26,0.5)}
-.jcard-title{font-family:'Clash Display',sans-serif;font-size:28px;font-weight:600;line-height:1.1;letter-spacing:-0.5px;margin-bottom:12px;color:var(--text)}
-.jcard-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.skill-tag{background:rgba(35,85,245,0.1);border:1px solid rgba(35,85,245,0.2);padding:5px 11px;border-radius:8px;font-size:12px;font-weight:500;color:var(--blue)}
-.salary-row{display:flex;justify-content:space-between;align-items:center}
-.salary{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;color:var(--blue)}
+.stamp{position:absolute;font-family:'Clash Display',sans-serif;font-weight:700;font-size:26px;letter-spacing:3px;padding:7px 15px;border-radius:10px;border:3px solid;opacity:0;pointer-events:none;z-index:10}
+.stamp-skip{top:26px;left:18px;color:var(--pink);border-color:var(--pink);transform:rotate(-12deg)}
+.stamp-save{top:26px;right:18px;color:#16a34a;border-color:#16a34a;transform:rotate(12deg)}
+.stamp-apply{top:26px;left:50%;transform:translateX(-50%);color:var(--blue);border-color:var(--blue)}
+.jcard-inner{flex:1;display:flex;flex-direction:column;padding:22px;min-height:0}
+.jcard-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:18px}
+.co-logo{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;background:var(--s2);border:1px solid var(--border)}
+.co-info{flex:1;min-width:0}
+.co-name{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.co-loc{font-size:12px;color:var(--sub);margin-top:3px}
+.match-pill{background:var(--blue);color:#fff;padding:5px 11px;border-radius:100px;font-family:'Clash Display',sans-serif;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.jcard-title{font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;line-height:1.2;letter-spacing:-0.5px;color:var(--text);flex:1;display:flex;align-items:center}
+.jcard-meta{display:flex;gap:7px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--border);margin-top:auto}
+.meta-tag{padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600;background:var(--s2);border:1px solid var(--border);color:var(--sub)}
+.meta-tag.salary{background:rgba(35,85,245,0.08);border-color:rgba(35,85,245,0.2);color:var(--blue)}
 .work-type{background:rgba(35,85,245,0.1);color:var(--blue);border:1px solid rgba(35,85,245,0.25);padding:6px 12px;border-radius:10px;font-size:13px;font-weight:600}
 
 .actions{display:flex;justify-content:center;align-items:center;gap:14px;padding:14px 22px 10px;flex-shrink:0}
@@ -304,8 +300,8 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   <div class="actions">
     <button class="act act-undo" onclick="undoLast()">↩</button>
     <button class="act act-skip" onclick="triggerSwipe('left')">✕</button>
-    <button class="act act-go"   onclick="triggerSwipe('right')">⚡</button>
-    <button class="act act-save" onclick="triggerSwipe('up')">★</button>
+    <button class="act act-go"   onclick="triggerSwipe('up')">⚡</button>
+    <button class="act act-save" onclick="triggerSwipe('right')">★</button>
     <button class="act act-info" onclick="openDetail()">◈</button>
   </div>
   <div class="bnav">
@@ -625,7 +621,25 @@ function initCards(){
 function makeCard(job){
   const d=document.createElement('div');
   d.className='jcard'; d.dataset.id=String(job.id);
-  d.innerHTML=`<div class="jcard-bg" style="background:${job.bg}"></div><div class="jcard-overlay"></div><div class="jcard-top"><div class="jcard-tag">${job.type}</div><div class="match-pill">${job.match}% match</div></div><div class="stamp stamp-skip">SKIP</div><div class="stamp stamp-apply">APPLY</div><div class="jcard-body"><div class="co-row"><div class="co-logo" style="background:${job.logoBg}">${job.logo}</div><span class="co-name">${job.company}</span><span class="co-dot"></span><span class="co-loc">${job.location}</span></div><div class="jcard-title">${job.title}</div><div class="jcard-tags">${job.skills.slice(0,3).map(s=>'<span class="skill-tag">'+s+'</span>').join('')}</div><div class="salary-row"><div class="salary">${job.salary}</div><div class="work-type">${job.type}</div></div></div>`;
+  d.innerHTML=`
+    <div class="stamp stamp-skip">SKIP</div>
+    <div class="stamp stamp-save">SAVE</div>
+    <div class="stamp stamp-apply">APPLY</div>
+    <div class="jcard-inner">
+      <div class="jcard-header">
+        <div class="co-logo">🏢</div>
+        <div class="co-info">
+          <div class="co-name">${job.company}</div>
+          <div class="co-loc">📍 ${job.location}</div>
+        </div>
+        <div class="match-pill">${job.match}%</div>
+      </div>
+      <div class="jcard-title">${job.title}</div>
+      <div class="jcard-meta">
+        <span class="meta-tag">${job.type}</span>
+        <span class="meta-tag salary">${job.salary}</span>
+      </div>
+    </div>`;
   return d;
 }
 
@@ -641,11 +655,11 @@ function refreshPositions(){
 
 function attachDrag(card){
   if(!card) return;
-  let sx=0,sy=0,dragging=false,dx=0,dy=0,velX=0,lastX=0,lastTime=0;
+  let sx=0,sy=0,dragging=false,dx=0,dy=0,velX=0,velY=0,lastX=0,lastY=0,lastTime=0;
   const start=e=>{
     dragging=true;
     const p=e.touches?e.touches[0]:e;
-    sx=p.clientX; sy=p.clientY; lastX=p.clientX; lastTime=Date.now();
+    sx=p.clientX; sy=p.clientY; lastX=p.clientX; lastY=p.clientY; lastTime=Date.now();
     card.style.transition='none';
     document.addEventListener('mousemove',move);
     document.addEventListener('mouseup',end);
@@ -657,13 +671,22 @@ function attachDrag(card){
     if(e.cancelable) e.preventDefault();
     const p=e.touches?e.touches[0]:e;
     dx=p.clientX-sx; dy=p.clientY-sy;
-    const now=Date.now();
-    velX=(p.clientX-lastX)/Math.max(1,now-lastTime);
-    lastX=p.clientX; lastTime=now;
-    card.style.transform=`translateX(${dx}px) translateY(${dy*0.25}px) rotate(${dx*0.07}deg)`;
-    const ratio=Math.min(Math.abs(dx)/80,1);
-    card.querySelector('.stamp-skip').style.opacity=dx<-20?ratio:0;
-    card.querySelector('.stamp-apply').style.opacity=dx>20?ratio:0;
+    const now=Date.now(); const dt=Math.max(1,now-lastTime);
+    velX=(p.clientX-lastX)/dt; velY=(p.clientY-lastY)/dt;
+    lastX=p.clientX; lastY=p.clientY; lastTime=now;
+    // Upward swipe moves card up; horizontal rotates
+    const isUpward=dy<-20&&Math.abs(dy)>Math.abs(dx);
+    if(isUpward){
+      card.style.transform=`translateY(${dy}px) translateX(${dx*0.2}px) scale(${1+Math.min(Math.abs(dy)/300,0.03)})`;
+    } else {
+      card.style.transform=`translateX(${dx}px) translateY(${dy*0.2}px) rotate(${dx*0.07}deg)`;
+    }
+    const xRatio=Math.min(Math.abs(dx)/80,1);
+    const yRatio=Math.min(Math.abs(dy)/80,1);
+    card.querySelector('.stamp-skip').style.opacity=dx<-20&&!isUpward?xRatio:0;
+    card.querySelector('.stamp-save').style.opacity=dx>20&&!isUpward?xRatio:0;
+    card.querySelector('.stamp-apply').style.opacity=isUpward?yRatio:0;
+    const ratio=isUpward?yRatio:xRatio;
     if(cards[1]){
       cards[1].style.transition='none';
       cards[1].style.transform=`scale(${0.95+ratio*0.05}) translateY(${18-ratio*18}px)`;
@@ -677,17 +700,31 @@ function attachDrag(card){
     document.removeEventListener('mouseup',end);
     document.removeEventListener('touchmove',move);
     document.removeEventListener('touchend',end);
-    const fling=Math.abs(velX)>0.4;
-    if(dx>70||(fling&&velX>0)) dismiss('right');
-    else if(dx<-70||(fling&&velX<0)) dismiss('left');
+    // Tap detection: minimal movement = open detail
+    const totalMove=Math.sqrt(dx*dx+dy*dy);
+    if(totalMove<10){
+      card.style.transition='transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';
+      card.style.transform='scale(1) translateY(0) rotate(0)';
+      refreshPositions();
+      openDetail();
+      dx=0; dy=0; velX=0; velY=0;
+      return;
+    }
+    const hFling=Math.abs(velX)>0.4;
+    const vFling=velY<-0.4;
+    const isUpward=dy<-20&&Math.abs(dy)>Math.abs(dx);
+    if((isUpward&&dy<-70)||vFling) dismiss('up');
+    else if(dx>70||(hFling&&velX>0)) dismiss('right');
+    else if(dx<-70||(hFling&&velX<0)) dismiss('left');
     else{
       card.style.transition='transform 0.45s cubic-bezier(0.34,1.56,0.64,1)';
       card.style.transform='scale(1) translateY(0) rotate(0)';
       card.querySelector('.stamp-skip').style.opacity=0;
+      card.querySelector('.stamp-save').style.opacity=0;
       card.querySelector('.stamp-apply').style.opacity=0;
       refreshPositions();
     }
-    dx=0; dy=0; velX=0;
+    dx=0; dy=0; velX=0; velY=0;
   };
   card.addEventListener('mousedown',start);
   card.addEventListener('touchstart',start,{passive:true});
@@ -698,9 +735,19 @@ function dismiss(dir){
   const card=cards[0];
   const job=JOBS.find(j=>String(j.id)===card.dataset.id);
   card.style.transition='transform 0.42s cubic-bezier(0.32,0.72,0,1),opacity 0.42s';
-  if(dir==='right'){card.style.transform='translateX(160%) rotate(28deg)';appliedCount++;if(job)matches.push(job);updateMatchesList();document.getElementById('statApplied').textContent=appliedCount;if(job)showToast('⚡ Applied to '+job.company+'!');}
-  else if(dir==='up'){card.style.transform='translateY(-160%) scale(0.9)';card.style.opacity='0';savedCount++;document.getElementById('statSaved').textContent=savedCount;showToast('★ Saved for later');}
-  else{card.style.transform='translateX(-160%) rotate(-28deg)';card.style.opacity='0.2';}
+  if(dir==='up'){
+    card.style.transform='translateY(-160%) scale(0.9)';card.style.opacity='0';
+    appliedCount++;if(job)matches.push(job);updateMatchesList();
+    document.getElementById('statApplied').textContent=appliedCount;
+    if(job&&job.url) window.open(job.url,'_blank');
+    if(job)showToast('⚡ Applied to '+job.company+'!');
+  } else if(dir==='right'){
+    card.style.transform='translateX(160%) rotate(28deg)';
+    savedCount++;document.getElementById('statSaved').textContent=savedCount;
+    showToast('★ Saved — find it in Matches');
+  } else {
+    card.style.transform='translateX(-160%) rotate(-28deg)';card.style.opacity='0.2';
+  }
   saveSwipe(card.dataset.id, dir);
   history.push({card,dir,job});
   cards.shift();
@@ -721,8 +768,8 @@ function undoLast(){
   card.querySelector('.stamp-apply').style.opacity=0;
   document.getElementById('stack').appendChild(card);
   cards.unshift(card);
-  if(dir==='right'){appliedCount=Math.max(0,appliedCount-1);matches.pop();document.getElementById('statApplied').textContent=appliedCount;updateMatchesList();}
-  if(dir==='up'){savedCount=Math.max(0,savedCount-1);document.getElementById('statSaved').textContent=savedCount;}
+  if(dir==='up'){appliedCount=Math.max(0,appliedCount-1);matches.pop();document.getElementById('statApplied').textContent=appliedCount;updateMatchesList();}
+  if(dir==='right'){savedCount=Math.max(0,savedCount-1);document.getElementById('statSaved').textContent=savedCount;}
   refreshPositions();
   attachDrag(card);
   showToast('↩ Undone');
@@ -749,9 +796,8 @@ function openDetail(){
 }
 
 function applyFromDetail(){
-  if(currentDetailJob&&currentDetailJob.url) window.open(currentDetailJob.url,'_blank');
   closePane('detailPane');
-  triggerSwipe('right');
+  triggerSwipe('up');
 }
 
 function updateMatchesList(){
