@@ -817,6 +817,7 @@ function updateMatchesList(){
 function openPane(id){document.getElementById(id).classList.add('open');}
 function closePane(id){
   document.getElementById(id).classList.remove('open');
+  if(id==='detailPane'){ JOBS.length=0; loadAndInit(); return; }
   // Immediately reset card positions so they're visible as the pane slides away
   if(cards.length) refreshPositions();
   // After the slide-out transition, re-attach drag with a fresh closure
