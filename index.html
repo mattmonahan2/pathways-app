@@ -969,45 +969,76 @@ async function saveSwipe(jobId, direction) {
 
 // Fetch real US jobs from Adzuna
 async function fetchAdzunaJobs() {
-const palettes = [
+  const palettes = [
     'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
     'linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)',
     'linear-gradient(145deg,#e0eaff,#ccdaff,#b8ccff)',
     'linear-gradient(145deg,#d4e4ff,#bcccff,#a8bcff)'
   ];
+
+  function stripHtml(str) {
+    if(!str) return '';
+    return str
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/&nbsp;/g, ' ').replace(/&#39;/g, "'").replace(/&quot;/g, '"')
+      .replace(/\s+/g, ' ').trim();
+  }
+
+  function cleanTitle(str) {
+    const t = stripHtml(str);
+    return t.length > 50 ? t.substring(0, 47) + '…' : t;
+  }
+
+  function cleanLocation(str) {
+    if(!str) return 'USA';
+    // Adzuna returns "City, State, US" — keep City, State only
+    const parts = str.split(',');
+    return parts.length >= 2
+      ? parts[0].trim() + ', ' + parts[1].trim()
+      : parts[0].trim();
+  }
+
   try {
-    const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&results_per_page=20&sort_by=date&content-type=application/json`;
+    const url = `https://api.adzuna.com/v1/api/jobs/us/search/1`
+      + `?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}`
+      + `&results_per_page=20&sort_by=date&content-type=application/json`;
     const res = await fetch(url);
     const json = await res.json();
     if(json.results && json.results.length) {
       json.results.forEach((r, i) => {
         const salMin = r.salary_min ? Math.round(r.salary_min / 1000) : null;
         const salMax = r.salary_max ? Math.round(r.salary_max / 1000) : null;
-        const salary = salMin && salMax ? '$'+salMin+'k–$'+salMax+'k' : salMin ? '$'+salMin+'k+' : 'Competitive';
-        const catLabel = r.category ? r.category.label : '';
-        const tag = catLabel.toLowerCase().includes('it') || catLabel.toLowerCase().includes('engineer') ? 'tech'
-          : catLabel.toLowerCase().includes('design') ? 'design'
-          : catLabel.toLowerCase().includes('financ') || catLabel.toLowerCase().includes('account') ? 'finance'
+        const salary = salMin && salMax ? '$' + salMin + 'k–$' + salMax + 'k'
+          : salMin ? '$' + salMin + 'k+' : 'Competitive';
+        const catLabel = r.category ? r.category.label.toLowerCase() : '';
+        const tag = catLabel.includes('it') || catLabel.includes('engineer') || catLabel.includes('software') ? 'tech'
+          : catLabel.includes('design') ? 'design'
+          : catLabel.includes('financ') || catLabel.includes('account') ? 'finance'
           : 'tech';
+        const type = r.contract_time === 'part_time' ? 'Part-time'
+          : r.contract_type === 'contract' ? 'Contract'
+          : 'Full-time';
+        const descClean = stripHtml(r.description);
         JOBS.push({
           id: 'az_' + r.id,
-          title: r.title,
-          company: r.company ? r.company.display_name : 'Company',
+          title: cleanTitle(r.title),
+          company: stripHtml(r.company ? r.company.display_name : 'Company'),
           logo: '🏢',
           logoBg: '#dce4ff',
           salary,
-          location: r.location ? r.location.display_name : 'USA',
-          type: r.contract_time === 'part_time' ? 'Part-time' : 'Full-time',
+          location: cleanLocation(r.location ? r.location.display_name : null),
+          type,
           match: Math.floor(Math.random() * 20) + 70,
           tag,
           bg: palettes[i % palettes.length],
           skills: ['See listing'],
-          desc: r.description ? r.description.replace(/<[^>]*>/g,'').substring(0, 400) + '…' : '',
+          desc: descClean.length > 400 ? descClean.substring(0, 397) + '…' : descClean,
           reqs: ['See full job listing'],
           url: r.redirect_url
         });
       });
-      console.log('Adzuna: loaded', json.results.length, 'jobs');
+      console.log('Adzuna: loaded', json.results.length, 'US jobs');
     }
   } catch(e) {
     console.log('Adzuna fetch failed:', e);
