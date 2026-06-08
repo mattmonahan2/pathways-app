@@ -52,7 +52,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .empty-sub{color:var(--sub);font-size:14px;line-height:1.6}
 .btn-refill{background:var(--blue);color:#fff;border:none;padding:13px 28px;border-radius:16px;font-family:'Clash Display',sans-serif;font-weight:600;font-size:15px;cursor:pointer;margin-top:6px}
 
-.jcard{position:absolute;width:calc(100% - 28px);height:100%;border-radius:var(--r-xl);overflow:hidden;cursor:grab;user-select:none;will-change:transform;transform-origin:center 90%;background:#fff;border:1px solid rgba(35,85,245,0.1);box-shadow:0 2px 20px rgba(35,85,245,0.08);display:flex;flex-direction:column}
+.jcard{position:absolute;top:0;bottom:0;left:0;width:calc(100% - 28px);border-radius:var(--r-xl);overflow:hidden;cursor:grab;user-select:none;will-change:transform;transform-origin:center 90%;background:#fff;border:1px solid rgba(35,85,245,0.1);box-shadow:0 2px 20px rgba(35,85,245,0.08);display:flex;flex-direction:column}
 .jcard:active{cursor:grabbing}
 .stamp{position:absolute;font-family:'Clash Display',sans-serif;font-weight:700;font-size:26px;letter-spacing:3px;padding:7px 15px;border-radius:10px;border:3px solid;opacity:0;pointer-events:none;z-index:10}
 .stamp-skip{top:26px;left:18px;color:var(--pink);border-color:var(--pink);transform:rotate(-12deg)}
@@ -85,8 +85,8 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .bni .ico{font-size:19px}
 .bni.on{color:var(--blue)}
 
-.pane{position:absolute;inset:0;background:var(--bg);transform:translateX(102%);transition:transform 0.38s cubic-bezier(0.32,0.72,0,1);z-index:20;display:flex;flex-direction:column;overflow:hidden}
-.pane.open{transform:translateX(0)}
+.pane{position:absolute;inset:0;background:var(--bg);transform:translateX(102%);transition:transform 0.38s cubic-bezier(0.32,0.72,0,1);z-index:20;display:flex;flex-direction:column;overflow:hidden;pointer-events:none}
+.pane.open{transform:translateX(0);pointer-events:auto}
 .pane-head{display:flex;align-items:center;gap:14px;padding:52px 22px 16px;flex-shrink:0}
 .back-btn{width:38px;height:38px;background:var(--s1);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-size:18px;color:var(--text);display:flex;align-items:center;justify-content:center}
 .pane-title{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:600}
@@ -270,7 +270,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 <div class="status"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>▲▲▲</span><span>WiFi</span><span>⬛</span></div></div>
 
 <!-- DISCOVER -->
-<div id="discoverScreen" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+<div id="discoverScreen" style="display:flex;flex-direction:column;flex:1;overflow:hidden;position:relative;z-index:1;">
   <div class="topbar">
     <div class="wordmark">path<em>ways</em></div>
     <div class="topbar-group">
@@ -809,7 +809,11 @@ function updateMatchesList(){
 }
 
 function openPane(id){document.getElementById(id).classList.add('open');}
-function closePane(id){document.getElementById(id).classList.remove('open');}
+function closePane(id){
+  document.getElementById(id).classList.remove('open');
+  // After the slide-out transition, re-sync card positions so nothing is stale
+  setTimeout(()=>{ if(cards.length) refreshPositions(); }, 400);
+}
 
 function setMode(btn,mode){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('on'));
