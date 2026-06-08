@@ -950,17 +950,20 @@ function toggleEmailForm(){
 
 // Save a swipe to Supabase (fire-and-forget)
 async function saveSwipe(jobId, direction) {
+  console.log('saveSwipe called:', { jobId, direction });
   try {
-    const { data: { session } } = await db.auth.getSession();
-    if(!session) return;
-    db.from('swipes').insert({
+    const { data: { session }, error: sessionError } = await db.auth.getSession();
+    console.log('saveSwipe session:', session, 'sessionError:', sessionError);
+    if(!session) { console.log('saveSwipe: no session, skipping insert'); return; }
+    const { data, error } = await db.from('swipes').insert({
       user_id: session.user.id,
       job_id: String(jobId),
       direction,
       swiped_at: new Date().toISOString()
     });
+    console.log('saveSwipe insert result:', { data, error });
   } catch(e) {
-    console.log('Swipe save failed:', e);
+    console.log('saveSwipe exception:', e);
   }
 }
 
