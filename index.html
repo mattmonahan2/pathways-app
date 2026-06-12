@@ -583,9 +583,6 @@ const SUPABASE_URL = 'https://fvvpopakwamakicyocbq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dnBvcGFrd2FtYWtpY3lvY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMDc4OTgsImV4cCI6MjA5NTY4Mzg5OH0.R5cYecMaiYpHr-tY19yY8K7HkPLEOBbHRBL9qB428zw';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Adzuna API credentials — fill these in to enable real US job listings
-const ADZUNA_APP_ID = '2547550c';
-const ADZUNA_APP_KEY = '5c96ef5c34daa80e04458c145cd617c9';
 
 const JOBS = [];
 
@@ -1026,8 +1023,8 @@ async function saveSwipe(jobId, direction) {
   }
 }
 
-// Fetch real US jobs from Adzuna
-async function fetchAdzunaJobs() {
+// Fetch real US jobs from JSearch (RapidAPI)
+async function fetchJSearchJobs() {
   const palettes = [
     'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
     'linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)',
@@ -1045,48 +1042,46 @@ async function fetchAdzunaJobs() {
   }
 
   function cleanTitle(str) {
-    const t = stripHtml(str);
+    const t = stripHtml(str || '');
     return t.length > 50 ? t.substring(0, 47) + '…' : t;
   }
 
-  function cleanLocation(str) {
-    if(!str) return 'USA';
-    // Adzuna returns "City, State, US" — keep City, State only
-    const parts = str.split(',');
-    return parts.length >= 2
-      ? parts[0].trim() + ', ' + parts[1].trim()
-      : parts[0].trim();
-  }
-
   try {
-    const url = `https://api.adzuna.com/v1/api/jobs/us/search/1`
-      + `?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}`
-      + `&results_per_page=20&sort_by=date&content-type=application/json`;
-    const res = await fetch(url);
+    const url = 'https://jsearch.p.rapidapi.com/search?query=jobs+in+United+States&num_pages=1';
+    const res = await fetch(url, {
+      headers: {
+        'x-rapidapi-host': 'jsearch.p.rapidapi.com',
+        'x-rapidapi-key': '48992ba50cmsh50433cf8c7eba8ep1cbba6jsna84f4aa11e41'
+      }
+    });
     const json = await res.json();
-    if(json.results && json.results.length) {
-      json.results.forEach((r, i) => {
-        const salMin = r.salary_min ? Math.round(r.salary_min / 1000) : null;
-        const salMax = r.salary_max ? Math.round(r.salary_max / 1000) : null;
+    if(json.data && json.data.length) {
+      json.data.forEach((r, i) => {
+        const salMin = r.job_min_salary ? Math.round(r.job_min_salary / 1000) : null;
+        const salMax = r.job_max_salary ? Math.round(r.job_max_salary / 1000) : null;
         const salary = salMin && salMax ? '$' + salMin + 'k–$' + salMax + 'k'
           : salMin ? '$' + salMin + 'k+' : 'Competitive';
-        const catLabel = r.category ? r.category.label.toLowerCase() : '';
-        const tag = catLabel.includes('it') || catLabel.includes('engineer') || catLabel.includes('software') ? 'tech'
-          : catLabel.includes('design') ? 'design'
-          : catLabel.includes('financ') || catLabel.includes('account') ? 'finance'
-          : 'tech';
-        const type = r.contract_time === 'part_time' ? 'Part-time'
-          : r.contract_type === 'contract' ? 'Contract'
+        const empType = (r.job_employment_type || '').toLowerCase();
+        const type = empType.includes('part') ? 'Part-time'
+          : empType.includes('contract') ? 'Contract'
           : 'Full-time';
-        const descClean = stripHtml(r.description);
+        const titleLow = (r.job_title || '').toLowerCase();
+        const tag = titleLow.includes('engineer') || titleLow.includes('software') || titleLow.includes('developer') || titleLow.includes('data') ? 'tech'
+          : titleLow.includes('design') ? 'design'
+          : titleLow.includes('financ') || titleLow.includes('account') ? 'finance'
+          : 'tech';
+        const city = r.job_city || '';
+        const state = r.job_state || '';
+        const location = city && state ? city + ', ' + state : city || state || 'USA';
+        const descClean = stripHtml(r.job_description);
         JOBS.push({
-          id: 'az_' + r.id,
-          title: cleanTitle(r.title),
-          company: stripHtml(r.company ? r.company.display_name : 'Company'),
+          id: 'js_' + i,
+          title: cleanTitle(r.job_title),
+          company: r.employer_name || 'Company',
           logo: '🏢',
           logoBg: '#dce4ff',
           salary,
-          location: cleanLocation(r.location ? r.location.display_name : null),
+          location,
           type,
           match: Math.floor(Math.random() * 20) + 70,
           tag,
@@ -1094,13 +1089,13 @@ async function fetchAdzunaJobs() {
           skills: ['See listing'],
           desc: descClean.length > 400 ? descClean.substring(0, 397) + '…' : descClean,
           reqs: ['See full job listing'],
-          url: r.redirect_url
+          url: r.job_apply_link
         });
       });
-      console.log('Adzuna: loaded', json.results.length, 'US jobs');
+      console.log('JSearch: loaded', json.data.length, 'US jobs');
     }
   } catch(e) {
-    console.log('Adzuna fetch failed:', e);
+    console.log('JSearch fetch failed:', e);
   }
 }
 
@@ -1121,7 +1116,7 @@ function showToast(msg){
   toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
 }
 
-// Load jobs from Supabase + Adzuna, then render
+// Load jobs from Supabase + JSearch, then render
 async function loadAndInit() {
   try {
     const { data, error } = await db.from('jobs').select('*').order('created_at', { ascending: false }).limit(50);
@@ -1153,7 +1148,7 @@ async function loadAndInit() {
   } catch(e) {
     console.log('Supabase load failed:', e);
   }
-  await fetchAdzunaJobs();
+  await fetchJSearchJobs();
   initCards();
 }
 
