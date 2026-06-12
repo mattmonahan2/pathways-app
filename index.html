@@ -43,6 +43,14 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .chips::-webkit-scrollbar{display:none}
 .chip{padding:7px 15px;border-radius:100px;border:1px solid var(--border);background:var(--s1);color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;transition:all .2s;font-family:'Cabinet Grotesk',sans-serif}
 .chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.loc-search-row{display:flex;align-items:center;gap:8px;padding:0 22px 12px;flex-shrink:0}
+.loc-input-wrap{position:relative;flex:1;display:flex;align-items:center}
+.loc-input{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:9px 34px 9px 13px;font-size:13px;font-family:'Cabinet Grotesk',sans-serif;color:var(--text);outline:none;box-sizing:border-box;transition:border-color .2s}
+.loc-input:focus{border-color:var(--blue)}
+.loc-input::placeholder{color:var(--sub)}
+.loc-clear-btn{position:absolute;right:9px;width:20px;height:20px;display:none;align-items:center;justify-content:center;background:var(--border);border-radius:50%;font-size:13px;line-height:1;cursor:pointer;color:var(--sub);flex-shrink:0}
+.loc-remote-btn{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:9px 13px;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;white-space:nowrap;font-family:'Cabinet Grotesk',sans-serif;transition:all .2s;flex-shrink:0}
+.loc-remote-btn.on{background:var(--blue);color:#fff;border-color:var(--blue)}
 
 .stack{flex:1;position:relative;padding:0 14px;overflow:hidden;touch-action:none}
 .empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;text-align:center;padding:40px}
@@ -287,6 +295,15 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   <div class="mode-toggle">
     <button class="mode-btn on" onclick="setMode(this,'seeker')">👤 Job Seeker</button>
     <button class="mode-btn" onclick="setMode(this,'employer')">🏢 Employer</button>
+  </div>
+  <div class="loc-search-row">
+    <div class="loc-input-wrap">
+      <input class="loc-input" id="locInput" type="text" placeholder="📍 City, state or zip"
+             onkeydown="if(event.key==='Enter')handleLocSearch()"
+             oninput="document.getElementById('locClear').style.display=this.value?'flex':'none'">
+      <div class="loc-clear-btn" id="locClear" onclick="clearLocSearch()">×</div>
+    </div>
+    <button class="loc-remote-btn" id="remoteToggle" onclick="toggleRemoteSearch(this)">🌍 Remote</button>
   </div>
   <div class="chips" id="chipRow">
     <div class="chip on" onclick="setChip(this,'all')">✦ For You</div>
@@ -1034,7 +1051,7 @@ async function saveSwipe(jobId, direction) {
 }
 
 // Fetch real US jobs from JSearch (RapidAPI)
-async function fetchJSearchJobs() {
+async function fetchJSearchJobs(query = 'jobs in United States') {
   const palettes = [
     'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
     'linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)',
@@ -1057,7 +1074,7 @@ async function fetchJSearchJobs() {
   }
 
   try {
-    const url = 'https://jsearch.p.rapidapi.com/search?query=jobs+in+United+States&num_pages=1';
+    const url = 'https://jsearch.p.rapidapi.com/search?query=' + encodeURIComponent(query) + '&num_pages=1';
     const res = await fetch(url, {
       headers: {
         'x-rapidapi-host': 'jsearch.p.rapidapi.com',
@@ -1128,6 +1145,40 @@ function showToast(msg){
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+async function searchByLocation(query) {
+  JOBS.length = 0;
+  jobsLoaded = false;
+  document.getElementById('stack').querySelectorAll('.jcard').forEach(c => c.remove());
+  cards = []; history = [];
+  document.getElementById('emptyState').classList.remove('show');
+  document.getElementById('loadingState').classList.add('show');
+  await fetchJSearchJobs(query);
+  jobsLoaded = true;
+  document.getElementById('loadingState').classList.remove('show');
+  initCards();
+}
+
+async function handleLocSearch() {
+  const val = document.getElementById('locInput').value.trim();
+  if(!val) return;
+  document.getElementById('remoteToggle').classList.remove('on');
+  await searchByLocation('jobs in ' + val);
+}
+
+async function clearLocSearch() {
+  document.getElementById('locInput').value = '';
+  document.getElementById('locClear').style.display = 'none';
+  document.getElementById('remoteToggle').classList.remove('on');
+  await searchByLocation('jobs in United States');
+}
+
+async function toggleRemoteSearch(btn) {
+  const isOn = btn.classList.toggle('on');
+  document.getElementById('locInput').value = '';
+  document.getElementById('locClear').style.display = 'none';
+  await searchByLocation(isOn ? 'remote jobs united states' : 'jobs in United States');
 }
 
 // Load jobs from Supabase + JSearch, then render. Only fetches once; subsequent calls just re-render.
