@@ -1,10 +1,6 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/privacy", "dest": "/privacy.html" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/$1.html" }
+  "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
