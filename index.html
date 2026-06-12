@@ -49,6 +49,12 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .empty-state.show{display:flex}
 .empty-icon{font-size:56px}
 .empty-title{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:600}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-state{display:none;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;text-align:center;padding:40px}
+.loading-state.show{display:flex}
+.loading-spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.75s linear infinite}
+.loading-title{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:600}
+.loading-sub{font-size:13px;color:var(--sub)}
 .empty-sub{color:var(--sub);font-size:14px;line-height:1.6}
 .btn-refill{background:var(--blue);color:#fff;border:none;padding:13px 28px;border-radius:16px;font-family:'Clash Display',sans-serif;font-weight:600;font-size:15px;cursor:pointer;margin-top:6px}
 
@@ -290,6 +296,11 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <div class="chip" onclick="setChip(this,'remote')">🌍 Remote</div>
   </div>
   <div class="stack" id="stack">
+    <div class="loading-state" id="loadingState">
+      <div class="loading-spinner"></div>
+      <div class="loading-title">Finding jobs for you…</div>
+      <div class="loading-sub">Searching thousands of listings</div>
+    </div>
     <div class="empty-state" id="emptyState">
       <div class="empty-icon">✨</div>
       <div class="empty-title">All caught up!</div>
@@ -586,7 +597,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const JOBS = [];
 
-let cards=[],history=[],matches=[],savedCount=0,appliedCount=0,currentFilter='all',currentDetailJob=null;
+let cards=[],history=[],matches=[],savedCount=0,appliedCount=0,currentFilter='all',currentDetailJob=null,jobsLoaded=false;
 
 function getJobs(){
   if(currentFilter==='all') return JOBS;
@@ -1119,8 +1130,10 @@ function showToast(msg){
   toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
 }
 
-// Load jobs from Supabase + JSearch, then render
+// Load jobs from Supabase + JSearch, then render. Only fetches once; subsequent calls just re-render.
 async function loadAndInit() {
+  if(jobsLoaded){ initCards(); return; }
+  document.getElementById('loadingState').classList.add('show');
   try {
     const { data, error } = await db.from('jobs').select('*').order('created_at', { ascending: false }).limit(50);
     if(error) {
@@ -1152,6 +1165,8 @@ async function loadAndInit() {
     console.log('Supabase load failed:', e);
   }
   await fetchJSearchJobs();
+  jobsLoaded = true;
+  document.getElementById('loadingState').classList.remove('show');
   initCards();
 }
 
