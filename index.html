@@ -703,7 +703,7 @@ function attachDrag(card){
       card.style.transition='transform 0.3s cubic-bezier(0.34,1.56,0.64,1)';
       card.style.transform='scale(1) translateY(0) rotate(0)';
       refreshPositions();
-      openDetail();
+      openDetail(card.dataset.id);
       dx=0; dy=0; velX=0; velY=0;
       return;
     }
@@ -778,9 +778,9 @@ function undoLast(){
   showToast('↩ Undone');
 }
 
-function openDetail(){
+function openDetail(id){
   if(!cards.length) return;
-  const job=JOBS.find(j=>String(j.id)===cards[0].dataset.id);
+  const job=JOBS.find(j=>String(j.id)===(id||cards[0].dataset.id));
   if(!job) return;
   document.getElementById('detailBg').style.background=job.bg;
   document.getElementById('detailLogo').textContent=job.logo;
@@ -814,7 +814,6 @@ function updateMatchesList(){
 function openPane(id){document.getElementById(id).classList.add('open');}
 function closePane(id){
   document.getElementById(id).classList.remove('open');
-  if(id==='detailPane'){ JOBS.length=0; loadAndInit(); return; }
   // Immediately reset card positions so they're visible as the pane slides away
   if(cards.length) refreshPositions();
   // After the slide-out transition, re-attach drag with a fresh closure
