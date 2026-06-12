@@ -1103,7 +1103,11 @@ async function fetchJSearchJobs() {
 db.auth.getSession().then(({ data: { session } }) => {
   if(session) {
     document.getElementById('authScreen').classList.add('hidden');
-    showToast('👋 Welcome back, ' + (session.user.email || 'friend') + '!');
+    const realName = (session.user.user_metadata && session.user.user_metadata.full_name)
+      || session.user.email || 'friend';
+    document.getElementById('dispName').textContent = realName;
+    document.getElementById('editName').value = realName;
+    showToast('👋 Welcome back, ' + realName + '!');
   }
 });
 
