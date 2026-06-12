@@ -858,7 +858,7 @@ function setMode(btn,mode){
 function bnavClick(el){document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
 function bnavReset(){document.querySelectorAll('#discoverScreen .bni').forEach((b,i)=>{b.classList.toggle('on',i===0);});}
 
-function saveProfile(){
+async function saveProfile(){
   const name=document.getElementById('editName').value.trim();
   const role=document.getElementById('editRole').value.trim();
   const loc=document.getElementById('editLoc').value.trim();
@@ -868,7 +868,7 @@ function saveProfile(){
   const wt=document.getElementById('editWorkType').value;
   const skills=[...document.querySelectorAll('#editSkillList .skill-pill')].map(s=>s.textContent.replace(' ×','').trim());
   document.getElementById('dispName').textContent=name;
-  document.getElementById('dispRole').textContent=role+' · '+loc;
+  document.getElementById('dispRole').textContent=role+(loc?' · '+loc:'');
   document.getElementById('dispBio').textContent=bio;
   document.getElementById('dispSalary').textContent=salary;
   document.getElementById('dispLocation').textContent=loc;
@@ -876,7 +876,53 @@ function saveProfile(){
   document.getElementById('dispType').textContent=wt;
   document.getElementById('dispSkills').innerHTML=skills.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
   closePane('editPane');
+  const { data:{ session } } = await db.auth.getSession();
+  if(session){
+    const { error } = await db.from('profiles').upsert({
+      id: session.user.id,
+      full_name: name,
+      role,
+      location: loc,
+      bio,
+      salary_expectation: salary,
+      skills: skills.join(', ')
+    });
+    if(error) console.error('Profile save error:', error.message);
+  }
   showToast('✅ Profile saved!');
+}
+
+async function loadProfile(userId){
+  const { data, error } = await db.from('profiles').select('*').eq('id', userId).single();
+  if(error || !data) return;
+  if(data.full_name){
+    document.getElementById('dispName').textContent=data.full_name;
+    document.getElementById('editName').value=data.full_name;
+  }
+  const role=data.role||'';
+  const loc=data.location||'';
+  if(role){
+    document.getElementById('dispRole').textContent=role+(loc?' · '+loc:'');
+    document.getElementById('editRole').value=role;
+  }
+  if(loc){
+    document.getElementById('dispLocation').textContent=loc;
+    document.getElementById('editLoc').value=loc;
+  }
+  if(data.bio){
+    document.getElementById('dispBio').textContent=data.bio;
+    document.getElementById('editBio').value=data.bio;
+  }
+  if(data.salary_expectation){
+    document.getElementById('dispSalary').textContent=data.salary_expectation;
+    const sel=document.getElementById('editSalary');
+    for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===data.salary_expectation){sel.selectedIndex=i;break;}}
+  }
+  if(data.skills){
+    const arr=data.skills.split(',').map(s=>s.trim()).filter(Boolean);
+    document.getElementById('dispSkills').innerHTML=arr.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
+    document.getElementById('editSkillList').innerHTML=arr.map(s=>'<span class="skill-pill removable" onclick="removeSkill(this)">'+s+'</span>').join('');
+  }
 }
 
 function addSkill(){
@@ -1127,7 +1173,7 @@ async function fetchJSearchJobs(query = 'jobs in United States') {
 }
 
 // Check if user is already logged in
-db.auth.getSession().then(({ data: { session } }) => {
+db.auth.getSession().then(async ({ data: { session } }) => {
   if(session) {
     document.getElementById('authScreen').classList.add('hidden');
     const realName = (session.user.user_metadata && session.user.user_metadata.full_name)
@@ -1135,6 +1181,7 @@ db.auth.getSession().then(({ data: { session } }) => {
     document.getElementById('dispName').textContent = realName;
     document.getElementById('editName').value = realName;
     showToast('👋 Welcome back, ' + realName + '!');
+    await loadProfile(session.user.id);
   }
 });
 
