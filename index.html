@@ -893,7 +893,7 @@ async function saveProfile(){
 }
 
 async function loadProfile(userId){
-  const { data, error } = await db.from('profiles').select('*').eq('id', userId).single();
+  const { data, error } = await db.from('profiles').select('*').eq('id', userId).maybeSingle();
   if(error || !data) return;
   if(data.full_name){
     document.getElementById('dispName').textContent=data.full_name;
