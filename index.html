@@ -719,6 +719,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const ANTHROPIC_API_KEY = ['sk-ant-api03-WoTxMByULXOeTO8c8XRWCi_fl0fJBo3F168','E43XDccaReq6DxxezdPV2AG9l0UbFzIg1Qqx7N5IsFJAp66ppgA-5qxmUgAA'].join('');
 const GUARDIAN_API_KEY = 'd8a96487-8238-4dab-a052-c4db86dda420';
+const NEWSAPI_KEY = 'e7c75424d2644146962b02e145f34590';
 
 const JOBS = [];
 
@@ -1221,6 +1222,13 @@ const GUARDIAN_QUERIES={
   skills:'q=workplace+skills',
   ai:'q=artificial+intelligence+work'
 };
+const NEWSAPI_QUERIES={
+  all:'careers+jobs+business+AI',
+  market:'jobs+hiring+employment',
+  salary:'salary+compensation+wages',
+  skills:'workplace+skills+training',
+  ai:'artificial+intelligence+workplace'
+};
 
 function timeAgo(dateStr){
   const diff=Date.now()-new Date(dateStr).getTime();
@@ -1238,41 +1246,44 @@ async function renderNews(filter,searchTerm){
   const body=document.getElementById('newsBody');
   body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">Loading…</div>';
   try{
-    const qs=searchTerm?`q=${encodeURIComponent(searchTerm)}`:(GUARDIAN_QUERIES[filter]||GUARDIAN_QUERIES.all);
-    const url=`https://content.guardianapis.com/search?${qs}&page-size=10&show-fields=headline,trailText,thumbnail,byline&api-key=${GUARDIAN_API_KEY}`;
-    const res=await fetch(url);
-    if(!res.ok) throw new Error('Guardian '+res.status);
-    const json=await res.json();
-    const results=json.response.results;
-    if(!results.length){body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">No stories found</div>';return;}
+    const guardianQs=searchTerm?`q=${encodeURIComponent(searchTerm)}`:(GUARDIAN_QUERIES[filter]||GUARDIAN_QUERIES.all);
+    const guardianUrl=`https://content.guardianapis.com/search?${guardianQs}&page-size=5&show-fields=headline,trailText,thumbnail,byline&api-key=${GUARDIAN_API_KEY}`;
+    const newsapiQ=searchTerm?encodeURIComponent(searchTerm):(NEWSAPI_QUERIES[filter]||NEWSAPI_QUERIES.all);
+    const newsapiUrl=`https://newsapi.org/v2/everything?q=${newsapiQ}&language=en&sortBy=publishedAt&pageSize=5&apiKey=${NEWSAPI_KEY}`;
+    const [guardianResult,newsapiResult]=await Promise.allSettled([fetch(guardianUrl),fetch(newsapiUrl)]);
+    let articles=[];
+    if(guardianResult.status==='fulfilled'&&guardianResult.value.ok){
+      const json=await guardianResult.value.json();
+      (json.response.results||[]).forEach(r=>{
+        articles.push({title:r.fields.headline||r.webTitle,excerpt:r.fields.trailText||'',thumb:r.fields.thumbnail||null,date:new Date(r.webPublicationDate),time:timeAgo(r.webPublicationDate),url:r.webUrl,source:r.sectionName||'The Guardian'});
+      });
+    }
+    if(newsapiResult.status==='fulfilled'&&newsapiResult.value.ok){
+      const json=await newsapiResult.value.json();
+      (json.articles||[]).filter(a=>a.url&&a.title&&a.title!=='[Removed]').forEach(a=>{
+        articles.push({title:a.title,excerpt:a.description||'',thumb:a.urlToImage||null,date:new Date(a.publishedAt),time:timeAgo(a.publishedAt),url:a.url,source:(a.source&&a.source.name)||'NewsAPI'});
+      });
+    }
+    if(!articles.length){body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">No stories found</div>';return;}
+    const seen=new Set();
+    articles=articles.filter(a=>{if(seen.has(a.url))return false;seen.add(a.url);return true;}).sort((a,b)=>b.date-a.date);
     let html='';
-    const featured=filter==='all'?results[0]:null;
+    const featured=(filter==='all'&&!searchTerm)?articles[0]:null;
     if(featured){
       const bg=GUARDIAN_PALETTES[0];
-      const t=featured.fields.headline||featured.webTitle;
-      const ex=featured.fields.trailText||'';
-      const src=featured.sectionName;
-      const time=timeAgo(featured.webPublicationDate);
-      const webUrl=featured.webUrl;
-      const heroThumb=featured.fields.thumbnail;
-      const heroBg=heroThumb?`url('${heroThumb}') center/cover no-repeat`:bg;
-      html+=`<div class="news-hero-card" onclick="window.open('${webUrl}','_blank')" style="cursor:pointer"><div class="news-hero-img" style="background:${heroBg}"><div class="news-hero-img-grad"></div><div class="news-cat">${src}</div><div class="news-hero-title">${t}</div></div><div class="news-hero-body"><div class="news-meta"><span class="news-source">The Guardian</span><span class="news-time">${time}</span></div><div class="news-excerpt">${ex}</div></div></div>`;
+      const heroBg=featured.thumb?`url('${featured.thumb}') center/cover no-repeat`:bg;
+      html+=`<div class="news-hero-card" onclick="window.open('${featured.url}','_blank')" style="cursor:pointer"><div class="news-hero-img" style="background:${heroBg}"><div class="news-hero-img-grad"></div><div class="news-cat">${featured.source}</div><div class="news-hero-title">${featured.title}</div></div><div class="news-hero-body"><div class="news-meta"><span class="news-source">${featured.source}</span><span class="news-time">${featured.time}</span></div><div class="news-excerpt">${featured.excerpt}</div></div></div>`;
     }
-    const rest=featured?results.slice(1):results;
+    const rest=featured?articles.slice(1):articles;
     rest.forEach((item,i)=>{
       const bg=GUARDIAN_PALETTES[(i+1)%GUARDIAN_PALETTES.length];
-      const t=item.fields.headline||item.webTitle;
-      const src=item.sectionName;
-      const time=timeAgo(item.webPublicationDate);
-      const webUrl=item.webUrl;
-      const thumb=item.fields.thumbnail;
-      const rowLeft=thumb?`<img src="${thumb}" alt="" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;">`:`<div class="news-row-icon" style="background:${bg}"></div>`;
-      html+=`<div class="news-row" onclick="window.open('${webUrl}','_blank')" style="cursor:pointer">${rowLeft}<div class="news-row-content"><div class="news-row-title">${t}</div><div class="news-row-meta"><span class="news-row-source">${src}</span><span class="news-row-time">${time}</span></div></div></div>`;
+      const rowLeft=item.thumb?`<img src="${item.thumb}" alt="" style="width:60px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;">`:`<div class="news-row-icon" style="background:${bg}"></div>`;
+      html+=`<div class="news-row" onclick="window.open('${item.url}','_blank')" style="cursor:pointer">${rowLeft}<div class="news-row-content"><div class="news-row-title">${item.title}</div><div class="news-row-meta"><span class="news-row-source">${item.source}</span><span class="news-row-time">${item.time}</span></div></div></div>`;
     });
     if(searchTerm) html='<div style="padding:0 0 14px;font-size:13px;font-weight:700;color:var(--blue);">Searching for: "'+searchTerm+'"</div>'+html;
     body.innerHTML=html;
   }catch(e){
-    console.error('Guardian news error:',e);
+    console.error('News fetch error:',e);
     body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">Couldn\'t load news right now</div>';
   }
 }
