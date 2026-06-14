@@ -1247,7 +1247,7 @@ async function renderNews(filter,searchTerm){
   body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">Loading…</div>';
   try{
     const guardianQs=searchTerm?`q=${encodeURIComponent(searchTerm)}`:(GUARDIAN_QUERIES[filter]||GUARDIAN_QUERIES.all);
-    const guardianUrl=`https://content.guardianapis.com/search?${guardianQs}&page-size=5&show-fields=headline,trailText,thumbnail,byline&api-key=${GUARDIAN_API_KEY}`;
+    const guardianUrl=`https://content.guardianapis.com/search?${guardianQs}&page-size=15&show-fields=headline,trailText,thumbnail,byline&api-key=${GUARDIAN_API_KEY}`;
     const newsapiQ=searchTerm?encodeURIComponent(searchTerm):(NEWSAPI_QUERIES[filter]||NEWSAPI_QUERIES.all);
     const newsapiUrl=`/api/news?q=${newsapiQ}`;
     const [guardianResult,newsapiResult]=await Promise.allSettled([fetch(guardianUrl),fetch(newsapiUrl)]);
