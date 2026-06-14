@@ -262,6 +262,58 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .auth-terms{text-align:center;font-size:11px;color:var(--sub);line-height:1.5;padding:0 10px}
 .auth-terms a{color:var(--blue);text-decoration:none}
 
+/* ===== PROFILE REDESIGN ===== */
+.prof-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.prof-scroll::-webkit-scrollbar{width:0}
+.prof-hero{background:#fff;padding:54px 24px 28px;text-align:center;position:relative;border-bottom:1px solid rgba(35,85,245,0.07);}
+.prof-back{position:absolute;top:16px;left:16px;width:36px;height:36px;background:rgba(0,0,0,0.06);border:none;border-radius:10px;cursor:pointer;font-size:18px;color:var(--text);display:flex;align-items:center;justify-content:center;}
+.prof-hero-btns{position:absolute;top:16px;right:16px;display:flex;gap:8px;}
+.prof-hero-btn{background:rgba(35,85,245,0.08);border:none;border-radius:10px;padding:7px 12px;font-family:'Cabinet Grotesk',sans-serif;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer;}
+.prof-hero-btn.dim{background:rgba(0,0,0,0.06);color:var(--sub);}
+.prof-avatar{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#2355f5,#6a8fff);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;color:#fff;margin:0 auto 14px;letter-spacing:-1px;}
+.prof-name{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;letter-spacing:-0.5px;color:var(--text);margin-bottom:4px;}
+.prof-role-line{font-size:15px;font-weight:600;color:var(--sub);margin-bottom:4px;}
+.prof-loc-line{font-size:13px;color:var(--sub);opacity:0.65;margin-bottom:14px;}
+.prof-bio-text{font-size:14px;line-height:1.7;color:var(--sub);font-style:italic;}
+.prof-highlights{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 16px 0;}
+.prof-hl-card{background:#fff;border-radius:16px;padding:15px;box-shadow:0 2px 14px rgba(35,85,245,0.07);}
+.prof-hl-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--blue);margin-bottom:7px;}
+.prof-hl-text{font-size:14px;color:var(--text);line-height:1.5;font-weight:500;}
+.prof-section{padding:20px 16px 0;}
+.prof-section-title{font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.9px;margin-bottom:12px;}
+.prof-tl{position:relative;padding-left:20px;}
+.prof-tl::before{content:'';position:absolute;left:3px;top:8px;bottom:8px;width:1.5px;background:var(--blue);opacity:0.2;border-radius:2px;}
+.prof-tl-item{position:relative;margin-bottom:18px;}
+.prof-tl-item:last-child{margin-bottom:0;}
+.prof-tl-dot{position:absolute;left:-20px;top:5px;width:7px;height:7px;background:var(--blue);border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--blue);}
+.prof-tl-role{font-weight:700;font-size:14px;color:var(--text);margin-bottom:1px;}
+.prof-tl-co{font-size:13px;color:var(--sub);margin-bottom:2px;}
+.prof-tl-years{font-size:12px;color:var(--blue);font-weight:600;}
+.prof-share-box{background:#fff;border-radius:14px;padding:15px 16px;box-shadow:0 2px 12px rgba(35,85,245,0.06);font-size:14px;line-height:1.7;color:var(--sub);}
+.prof-pref-wrap{background:#fff;border-radius:16px;box-shadow:0 2px 12px rgba(35,85,245,0.06);padding:0 16px;}
+.prof-pref-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(35,85,245,0.07);}
+.prof-pref-row:last-child{border-bottom:none;}
+.prof-pref-label{font-size:14px;color:var(--sub);}
+.prof-pref-val{font-size:14px;font-weight:600;color:var(--text);}
+.prof-badge{font-size:12px;font-weight:700;padding:4px 10px;border-radius:100px;}
+.prof-badge.open{background:rgba(22,163,74,0.1);color:#16a34a;}
+.prof-badge.closed{background:rgba(0,0,0,0.06);color:var(--sub);}
+.prof-stats-bar{display:grid;grid-template-columns:repeat(3,1fr);margin:20px 16px 0;background:#fff;border-radius:18px;box-shadow:0 2px 16px rgba(35,85,245,0.08);overflow:hidden;}
+.prof-stat{text-align:center;padding:18px 10px;border-right:1px solid rgba(35,85,245,0.07);}
+.prof-stat:last-child{border-right:none;}
+.prof-stat-n{font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;color:var(--blue);}
+.prof-stat-l{font-size:11px;color:var(--sub);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;}
+.ep-section-label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.9px;margin:22px 0 12px;display:block;}
+.ep-exp-entry{background:var(--s1);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;position:relative;}
+.ep-exp-remove{position:absolute;top:12px;right:12px;width:26px;height:26px;background:rgba(224,24,94,0.08);border:none;border-radius:7px;color:var(--pink);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1;}
+.ep-exp-yr-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+.ep-add-exp{width:100%;padding:12px;border:1.5px dashed rgba(35,85,245,0.25);border-radius:13px;background:rgba(35,85,245,0.03);color:var(--blue);font-family:'Cabinet Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:4px;}
+.ep-toggle-row{display:flex;justify-content:space-between;align-items:center;}
+.ep-toggle{width:44px;height:26px;background:rgba(0,0,0,0.13);border:none;border-radius:13px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.ep-toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+.ep-toggle.on{background:var(--blue);}
+.ep-toggle.on::after{transform:translateX(18px);}
+
 /* NEWS */
 .news-hero-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px;cursor:pointer;transition:border-color .2s}
 .news-hero-card:hover{border-color:rgba(35,85,245,0.3)}
@@ -413,45 +465,55 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 <!-- PROFILE VIEW -->
 <div class="pane" id="profilePane">
-  <div style="flex-shrink:0;">
-    <div style="display:flex;align-items:center;gap:10px;padding:52px 22px 0;flex-wrap:wrap;">
-      <div class="back-btn" onclick="closePane('profilePane')">←</div>
-      <div class="pane-title">My Profile</div>
-      <button class="edit-trigger" onclick="openPane('editPane')" style="margin-left:auto;">✎ Edit</button>
-      <button class="edit-trigger" onclick="doLogout()" style="background:rgba(224,24,94,0.08);border-color:rgba(224,24,94,0.25);color:var(--pink);">↪ Log Out</button>
+  <div class="prof-scroll">
+    <div class="prof-hero">
+      <button class="prof-back" onclick="closePane('profilePane')">←</button>
+      <div class="prof-hero-btns">
+        <button class="prof-hero-btn" onclick="openPane('editPane')">Edit</button>
+        <button class="prof-hero-btn dim" onclick="doLogout()">Log out</button>
+      </div>
+      <div class="prof-avatar" id="dispAvatar">?</div>
+      <div class="prof-name" id="dispName"></div>
+      <div class="prof-role-line" id="dispRole"></div>
+      <div class="prof-loc-line" id="dispLocation"></div>
+      <div class="prof-bio-text" id="dispBio"></div>
     </div>
-    <div class="profile-hero" style="margin-top:16px;">
-      <div class="profile-av">🧑</div>
-      <div>
-        <div class="profile-name" id="dispName">Alex Johnson</div>
-        <div class="profile-sub" id="dispRole">Product Designer · London</div>
-        <div style="background:rgba(35,85,245,0.08);color:var(--blue);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;display:inline-block;margin-top:8px;border:1px solid rgba(35,85,245,0.2);">Profile 87% complete</div>
+    <div class="prof-highlights">
+      <div class="prof-hl-card">
+        <div class="prof-hl-label">Currently</div>
+        <div class="prof-hl-text" id="dispCurrently">—</div>
+      </div>
+      <div class="prof-hl-card">
+        <div class="prof-hl-label">Figuring out</div>
+        <div class="prof-hl-text" id="dispFiguringOut">—</div>
       </div>
     </div>
-  </div>
-  <div class="pane-body">
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-n" id="statApplied">0</div><div class="stat-l">Applied</div></div>
-      <div class="stat-box"><div class="stat-n" id="statSaved">0</div><div class="stat-l">Saved</div></div>
-      <div class="stat-box"><div class="stat-n">89%</div><div class="stat-l">Avg Match</div></div>
+    <div class="prof-section">
+      <div class="prof-section-title">Experience</div>
+      <div class="prof-tl" id="dispExperience"><div style="font-size:14px;color:var(--sub);">No experience added yet</div></div>
     </div>
-    <div class="icard">
-      <div class="icard-title">Skills</div>
-      <div class="pill-wrap" id="dispSkills">
-        <span class="skill-pill">Figma</span><span class="skill-pill">UX Research</span><span class="skill-pill">Design Systems</span><span class="skill-pill">Prototyping</span><span class="skill-pill">React</span>
+    <div class="prof-section">
+      <div class="prof-section-title">Skills</div>
+      <div class="pill-wrap" id="dispSkills"></div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-section-title">What I can share</div>
+      <div class="prof-share-box" id="dispCanShare">—</div>
+    </div>
+    <div class="prof-section">
+      <div class="prof-section-title">Preferences</div>
+      <div class="prof-pref-wrap">
+        <div class="prof-pref-row"><span class="prof-pref-label">Salary</span><span class="prof-pref-val" id="dispSalary">—</span></div>
+        <div class="prof-pref-row"><span class="prof-pref-label">Work type</span><span class="prof-pref-val" id="dispType">—</span></div>
+        <div class="prof-pref-row"><span class="prof-pref-label">Open to opportunities</span><span class="prof-badge open" id="dispOpenTo">Open</span></div>
       </div>
     </div>
-    <div class="icard">
-      <div class="icard-title">Preferences</div>
-      <div class="pref-row"><span class="pref-label">💰 Salary</span><span class="pref-val" id="dispSalary">$65k – $95k</span></div>
-      <div class="pref-row"><span class="pref-label">📍 Location</span><span class="pref-val" id="dispLocation">London / Remote</span></div>
-      <div class="pref-row"><span class="pref-label">🏢 Company</span><span class="pref-val" id="dispCompany">Scale-up</span></div>
-      <div class="pref-row"><span class="pref-label">⏰ Type</span><span class="pref-val" id="dispType">Full-time</span></div>
+    <div class="prof-stats-bar">
+      <div class="prof-stat"><div class="prof-stat-n" id="statApplied">0</div><div class="prof-stat-l">Applied</div></div>
+      <div class="prof-stat"><div class="prof-stat-n" id="statSaved">0</div><div class="prof-stat-l">Saved</div></div>
+      <div class="prof-stat"><div class="prof-stat-n">0</div><div class="prof-stat-l">Connected</div></div>
     </div>
-    <div class="icard">
-      <div class="icard-title">About</div>
-      <div style="font-size:14px;line-height:1.7;color:var(--sub);" id="dispBio">Product designer with 5 years experience crafting digital products used by millions. Passionate about design systems and user research.</div>
-    </div>
+    <div style="height:28px;"></div>
   </div>
 </div>
 
@@ -463,38 +525,40 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
       <div class="ep-cv-title">Upload your CV</div>
       <div class="ep-cv-sub">We'll auto-fill your profile from your resume</div>
       <div class="ep-cv-area" onclick="document.getElementById('epCvInput').click()">
-        <div class="ep-cv-icon">📄</div>
         <div class="ep-cv-hint">Tap to upload · PDF or Word</div>
       </div>
       <div class="ep-cv-filename" id="epCvFilename"></div>
       <button class="ep-cv-scan-btn" id="epCvScanBtn" onclick="scanCvWithClaude()">Scan CV</button>
       <input type="file" id="epCvInput" accept=".pdf,.doc,.docx" style="display:none" onchange="handleEditCvFile(this)">
     </div>
-    <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="editName" value="Alex Johnson"></div>
-    <div class="form-group"><label class="form-label">Current Role</label><input class="form-input" id="editRole" value="Product Designer"></div>
-    <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="editLoc" value="London"></div>
-    <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" id="editBio">Product designer with 5 years experience crafting digital products used by millions. Passionate about design systems and user research.</textarea></div>
-    <div class="form-group">
-      <label class="form-label">Skills</label>
-      <div class="skill-input-row"><input class="form-input" id="editSkillInput" placeholder="Add a skill…"><button class="add-skill-btn" onclick="addSkill()">+</button></div>
-      <div class="pill-wrap" id="editSkillList" style="margin-top:10px;">
-        <span class="skill-pill removable" onclick="removeSkill(this)">Figma</span>
-        <span class="skill-pill removable" onclick="removeSkill(this)">UX Research</span>
-        <span class="skill-pill removable" onclick="removeSkill(this)">Design Systems</span>
-        <span class="skill-pill removable" onclick="removeSkill(this)">Prototyping</span>
-        <span class="skill-pill removable" onclick="removeSkill(this)">React</span>
-      </div>
-    </div>
+    <span class="ep-section-label">Basic Info</span>
+    <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="editName" placeholder="Your full name"></div>
+    <div class="form-group"><label class="form-label">Current Role</label><input class="form-input" id="editRole" placeholder="e.g. Product Designer"></div>
+    <div class="form-group"><label class="form-label">Company</label><input class="form-input" id="editCompany" placeholder="e.g. Figma"></div>
+    <div class="form-group"><label class="form-label">Location</label><input class="form-input" id="editLoc" placeholder="e.g. London"></div>
+    <div class="form-group"><label class="form-label">Bio</label><textarea class="form-textarea" id="editBio" placeholder="A short professional summary…"></textarea></div>
+    <span class="ep-section-label">Right Now</span>
+    <div class="form-group"><label class="form-label">Currently working on</label><input class="form-input" id="editCurrently" placeholder="What are you building or focused on?"></div>
+    <div class="form-group"><label class="form-label">Figuring out</label><input class="form-input" id="editFiguringOut" placeholder="What's your next big question?"></div>
+    <span class="ep-section-label">Experience</span>
+    <div id="editExpList"></div>
+    <button class="ep-add-exp" onclick="addExperience()">+ Add Experience</button>
+    <span class="ep-section-label">Skills</span>
+    <div class="skill-input-row" style="margin-bottom:10px;"><input class="form-input" id="editSkillInput" placeholder="Add a skill…"><button class="add-skill-btn" onclick="addSkill()">+</button></div>
+    <div class="pill-wrap" id="editSkillList" style="margin-bottom:4px;min-height:32px;"></div>
+    <span class="ep-section-label">What I Can Share</span>
+    <div class="form-group"><textarea class="form-textarea" id="editCanShare" placeholder="What experience, advice or connections can you offer?"></textarea></div>
+    <span class="ep-section-label">Preferences</span>
     <div class="form-group"><label class="form-label">Salary Expectation</label>
       <select class="form-select" id="editSalary">
         <option>$40k – $55k</option><option>$55k – $70k</option><option selected>$65k – $95k</option><option>$90k – $120k</option><option>$120k+</option>
       </select>
     </div>
-    <div class="form-group"><label class="form-label">Company Size</label>
-      <select class="form-select" id="editCompany"><option>Early-stage startup</option><option selected>Scale-up</option><option>Enterprise</option><option>Any</option></select>
-    </div>
     <div class="form-group"><label class="form-label">Work Type</label>
-      <select class="form-select" id="editWorkType"><option selected>Full-time</option><option>Part-time</option><option>Contract</option><option>Freelance</option></select>
+      <select class="form-select" id="editWorkType"><option>Full-time</option><option>Part-time</option><option>Contract</option><option>Freelance</option></select>
+    </div>
+    <div class="form-group"><label class="form-label" style="margin-bottom:12px;">Open to Opportunities</label>
+      <div class="ep-toggle-row"><span style="font-size:14px;color:var(--sub);">I'm open to new roles</span><button class="ep-toggle on" id="editOpenTo" onclick="this.classList.toggle('on')"></button></div>
     </div>
     <button class="save-btn" onclick="saveProfile()">Save Profile</button>
   </div>
@@ -883,67 +947,108 @@ function bnavReset(){document.querySelectorAll('#discoverScreen .bni').forEach((
 async function saveProfile(){
   const name=document.getElementById('editName').value.trim();
   const role=document.getElementById('editRole').value.trim();
+  const company=document.getElementById('editCompany').value.trim();
   const loc=document.getElementById('editLoc').value.trim();
   const bio=document.getElementById('editBio').value.trim();
+  const currently=document.getElementById('editCurrently').value.trim();
+  const figuringOut=document.getElementById('editFiguringOut').value.trim();
+  const canShare=document.getElementById('editCanShare').value.trim();
   const salary=document.getElementById('editSalary').value;
-  const co=document.getElementById('editCompany').value;
   const wt=document.getElementById('editWorkType').value;
+  const openTo=document.getElementById('editOpenTo').classList.contains('on');
   const skills=[...document.querySelectorAll('#editSkillList .skill-pill')].map(s=>s.textContent.replace(' ×','').trim());
+  const expEntries=[...document.querySelectorAll('#editExpList .ep-exp-entry')].map(entry=>({
+    role:entry.querySelector('.ep-exp-role').value.trim(),
+    company:entry.querySelector('.ep-exp-company').value.trim(),
+    start:entry.querySelector('.ep-exp-start').value.trim(),
+    end:entry.querySelector('.ep-exp-end').value.trim()
+  })).filter(e=>e.role||e.company);
+  const initials=name.split(' ').filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('dispAvatar').textContent=initials||'?';
   document.getElementById('dispName').textContent=name;
-  document.getElementById('dispRole').textContent=role+(loc?' · '+loc:'');
-  document.getElementById('dispBio').textContent=bio;
-  document.getElementById('dispSalary').textContent=salary;
+  document.getElementById('dispRole').textContent=role+(company?' · '+company:'');
   document.getElementById('dispLocation').textContent=loc;
-  document.getElementById('dispCompany').textContent=co;
+  document.getElementById('dispBio').textContent=bio;
+  document.getElementById('dispCurrently').textContent=currently||'—';
+  document.getElementById('dispFiguringOut').textContent=figuringOut||'—';
+  document.getElementById('dispCanShare').textContent=canShare||'—';
+  document.getElementById('dispSalary').textContent=salary;
   document.getElementById('dispType').textContent=wt;
+  const badge=document.getElementById('dispOpenTo');
+  badge.textContent=openTo?'Open':'Not looking';
+  badge.className='prof-badge '+(openTo?'open':'closed');
   document.getElementById('dispSkills').innerHTML=skills.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
+  renderProfileExperience(expEntries);
   closePane('editPane');
-  const { data:{ session } } = await db.auth.getSession();
+  const { data:{ session } }=await db.auth.getSession();
   if(session){
-    const { error } = await db.from('profiles').upsert({
-      id: session.user.id,
-      full_name: name,
+    const { error }=await db.from('profiles').upsert({
+      id:session.user.id,
+      full_name:name,
       role,
-      location: loc,
+      company,
+      location:loc,
       bio,
-      salary_expectation: salary,
-      skills: skills.join(', ')
+      currently,
+      figuring_out:figuringOut,
+      can_share:canShare,
+      salary_expectation:salary,
+      work_type:wt,
+      open_to_opportunities:openTo,
+      experience:JSON.stringify(expEntries),
+      skills:skills.join(', ')
     });
-    if(error) console.error('Profile save error:', error.message);
+    if(error) console.error('Profile save error:',error.message);
   }
-  showToast('✅ Profile saved!');
+  showToast('Profile saved');
 }
 
 async function loadProfile(userId){
-  const { data, error } = await db.from('profiles').select('*').eq('id', userId).maybeSingle();
-  if(error || !data) return;
+  const { data, error }=await db.from('profiles').select('*').eq('id',userId).maybeSingle();
+  if(error||!data) return;
   if(data.full_name){
+    const initials=data.full_name.split(' ').filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('dispAvatar').textContent=initials||'?';
     document.getElementById('dispName').textContent=data.full_name;
     document.getElementById('editName').value=data.full_name;
   }
   const role=data.role||'';
+  const company=data.company||'';
   const loc=data.location||'';
-  if(role){
-    document.getElementById('dispRole').textContent=role+(loc?' · '+loc:'');
-    document.getElementById('editRole').value=role;
-  }
-  if(loc){
-    document.getElementById('dispLocation').textContent=loc;
-    document.getElementById('editLoc').value=loc;
-  }
-  if(data.bio){
-    document.getElementById('dispBio').textContent=data.bio;
-    document.getElementById('editBio').value=data.bio;
-  }
+  if(role){document.getElementById('dispRole').textContent=role+(company?' · '+company:'');document.getElementById('editRole').value=role;}
+  if(company) document.getElementById('editCompany').value=company;
+  if(loc){document.getElementById('dispLocation').textContent=loc;document.getElementById('editLoc').value=loc;}
+  if(data.bio){document.getElementById('dispBio').textContent=data.bio;document.getElementById('editBio').value=data.bio;}
+  if(data.currently){document.getElementById('dispCurrently').textContent=data.currently;document.getElementById('editCurrently').value=data.currently;}
+  if(data.figuring_out){document.getElementById('dispFiguringOut').textContent=data.figuring_out;document.getElementById('editFiguringOut').value=data.figuring_out;}
+  if(data.can_share){document.getElementById('dispCanShare').textContent=data.can_share;document.getElementById('editCanShare').value=data.can_share;}
   if(data.salary_expectation){
     document.getElementById('dispSalary').textContent=data.salary_expectation;
     const sel=document.getElementById('editSalary');
-    for(let i=0;i<sel.options.length;i++){if(sel.options[i].value===data.salary_expectation){sel.selectedIndex=i;break;}}
+    for(let i=0;i<sel.options.length;i++){if(sel.options[i].text===data.salary_expectation){sel.selectedIndex=i;break;}}
+  }
+  if(data.work_type){
+    document.getElementById('dispType').textContent=data.work_type;
+    const sel=document.getElementById('editWorkType');
+    for(let i=0;i<sel.options.length;i++){if(sel.options[i].text===data.work_type){sel.selectedIndex=i;break;}}
+  }
+  if(typeof data.open_to_opportunities==='boolean'){
+    const badge=document.getElementById('dispOpenTo');
+    badge.textContent=data.open_to_opportunities?'Open':'Not looking';
+    badge.className='prof-badge '+(data.open_to_opportunities?'open':'closed');
+    document.getElementById('editOpenTo').classList.toggle('on',data.open_to_opportunities);
   }
   if(data.skills){
     const arr=data.skills.split(',').map(s=>s.trim()).filter(Boolean);
     document.getElementById('dispSkills').innerHTML=arr.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
     document.getElementById('editSkillList').innerHTML=arr.map(s=>'<span class="skill-pill removable" onclick="removeSkill(this)">'+s+'</span>').join('');
+  }
+  if(data.experience){
+    try{
+      const expArr=typeof data.experience==='string'?JSON.parse(data.experience):data.experience;
+      renderProfileExperience(expArr);
+      renderEditExperience(expArr);
+    }catch(e){console.error('Experience parse error:',e);}
   }
 }
 
@@ -960,6 +1065,29 @@ function addSkill(){
 }
 document.getElementById('editSkillInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addSkill();}});
 function removeSkill(el){el.remove();}
+
+function renderProfileExperience(expArr){
+  const container=document.getElementById('dispExperience');
+  if(!expArr||!expArr.length){container.innerHTML='<div style="font-size:14px;color:var(--sub);">No experience added yet</div>';return;}
+  container.innerHTML=expArr.map(e=>`<div class="prof-tl-item"><div class="prof-tl-dot"></div><div class="prof-tl-role">${e.role||''}</div><div class="prof-tl-co">${e.company||''}</div><div class="prof-tl-years">${e.start||''}${e.end?' – '+e.end:''}</div></div>`).join('');
+}
+
+function renderEditExperience(expArr){
+  document.getElementById('editExpList').innerHTML='';
+  (expArr||[]).forEach(e=>addExperience(e));
+}
+
+function addExperience(data){
+  const container=document.getElementById('editExpList');
+  const entry=document.createElement('div');
+  entry.className='ep-exp-entry';
+  const r=(data&&data.role)||'';
+  const c=(data&&data.company)||'';
+  const s=(data&&data.start)||'';
+  const en=(data&&data.end)||'';
+  entry.innerHTML=`<button class="ep-exp-remove" onclick="this.closest('.ep-exp-entry').remove()">×</button><div class="form-group" style="margin-bottom:10px;"><label class="form-label">Role Title</label><input class="form-input ep-exp-role" value="${r}" placeholder="e.g. Product Designer"></div><div class="form-group" style="margin-bottom:0;"><label class="form-label">Company</label><input class="form-input ep-exp-company" value="${c}" placeholder="e.g. Figma"></div><div class="ep-exp-yr-row"><div><label class="form-label">Start</label><input class="form-input ep-exp-start" value="${s}" placeholder="2021"></div><div><label class="form-label">End</label><input class="form-input ep-exp-end" value="${en}" placeholder="Present"></div></div>`;
+  container.appendChild(entry);
+}
 
 function postJob(){
   const title=document.getElementById('pjTitle').value.trim();
@@ -1091,14 +1219,20 @@ async function doLogout() {
   matches = []; appliedCount = 0; savedCount = 0;
   document.getElementById('statApplied').textContent = '0';
   document.getElementById('statSaved').textContent = '0';
+  document.getElementById('dispAvatar').textContent = '?';
   document.getElementById('dispName').textContent = '';
   document.getElementById('dispRole').textContent = '';
+  document.getElementById('dispLocation').textContent = '';
   document.getElementById('dispBio').textContent = '';
+  document.getElementById('dispCurrently').textContent = '—';
+  document.getElementById('dispFiguringOut').textContent = '—';
+  document.getElementById('dispCanShare').textContent = '—';
+  document.getElementById('dispExperience').innerHTML = '<div style="font-size:14px;color:var(--sub);">No experience added yet</div>';
   document.getElementById('dispSkills').innerHTML = '';
   updateMatchesList();
   closePane('profilePane');
   document.getElementById('authScreen').classList.remove('hidden');
-  showToast('👋 Logged out successfully');
+  showToast('Logged out successfully');
 }
 
 function toggleEmailForm(){
@@ -1208,7 +1342,7 @@ let epCvFile = null;
 function handleEditCvFile(input){
   if(!input.files || !input.files[0]) return;
   epCvFile = input.files[0];
-  document.getElementById('epCvFilename').textContent='📎 '+epCvFile.name;
+  document.getElementById('epCvFilename').textContent = epCvFile.name;
   document.getElementById('epCvFilename').style.display='block';
   document.getElementById('epCvScanBtn').style.display='block';
 }
@@ -1258,7 +1392,10 @@ async function scanCvWithClaude(){
     if(parsed.current_role) document.getElementById('editRole').value = parsed.current_role;
     if(parsed.location) document.getElementById('editLoc').value = parsed.location;
     if(parsed.bio) document.getElementById('editBio').value = parsed.bio;
-    if(parsed.skills) document.getElementById('editSkillList').value = parsed.skills;
+    if(parsed.skills){
+      const skillArr=parsed.skills.split(',').map(s=>s.trim()).filter(Boolean);
+      document.getElementById('editSkillList').innerHTML=skillArr.map(s=>'<span class="skill-pill removable" onclick="removeSkill(this)">'+s+'</span>').join('');
+    }
     showToast('CV scanned — profile updated! Review and save.');
   } catch(e) {
     console.error('CV scan error:', e);
@@ -1277,7 +1414,9 @@ db.auth.getSession().then(async ({ data: { session } }) => {
       || session.user.email || 'friend';
     document.getElementById('dispName').textContent = realName;
     document.getElementById('editName').value = realName;
-    showToast('👋 Welcome back, ' + realName + '!');
+    const initials = realName.split(' ').filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('dispAvatar').textContent = initials || realName[0]?.toUpperCase() || '?';
+    showToast('Welcome back, ' + realName.split(' ')[0] + '!');
     await loadProfile(session.user.id);
   }
 });
