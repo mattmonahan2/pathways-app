@@ -219,6 +219,9 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .ai-spinner{width:48px;height:48px;border:3px solid #dce4ff;border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes newCardPulse{0%,100%{box-shadow:0 0 0 3px rgba(35,85,245,0.5)}50%{box-shadow:0 0 0 6px rgba(35,85,245,0.1)}}
+@keyframes recordingPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+.recording-pulse{animation:recordingPulse 1.2s ease-in-out infinite}
+.cv-scan-spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:7px;position:relative;top:-1px}
 
 /* AUTH */
 #authScreen{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;background:var(--bg);transition:opacity 0.5s,transform 0.5s cubic-bezier(0.32,0.72,0,1)}
@@ -493,7 +496,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
         <div class="prof-hl-text" id="dispCurrently">—</div>
       </div>
       <div class="prof-hl-card">
-        <div class="prof-hl-label">Figuring out</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;"><div class="prof-hl-label">Figuring out</div><button onclick="openEditWithAI('figuring_out')" style="font-size:11px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;padding:0;white-space:nowrap;">Edit with AI</button></div>
         <div class="prof-hl-text" id="dispFiguringOut">—</div>
       </div>
     </div>
@@ -510,12 +513,16 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
       <div class="pill-wrap" id="dispSkills"></div>
     </div>
     <div class="prof-section">
-      <div class="prof-section-title">What drives me</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div class="prof-section-title" style="margin-bottom:0;">What drives me</div><button onclick="openEditWithAI('drives_me')" style="font-size:12px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;">Edit with AI</button></div>
       <div class="prof-share-box" id="dispDrivesMe"></div>
     </div>
     <div class="prof-section">
-      <div class="prof-section-title">What I can share</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div class="prof-section-title" style="margin-bottom:0;">What I can share</div><button onclick="openEditWithAI('can_share')" style="font-size:12px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;">Edit with AI</button></div>
       <div class="prof-share-box" id="dispCanShare">—</div>
+    </div>
+    <div class="prof-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div class="prof-section-title" style="margin-bottom:0;">My ideal work life</div><button onclick="openEditWithAI('ideal_work_life')" style="font-size:12px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;">Edit with AI</button></div>
+      <div class="prof-share-box" id="dispIdealWork"></div>
     </div>
     <div class="prof-section">
       <div class="prof-section-title">Preferences</div>
@@ -570,6 +577,8 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <div class="form-group"><textarea class="form-textarea" id="editDrivesMe" placeholder="What actually motivates you underneath the job titles..."></textarea></div>
     <span class="ep-section-label">What I Can Share</span>
     <div class="form-group"><textarea class="form-textarea" id="editCanShare" placeholder="What experience, advice or connections can you offer?"></textarea></div>
+    <span class="ep-section-label">My Ideal Work Life</span>
+    <div class="form-group"><textarea class="form-textarea" id="editIdealWork" placeholder="Describe your ideal Tuesday — what does a great workday actually feel like?"></textarea></div>
     <span class="ep-section-label">Preferences</span>
     <div class="form-group"><label class="form-label">Salary Expectation</label>
       <select class="form-select" id="editSalary">
@@ -977,6 +986,7 @@ async function saveProfile(){
   const figuringOut=document.getElementById('editFiguringOut').value.trim();
   const canShare=document.getElementById('editCanShare').value.trim();
   const drivesMe=document.getElementById('editDrivesMe').value.trim();
+  const idealWorkLife=document.getElementById('editIdealWork').value.trim();
   const salary=document.getElementById('editSalary').value;
   const wt=document.getElementById('editWorkType').value;
   const openTo=document.getElementById('editOpenTo').classList.contains('on');
@@ -1003,6 +1013,7 @@ async function saveProfile(){
   document.getElementById('dispFiguringOut').textContent=figuringOut||'—';
   document.getElementById('dispCanShare').textContent=canShare||'—';
   document.getElementById('dispDrivesMe').textContent=drivesMe||'—';
+  document.getElementById('dispIdealWork').textContent=idealWorkLife||'—';
   document.getElementById('dispSalary').textContent=salary;
   document.getElementById('dispType').textContent=wt;
   const badge=document.getElementById('dispOpenTo');
@@ -1030,7 +1041,8 @@ async function saveProfile(){
       experience:JSON.stringify(expEntries),
       education:JSON.stringify(eduEntries),
       skills:skills.join(', '),
-      drives_me:drivesMe
+      drives_me:drivesMe,
+      ideal_work_life:idealWorkLife
     });
     if(error) console.error('Profile save error:',error.message);
   }
@@ -1057,6 +1069,7 @@ async function loadProfile(userId){
   if(data.figuring_out){document.getElementById('dispFiguringOut').textContent=data.figuring_out;document.getElementById('editFiguringOut').value=data.figuring_out;}
   if(data.can_share){document.getElementById('dispCanShare').textContent=data.can_share;document.getElementById('editCanShare').value=data.can_share;}
   if(data.drives_me){document.getElementById('dispDrivesMe').textContent=data.drives_me;document.getElementById('editDrivesMe').value=data.drives_me;}
+  if(data.ideal_work_life){document.getElementById('dispIdealWork').textContent=data.ideal_work_life;document.getElementById('editIdealWork').value=data.ideal_work_life;}
   if(data.salary_expectation){
     document.getElementById('dispSalary').textContent=data.salary_expectation;
     const sel=document.getElementById('editSalary');
@@ -1493,63 +1506,307 @@ function handleEditCvFile(input){
 }
 
 async function scanCvWithClaude(){
-  if(!epCvFile){ showToast('Please upload a CV file first'); return; }
-  const btn = document.getElementById('epCvScanBtn');
-  btn.textContent = 'Scanning your CV...';
-  btn.disabled = true;
-  try {
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = e => resolve(e.target.result.split(',')[1]);
-      reader.onerror = reject;
-      reader.readAsDataURL(epCvFile);
+  if(!epCvFile){showToast('Please upload a CV file first');return;}
+  const btn=document.getElementById('epCvScanBtn');
+  btn.innerHTML='<span class="cv-scan-spinner"></span>Reading your CV…';
+  btn.disabled=true;
+  try{
+    const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(epCvFile);});
+    const mediaType=epCvFile.type||'application/pdf';
+    const apiRes=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2048,
+        system:'You are a profile builder for a career platform called Pathways. Extract information from this CV/resume and return ONLY a valid JSON object with these exact fields: full_name, current_role, company, location, bio (2 sentence professional summary), skills (comma separated string), experience (JSON array of objects with role, company, start_year, end_year), education (JSON array of objects with degree, field, school, grad_year), hidden_skills (comma separated string of skills inferred from their experience that they didn\'t explicitly list). Return only the JSON, no other text.',
+        messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:mediaType,data:base64}},{type:'text',text:'Extract information from this CV and return the JSON object.'}]}]})
     });
-    const mediaType = epCvFile.type || 'application/pdf';
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key': ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1024,
-        system: 'You are a CV parser. Extract information from this resume and return ONLY a JSON object with these fields: full_name, current_role, location, skills (comma separated string), bio (2 sentence professional summary). No other text, just the JSON.',
-        messages: [{
-          role: 'user',
-          content: [{
-            type: 'document',
-            source: { type: 'base64', media_type: mediaType, data: base64 }
-          }, {
-            type: 'text',
-            text: 'Parse this CV and return the JSON object.'
-          }]
-        }]
-      })
-    });
-    if(!res.ok){ const err = await res.text(); throw new Error(err); }
-    const data = await res.json();
-    const raw = data.content[0].text.trim();
-    const parsed = JSON.parse(raw.replace(/^```json\s*/,'').replace(/\s*```$/,''));
-    if(parsed.full_name) document.getElementById('editName').value = parsed.full_name;
-    if(parsed.current_role) document.getElementById('editRole').value = parsed.current_role;
-    if(parsed.location) document.getElementById('editLoc').value = parsed.location;
-    if(parsed.bio) document.getElementById('editBio').value = parsed.bio;
-    if(parsed.skills){
-      const skillArr=parsed.skills.split(',').map(s=>s.trim()).filter(Boolean);
-      document.getElementById('editSkillList').innerHTML=skillArr.map(s=>'<span class="skill-pill removable" onclick="removeSkill(this)">'+s+'</span>').join('');
+    if(!apiRes.ok){const err=await apiRes.text();throw new Error(err);}
+    const apiData=await apiRes.json();
+    const raw=apiData.content[0].text.trim();
+    const p=JSON.parse(raw.replace(/^```json\s*/,'').replace(/\s*```$/,''));
+    // Populate edit fields
+    if(p.full_name)document.getElementById('editName').value=p.full_name;
+    if(p.current_role)document.getElementById('editRole').value=p.current_role;
+    if(p.company)document.getElementById('editCompany').value=p.company;
+    if(p.location)document.getElementById('editLoc').value=p.location;
+    if(p.bio)document.getElementById('editBio').value=p.bio;
+    const skillArr=p.skills?p.skills.split(',').map(s=>s.trim()).filter(Boolean):[];
+    const hiddenArr=p.hidden_skills?p.hidden_skills.split(',').map(s=>s.trim()).filter(Boolean):[];
+    const allSkills=[...new Set([...skillArr,...hiddenArr])];
+    document.getElementById('editSkillList').innerHTML=allSkills.map(s=>'<span class="skill-pill removable" onclick="removeSkill(this)">'+s+'</span>').join('');
+    const cvExpArr=p.experience&&Array.isArray(p.experience)?p.experience.map(e=>({role:e.role||'',company:e.company||'',start:String(e.start_year||''),end:String(e.end_year||'')})):[];
+    const cvEduArr=p.education&&Array.isArray(p.education)?p.education.map(e=>({degree:e.degree||'',field:e.field||'',school:e.school||'',year:String(e.grad_year||'')})):[];
+    if(cvExpArr.length)renderEditExperience(cvExpArr);
+    if(cvEduArr.length)renderEditEducation(cvEduArr);
+    // Update display pane
+    if(p.full_name){const ini=p.full_name.split(' ').filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,2);document.getElementById('dispAvatar').textContent=ini||'?';document.getElementById('dispName').textContent=p.full_name;}
+    if(p.current_role||p.company)document.getElementById('dispRole').textContent=(p.current_role||'')+(p.company?' · '+p.company:'');
+    if(p.location)document.getElementById('dispLocation').textContent=p.location;
+    if(p.bio)document.getElementById('dispBio').textContent=p.bio;
+    document.getElementById('dispSkills').innerHTML=allSkills.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
+    if(cvExpArr.length)renderProfileExperience(cvExpArr);
+    if(cvEduArr.length)renderProfileEducation(cvEduArr);
+    // Save to Supabase
+    const {data:{session}}=await db.auth.getSession();
+    if(session){
+      await db.from('profiles').upsert({id:session.user.id,full_name:p.full_name||'',role:p.current_role||'',company:p.company||'',location:p.location||'',bio:p.bio||'',skills:allSkills.join(', '),experience:JSON.stringify(cvExpArr),education:JSON.stringify(cvEduArr)});
     }
-    showToast('CV scanned — profile updated! Review and save.');
-  } catch(e) {
-    console.error('CV scan error:', e);
+    showToast('Profile built from your CV');
+    setTimeout(()=>startOnboarding(p),800);
+  }catch(e){
+    console.error('CV scan error:',e);
     showToast('Failed to scan CV. Please try again.');
-  } finally {
-    btn.textContent = 'Scan CV';
-    btn.disabled = false;
+  }finally{
+    btn.innerHTML='Scan CV';
+    btn.disabled=false;
   }
 }
+
+// ==================== AI ONBOARDING ====================
+const ONBOARDING_FIELDS=['figuring_out','can_share','drives_me','ideal_work_life'];
+const ONBOARDING_DISP=['dispFiguringOut','dispCanShare','dispDrivesMe','dispIdealWork'];
+const ONBOARDING_EDIT=['editFiguringOut','editCanShare','editDrivesMe','editIdealWork'];
+let _cvData=null,_voiceRec=null,_voiceOn=false,_origAnswer='',_refinedAnswer='';
+
+function _obQ(i,cv){
+  const r=(cv&&cv.current_role)||'your background';
+  return[
+    `Based on your background as a ${r}, what are you actually trying to figure out about your career right now?`,
+    `What could you teach someone earlier in your journey — something you know deeply from your experience?`,
+    `What actually drives you underneath the job titles? Not what looks good on paper — what genuinely motivates you?`,
+    `Describe your ideal Tuesday. Not where you want to be in 5 years — what does a great workday actually feel like day to day?`
+  ][i];
+}
+function _dots(total,cur){return Array.from({length:total},(_,i)=>`<div style="flex:1;height:3px;border-radius:2px;background:${i<=cur?'var(--blue)':'#e0e4f0'};transition:background .3s;"></div>`).join('');}
+
+function startOnboarding(cv){_cvData=cv;closePane('editPane');showObQ(0);}
+
+function showObQ(idx){
+  document.getElementById('aiOnboardingModal').style.display='flex';
+  document.getElementById('onboardingBody').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sub);">Question ${idx+1} of 4</div>
+      <button onclick="closeOnboarding()" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:26px;line-height:1;padding:0;">×</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:24px;">${_dots(4,idx)}</div>
+    <div style="font-size:19px;font-weight:700;line-height:1.45;color:var(--text);margin-bottom:20px;">${_obQ(idx,_cvData)}</div>
+    <textarea id="obAnswer" placeholder="Type your answer, or tap the mic below…" style="width:100%;min-height:120px;border:1.5px solid var(--border);border-radius:12px;padding:14px;font-size:15px;font-family:inherit;resize:vertical;outline:none;margin-bottom:14px;box-sizing:border-box;"></textarea>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button id="obMicBtn" onclick="toggleObVoice()" style="width:48px;height:48px;border-radius:50%;border:none;background:#f0f2ff;color:var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 0 1 6 0v8.25a3 3 0 0 1-3 3Z"/></svg>
+      </button>
+      <div id="obVoiceStatus" style="font-size:13px;color:var(--sub);">Tap mic to answer by voice</div>
+    </div>
+    <button onclick="submitObAnswer(${idx})" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">Continue →</button>
+  `;
+}
+
+function toggleObVoice(){_voiceOn?stopObVoice():startObVoice();}
+function startObVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('Voice input not supported in this browser');return;}
+  _voiceRec=new SR();_voiceRec.continuous=true;_voiceRec.interimResults=true;_voiceRec.lang='en-US';
+  const ta=document.getElementById('obAnswer'),base=ta.value;
+  _voiceRec.onresult=e=>{let fin=base,int='';for(let i=0;i<e.results.length;i++){if(e.results[i].isFinal)fin+=(fin?' ':'')+e.results[i][0].transcript;else int+=e.results[i][0].transcript;}ta.value=fin+(int?' '+int:'');};
+  _voiceRec.onerror=()=>stopObVoice();
+  _voiceRec.onend=()=>{if(_voiceOn)_voiceOn=false;};
+  _voiceRec.start();_voiceOn=true;
+  const btn=document.getElementById('obMicBtn');
+  btn.style.background='#fee2e2';btn.style.color='#ef4444';btn.classList.add('recording-pulse');
+  document.getElementById('obVoiceStatus').innerHTML='<span style="color:#ef4444;font-weight:700;">● Recording</span> — tap to stop';
+}
+function stopObVoice(){
+  if(_voiceRec){try{_voiceRec.stop();}catch(e){}}_voiceRec=null;_voiceOn=false;
+  const btn=document.getElementById('obMicBtn');
+  if(btn){btn.style.background='#f0f2ff';btn.style.color='var(--blue)';btn.classList.remove('recording-pulse');}
+  const st=document.getElementById('obVoiceStatus');if(st)st.textContent='Tap mic to answer by voice';
+}
+function _obLoading(msg){document.getElementById('onboardingBody').innerHTML=`<div style="text-align:center;padding:50px 20px;"><div style="width:32px;height:32px;border:3px solid #dce4ff;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;display:block;"></div><div style="color:var(--sub);font-size:15px;">${msg}</div></div>`;}
+
+async function submitObAnswer(idx){
+  stopObVoice();
+  const answer=document.getElementById('obAnswer').value.trim();
+  if(!answer){showToast('Please add an answer first');return;}
+  _origAnswer=answer;
+  _obLoading('Refining your answer…');
+  try{const refined=await _claudeRefine(_obQ(idx,_cvData),answer);_refinedAnswer=refined;showObRefined(idx,refined);}
+  catch(e){_refinedAnswer=answer;showObRefined(idx,answer);}
+}
+async function tryAgainOb(idx){
+  _obLoading('Generating a new version…');
+  try{const refined=await _claudeRefine(_obQ(idx,_cvData),_origAnswer);_refinedAnswer=refined;showObRefined(idx,refined);}
+  catch(e){showObRefined(idx,_origAnswer);}
+}
+function showObRefined(idx,refined){
+  _refinedAnswer=refined;
+  document.getElementById('onboardingBody').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sub);">Question ${idx+1} of 4</div>
+      <button onclick="closeOnboarding()" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:26px;line-height:1;padding:0;">×</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:24px;">${_dots(4,idx)}</div>
+    <div style="font-size:13px;font-weight:600;color:var(--sub);margin-bottom:8px;">Here's how this could sound on your profile:</div>
+    <div id="obRefinedText" style="background:#f0f4ff;border-radius:14px;padding:16px 18px;font-size:15px;line-height:1.65;color:var(--text);margin-bottom:6px;">${refined}</div>
+    <div style="font-size:12px;color:var(--sub);margin-bottom:20px;">Does this feel right?</div>
+    <div style="display:flex;gap:10px;margin-bottom:12px;">
+      <button onclick="acceptObAnswer(${idx})" style="flex:1;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Yes, save it</button>
+      <button onclick="tryAgainOb(${idx})" style="flex:1;padding:14px;background:#f0f2ff;color:var(--blue);border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Try again</button>
+    </div>
+    <button onclick="editObAnswer(${idx})" style="width:100%;padding:12px;background:none;color:var(--sub);border:1.5px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;">Edit manually</button>
+  `;
+}
+async function acceptObAnswer(idx){
+  const val=(document.getElementById('obRefinedText')||{}).textContent||_refinedAnswer;
+  const dispEl=document.getElementById(ONBOARDING_DISP[idx]);if(dispEl)dispEl.textContent=val;
+  const editEl=document.getElementById(ONBOARDING_EDIT[idx]);if(editEl)editEl.value=val;
+  const {data:{session}}=await db.auth.getSession();
+  if(session){const u={id:session.user.id};u[ONBOARDING_FIELDS[idx]]=val;await db.from('profiles').upsert(u);}
+  if(idx<3)showObQ(idx+1);else finishOnboarding();
+}
+function editObAnswer(idx){
+  const cur=(document.getElementById('obRefinedText')||{}).textContent||_refinedAnswer;
+  document.getElementById('onboardingBody').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:600;color:var(--sub);">Question ${idx+1} of 4</div>
+      <button onclick="closeOnboarding()" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:26px;line-height:1;padding:0;">×</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:24px;">${_dots(4,idx)}</div>
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:10px;">Edit your answer:</div>
+    <textarea id="obEditText" style="width:100%;min-height:140px;border:1.5px solid var(--blue);border-radius:12px;padding:14px;font-size:15px;font-family:inherit;resize:vertical;outline:none;margin-bottom:16px;box-sizing:border-box;">${cur}</textarea>
+    <button onclick="saveObEdited(${idx})" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">Save this version</button>
+  `;
+}
+async function saveObEdited(idx){
+  const val=document.getElementById('obEditText').value.trim();if(!val)return;
+  const dispEl=document.getElementById(ONBOARDING_DISP[idx]);if(dispEl)dispEl.textContent=val;
+  const editEl=document.getElementById(ONBOARDING_EDIT[idx]);if(editEl)editEl.value=val;
+  const {data:{session}}=await db.auth.getSession();
+  if(session){const u={id:session.user.id};u[ONBOARDING_FIELDS[idx]]=val;await db.from('profiles').upsert(u);}
+  if(idx<3)showObQ(idx+1);else finishOnboarding();
+}
+function finishOnboarding(){
+  document.getElementById('onboardingBody').innerHTML=`
+    <div style="text-align:center;padding:24px 0 10px;">
+      <div style="width:56px;height:56px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="#fff" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+      </div>
+      <div style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:10px;">Profile complete</div>
+      <div style="font-size:15px;color:var(--sub);margin-bottom:28px;line-height:1.5;">Your profile has been built from your CV and personalised with your answers.</div>
+      <button onclick="closeOnboarding()" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">View my profile</button>
+    </div>
+  `;
+}
+function closeOnboarding(){stopObVoice();document.getElementById('aiOnboardingModal').style.display='none';}
+
+async function _claudeRefine(question,answer){
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,
+      system:'You are a career coach helping someone articulate their professional story. Take their raw answer and rewrite it as a clear, authentic, first-person statement in 2-4 sentences. Keep their voice and specific details. Remove filler. Make it sound genuine, not corporate. Return only the refined text, no explanation.',
+      messages:[{role:'user',content:`Question: "${question}"\n\nAnswer: "${answer}"\n\nRefine this into a clear, authentic statement.`}]})
+  });
+  if(!res.ok)throw new Error('Claude API error');
+  return (await res.json()).content[0].text.trim();
+}
+
+// ==================== EDIT WITH AI ====================
+const _aiCfg={figuring_out:{label:'Figuring out',disp:'dispFiguringOut',edit:'editFiguringOut'},can_share:{label:'What I can share',disp:'dispCanShare',edit:'editCanShare'},drives_me:{label:'What drives me',disp:'dispDrivesMe',edit:'editDrivesMe'},ideal_work_life:{label:'My ideal work life',disp:'dispIdealWork',edit:'editIdealWork'}};
+let _aiField=null,_aiVoiceRec=null,_aiVoiceOn=false,_aiResult='';
+
+function openEditWithAI(field){
+  _aiField=field;
+  const cfg=_aiCfg[field];
+  const dispEl=document.getElementById(cfg.disp);
+  const current=dispEl&&dispEl.textContent&&dispEl.textContent!=='—'?dispEl.textContent:'';
+  document.getElementById('editAiBody').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="font-size:16px;font-weight:700;color:var(--text);">Edit with AI</div>
+      <button onclick="closeEditAi()" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:26px;line-height:1;padding:0;">×</button>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">${cfg.label}</div>
+    ${current?`<div style="background:#f7f8fe;border-radius:12px;padding:14px 16px;font-size:14px;color:var(--sub);margin-bottom:16px;line-height:1.55;">${current}</div>`:''}
+    <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;">What would you like to change or add?</div>
+    <textarea id="aiEditInstruction" placeholder="e.g. Make it more specific, add that I love building products people actually use…" style="width:100%;min-height:100px;border:1.5px solid var(--border);border-radius:12px;padding:14px;font-size:15px;font-family:inherit;resize:vertical;outline:none;margin-bottom:12px;box-sizing:border-box;"></textarea>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button id="aiEditMicBtn" onclick="toggleAiEditVoice()" style="width:44px;height:44px;border-radius:50%;border:none;background:#f0f2ff;color:var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 0 1 6 0v8.25a3 3 0 0 1-3 3Z"/></svg>
+      </button>
+      <div id="aiEditVoiceStatus" style="font-size:13px;color:var(--sub);">Or speak your instruction</div>
+    </div>
+    <button onclick="runAiEdit()" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">Rewrite with AI</button>
+  `;
+  document.getElementById('editAiModal').style.display='flex';
+}
+function toggleAiEditVoice(){_aiVoiceOn?stopAiEditVoice():startAiEditVoice();}
+function startAiEditVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('Voice input not supported in this browser');return;}
+  _aiVoiceRec=new SR();_aiVoiceRec.continuous=true;_aiVoiceRec.interimResults=true;_aiVoiceRec.lang='en-US';
+  const ta=document.getElementById('aiEditInstruction'),base=ta.value;
+  _aiVoiceRec.onresult=e=>{let fin=base,int='';for(let i=0;i<e.results.length;i++){if(e.results[i].isFinal)fin+=(fin?' ':'')+e.results[i][0].transcript;else int+=e.results[i][0].transcript;}ta.value=fin+(int?' '+int:'');};
+  _aiVoiceRec.onerror=()=>stopAiEditVoice();
+  _aiVoiceRec.onend=()=>{if(_aiVoiceOn)_aiVoiceOn=false;};
+  _aiVoiceRec.start();_aiVoiceOn=true;
+  const btn=document.getElementById('aiEditMicBtn');
+  btn.style.background='#fee2e2';btn.style.color='#ef4444';btn.classList.add('recording-pulse');
+  document.getElementById('aiEditVoiceStatus').innerHTML='<span style="color:#ef4444;font-weight:700;">● Recording</span> — tap to stop';
+}
+function stopAiEditVoice(){
+  if(_aiVoiceRec){try{_aiVoiceRec.stop();}catch(e){}}_aiVoiceRec=null;_aiVoiceOn=false;
+  const btn=document.getElementById('aiEditMicBtn');
+  if(btn){btn.style.background='#f0f2ff';btn.style.color='var(--blue)';btn.classList.remove('recording-pulse');}
+  const st=document.getElementById('aiEditVoiceStatus');if(st)st.textContent='Or speak your instruction';
+}
+async function runAiEdit(){
+  stopAiEditVoice();
+  const instruction=document.getElementById('aiEditInstruction').value.trim();
+  if(!instruction){showToast('Please describe what you want to change');return;}
+  const cfg=_aiCfg[_aiField];
+  const dispEl=document.getElementById(cfg.disp);
+  const current=dispEl&&dispEl.textContent&&dispEl.textContent!=='—'?dispEl.textContent:'';
+  document.getElementById('editAiBody').innerHTML=`<div style="text-align:center;padding:50px 20px;"><div style="width:32px;height:32px;border:3px solid #dce4ff;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div><div style="color:var(--sub);font-size:15px;">Rewriting…</div></div>`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,
+        system:'You are a career coach helping someone update their professional profile. Rewrite the given field based on their instruction. Keep it first-person, authentic, and concise (2-4 sentences max). Return only the rewritten text, no explanation.',
+        messages:[{role:'user',content:`Field: "${cfg.label}"\nCurrent: "${current||'(empty)'}"\nInstruction: "${instruction}"\n\nRewrite this field.`}]})
+    });
+    if(!res.ok)throw new Error('API error');
+    const rewritten=(await res.json()).content[0].text.trim();
+    _aiResult=rewritten;
+    document.getElementById('editAiBody').innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="font-size:16px;font-weight:700;color:var(--text);">Edit with AI</div>
+        <button onclick="closeEditAi()" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:26px;line-height:1;padding:0;">×</button>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">${cfg.label}</div>
+      <div id="aiResultText" style="background:#f0f4ff;border-radius:14px;padding:16px 18px;font-size:15px;line-height:1.65;color:var(--text);margin-bottom:6px;">${rewritten}</div>
+      <div style="font-size:12px;color:var(--sub);margin-bottom:20px;">Does this work?</div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="saveAiEdit()" style="flex:1;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;">Save</button>
+        <button onclick="openEditWithAI('${_aiField}')" style="flex:1;padding:14px;background:#f0f2ff;color:var(--blue);border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Try again</button>
+      </div>
+    `;
+  }catch(e){
+    console.error('AI edit error:',e);
+    showToast('Failed to rewrite. Please try again.');
+    openEditWithAI(_aiField);
+  }
+}
+async function saveAiEdit(){
+  const val=(document.getElementById('aiResultText')||{}).textContent||_aiResult;
+  if(!val)return;
+  const cfg=_aiCfg[_aiField];
+  const dispEl=document.getElementById(cfg.disp);if(dispEl)dispEl.textContent=val;
+  const editEl=document.getElementById(cfg.edit);if(editEl)editEl.value=val;
+  const {data:{session}}=await db.auth.getSession();
+  if(session){const u={id:session.user.id};u[_aiField]=val;await db.from('profiles').upsert(u);}
+  closeEditAi();showToast('Saved');
+}
+function closeEditAi(){stopAiEditVoice();document.getElementById('editAiModal').style.display='none';}
 
 // Check if user is already logged in
 db.auth.getSession().then(async ({ data: { session } }) => {
@@ -1651,5 +1908,19 @@ async function loadAndInit() {
 
 loadAndInit();
 </script>
+<!-- AI ONBOARDING MODAL -->
+<div id="aiOnboardingModal" style="display:none;position:fixed;inset:0;background:rgba(15,15,19,0.6);z-index:3000;align-items:flex-end;justify-content:center;">
+  <div style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:28px 20px 48px;box-sizing:border-box;">
+    <div id="onboardingBody"></div>
+  </div>
+</div>
+
+<!-- EDIT WITH AI MODAL -->
+<div id="editAiModal" style="display:none;position:fixed;inset:0;background:rgba(15,15,19,0.6);z-index:3000;align-items:flex-end;justify-content:center;">
+  <div style="background:#fff;border-radius:24px 24px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:28px 20px 48px;box-sizing:border-box;">
+    <div id="editAiBody"></div>
+  </div>
+</div>
+
 </body>
 </html>
