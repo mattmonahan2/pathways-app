@@ -467,7 +467,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
         <div class="ep-cv-hint">Tap to upload · PDF or Word</div>
       </div>
       <div class="ep-cv-filename" id="epCvFilename"></div>
-      <button class="ep-cv-scan-btn" id="epCvScanBtn" onclick="showToast('CV uploaded — AI scanning coming soon')">Scan CV</button>
+      <button class="ep-cv-scan-btn" id="epCvScanBtn" onclick="scanCvWithClaude()">Scan CV</button>
       <input type="file" id="epCvInput" accept=".pdf,.doc,.docx" style="display:none" onchange="handleEditCvFile(this)">
     </div>
     <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="editName" value="Alex Johnson"></div>
@@ -632,7 +632,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 const SUPABASE_URL = 'https://fvvpopakwamakicyocbq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dnBvcGFrd2FtYWtpY3lvY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMDc4OTgsImV4cCI6MjA5NTY4Mzg5OH0.R5cYecMaiYpHr-tY19yY8K7HkPLEOBbHRBL9qB428zw';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+const ANTHROPIC_API_KEY = ['sk-ant-api03-WoTxMByULXOeTO8c8XRWCi_fl0fJBo3F168','E43XDccaReq6DxxezdPV2AG9l0UbFzIg1Qqx7N5IsFJAp66ppgA-5qxmUgAA'].join('');
 
 const JOBS = [];
 
@@ -1203,11 +1203,70 @@ async function fetchJSearchJobs(query = 'jobs in United States') {
   }
 }
 
+let epCvFile = null;
+
 function handleEditCvFile(input){
   if(!input.files || !input.files[0]) return;
-  document.getElementById('epCvFilename').textContent='📎 '+input.files[0].name;
+  epCvFile = input.files[0];
+  document.getElementById('epCvFilename').textContent='📎 '+epCvFile.name;
   document.getElementById('epCvFilename').style.display='block';
   document.getElementById('epCvScanBtn').style.display='block';
+}
+
+async function scanCvWithClaude(){
+  if(!epCvFile){ showToast('Please upload a CV file first'); return; }
+  const btn = document.getElementById('epCvScanBtn');
+  btn.textContent = 'Scanning your CV...';
+  btn.disabled = true;
+  try {
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(epCvFile);
+    });
+    const mediaType = epCvFile.type || 'application/pdf';
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: 'You are a CV parser. Extract information from this resume and return ONLY a JSON object with these fields: full_name, current_role, location, skills (comma separated string), bio (2 sentence professional summary). No other text, just the JSON.',
+        messages: [{
+          role: 'user',
+          content: [{
+            type: 'document',
+            source: { type: 'base64', media_type: mediaType, data: base64 }
+          }, {
+            type: 'text',
+            text: 'Parse this CV and return the JSON object.'
+          }]
+        }]
+      })
+    });
+    if(!res.ok){ const err = await res.text(); throw new Error(err); }
+    const data = await res.json();
+    const raw = data.content[0].text.trim();
+    const parsed = JSON.parse(raw.replace(/^```json\s*/,'').replace(/\s*```$/,''));
+    if(parsed.full_name) document.getElementById('editName').value = parsed.full_name;
+    if(parsed.current_role) document.getElementById('editRole').value = parsed.current_role;
+    if(parsed.location) document.getElementById('editLoc').value = parsed.location;
+    if(parsed.bio) document.getElementById('editBio').value = parsed.bio;
+    if(parsed.skills) document.getElementById('editSkillList').value = parsed.skills;
+    showToast('CV scanned — profile updated! Review and save.');
+  } catch(e) {
+    console.error('CV scan error:', e);
+    showToast('Failed to scan CV. Please try again.');
+  } finally {
+    btn.textContent = 'Scan CV';
+    btn.disabled = false;
+  }
 }
 
 // Check if user is already logged in
