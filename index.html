@@ -1524,8 +1524,18 @@ async function scanCvWithClaude(){
     const isWord=/\.(doc|docx)$/i.test(epCvFile.name)||epCvFile.type==='application/msword'||epCvFile.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     let userContent;
     if(isWord){
-      const text=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsText(epCvFile);});
-      userContent=`Extract information from this CV/resume and return the JSON object.\n\n${text}`;
+      const raw=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsArrayBuffer(epCvFile);});
+      const bytes=new Uint8Array(raw);
+      let str='';
+      for(let i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);
+      const clean=str
+        .replace(/<[^>]+>/g,' ')
+        .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/&#\d+;/g,' ')
+        .replace(/[a-z]+:[a-z]+="[^"]*"/gi,' ')
+        .replace(/\s+/g,' ')
+        .trim()
+        .slice(0,8000);
+      userContent=`Extract information from this CV/resume and return the JSON object.\n\n${clean}`;
     }else{
       const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(epCvFile);});
       userContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}},{type:'text',text:'Extract information from this CV and return the JSON object.'}];
