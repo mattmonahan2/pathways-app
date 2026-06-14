@@ -1249,7 +1249,7 @@ async function renderNews(filter,searchTerm){
     const guardianQs=searchTerm?`q=${encodeURIComponent(searchTerm)}`:(GUARDIAN_QUERIES[filter]||GUARDIAN_QUERIES.all);
     const guardianUrl=`https://content.guardianapis.com/search?${guardianQs}&page-size=5&show-fields=headline,trailText,thumbnail,byline&api-key=${GUARDIAN_API_KEY}`;
     const newsapiQ=searchTerm?encodeURIComponent(searchTerm):(NEWSAPI_QUERIES[filter]||NEWSAPI_QUERIES.all);
-    const newsapiUrl=`https://newsapi.org/v2/everything?q=${newsapiQ}&language=en&sortBy=publishedAt&pageSize=5&apiKey=${NEWSAPI_KEY}`;
+    const newsapiUrl=`/api/news?q=${newsapiQ}`;
     const [guardianResult,newsapiResult]=await Promise.allSettled([fetch(guardianUrl),fetch(newsapiUrl)]);
     let articles=[];
     if(guardianResult.status==='fulfilled'&&guardianResult.value.ok){
