@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -96,7 +96,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 .bnav{display:flex;justify-content:space-around;padding:10px 10px 22px;background:#fff;border-top:1px solid var(--border);flex-shrink:0}
 .bni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 10px;border-radius:14px;transition:color .2s;color:var(--sub);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
-.bni .ico{font-size:19px}
+.bni .ico{display:flex;align-items:center;justify-content:center;line-height:1}
 .bni.on{color:var(--blue)}
 
 .pane{position:absolute;inset:0;background:var(--bg);transform:translateX(102%);transition:transform 0.38s cubic-bezier(0.32,0.72,0,1);z-index:20;display:flex;flex-direction:column;overflow:hidden;pointer-events:none}
@@ -343,36 +343,36 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 <body>
 <div class="phone" id="phone">
 
-<div class="status"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>▲▲▲</span><span>WiFi</span><span>⬛</span></div></div>
+<div class="status"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>WiFi</span></div></div>
 
 <!-- DISCOVER -->
 <div id="discoverScreen" style="display:flex;flex-direction:column;flex:1;overflow:hidden;position:relative;z-index:1;">
   <div class="topbar">
     <div class="wordmark">path<em>ways</em></div>
     <div class="topbar-group">
-      <div class="icon-btn" onclick="showToast('🔔 2 new matches!')"><span>🔔</span><div class="badge"></div></div>
-      <div class="icon-btn" onclick="openPane('profilePane')">👤</div>
+      <div class="icon-btn" onclick="showToast('2 new matches!')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><div class="badge"></div></div>
+      <div class="icon-btn" onclick="openPane('profilePane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></div>
     </div>
   </div>
   <div class="mode-toggle">
-    <button class="mode-btn on" onclick="setMode(this,'seeker')">👤 Job Seeker</button>
-    <button class="mode-btn" onclick="setMode(this,'employer')">🏢 Employer</button>
+    <button class="mode-btn on" onclick="setMode(this,'seeker')">Job Seeker</button>
+    <button class="mode-btn" onclick="setMode(this,'employer')">Employer</button>
   </div>
   <div class="loc-search-row">
     <div class="loc-input-wrap">
-      <input class="loc-input" id="locInput" type="text" placeholder="📍 City, state or zip"
+      <input class="loc-input" id="locInput" type="text" placeholder="City, state or zip"
              onkeydown="if(event.key==='Enter')handleLocSearch()"
              oninput="document.getElementById('locClear').style.display=this.value?'flex':'none'">
       <div class="loc-clear-btn" id="locClear" onclick="clearLocSearch()">×</div>
     </div>
-    <button class="loc-remote-btn" id="remoteToggle" onclick="toggleRemoteSearch(this)">🌍 Remote</button>
+    <button class="loc-remote-btn" id="remoteToggle" onclick="toggleRemoteSearch(this)">Remote</button>
   </div>
   <div class="chips" id="chipRow">
-    <div class="chip on" onclick="setChip(this,'all')">✦ For You</div>
-    <div class="chip" onclick="setChip(this,'tech')">💻 Tech</div>
-    <div class="chip" onclick="setChip(this,'design')">🎨 Design</div>
-    <div class="chip" onclick="setChip(this,'finance')">📈 Finance</div>
-    <div class="chip" onclick="setChip(this,'remote')">🌍 Remote</div>
+    <div class="chip on" onclick="setChip(this,'all')">For You</div>
+    <div class="chip" onclick="setChip(this,'tech')">Tech</div>
+    <div class="chip" onclick="setChip(this,'design')">Design</div>
+    <div class="chip" onclick="setChip(this,'finance')">Finance</div>
+    <div class="chip" onclick="setChip(this,'remote')">Remote</div>
   </div>
   <div class="stack" id="stack">
     <div class="loading-state" id="loadingState">
@@ -381,25 +381,25 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
       <div class="loading-sub">Searching thousands of listings</div>
     </div>
     <div class="empty-state" id="emptyState">
-      <div class="empty-icon">✨</div>
+      <div class="empty-icon" style="display:flex;justify-content:center;color:var(--blue)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="36" height="36" style="color:var(--blue)"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></div>
       <div class="empty-title">All caught up!</div>
       <div class="empty-sub">You've seen every role. New jobs added daily.</div>
       <button class="btn-refill" onclick="initCards()">↺ Refresh Jobs</button>
     </div>
   </div>
   <div class="actions">
-    <button class="act act-undo" onclick="undoLast()">↩</button>
-    <button class="act act-skip" onclick="triggerSwipe('left')">✕</button>
-    <button class="act act-go"   onclick="triggerSwipe('up')">⚡</button>
-    <button class="act act-save" onclick="triggerSwipe('right')">★</button>
-    <button class="act act-info" onclick="openDetail()">◈</button>
+    <button class="act act-undo" onclick="undoLast()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg></button>
+    <button class="act act-skip" onclick="triggerSwipe('left')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+    <button class="act act-go"   onclick="triggerSwipe('up')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="22" height="22"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></button>
+    <button class="act act-save" onclick="triggerSwipe('right')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.046 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.14.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/></svg></button>
+    <button class="act act-info" onclick="openDetail()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg></button>
   </div>
   <div class="bnav">
-    <div class="bni on"  onclick="bnavClick(this)"><span class="ico">⚡</span>Discover</div>
-    <div class="bni"     onclick="bnavClick(this);openPane('matchesPane')"><span class="ico">💬</span>Matches</div>
-    <div class="bni"     onclick="bnavClick(this);openPane('newsPane');renderNews('all')"><span class="ico">📰</span>News</div>
-    <div class="bni"     onclick="bnavClick(this);openPane('pathsPane')"><span class="ico">◈</span>Pathways</div>
-    <div class="bni"     onclick="bnavClick(this);openPane('profilePane')"><span class="ico">👤</span>Profile</div>
+    <div class="bni on"  onclick="bnavClick(this)"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Discover</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('matchesPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg></span>Matches</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('newsPane');renderNews('all')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg></span>News</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('pathsPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg></span>Pathways</div>
+    <div class="bni"     onclick="bnavClick(this);openPane('profilePane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Profile</div>
   </div>
 </div>
 
@@ -407,14 +407,14 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 <!-- MATCHES -->
 <div class="pane" id="matchesPane">
-  <div class="pane-head"><div class="back-btn" onclick="closePane('matchesPane')">←</div><div class="pane-title">Your Matches</div></div>
-  <div class="pane-body" id="matchesList"><div style="text-align:center;padding:50px 20px;color:var(--sub);"><div style="font-size:44px;margin-bottom:12px;">⚡</div><div style="font-size:15px;">Swipe right to start matching</div></div></div>
+  <div class="pane-head"><div class="back-btn" onclick="closePane('matchesPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></div><div class="pane-title">Your Matches</div></div>
+  <div class="pane-body" id="matchesList"><div style="text-align:center;padding:50px 20px;color:var(--sub);"><div style="margin-bottom:12px;display:flex;justify-content:center;color:var(--blue)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="36" height="36" style="color:var(--blue)"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></div><div style="font-size:15px;">Swipe right to start matching</div></div></div>
 </div>
 
 <!-- NEWS -->
 <div class="pane" id="newsPane">
   <div style="display:flex;align-items:center;gap:12px;padding:52px 20px 8px;flex-shrink:0;">
-    <div class="back-btn" onclick="closePane('newsPane')">←</div>
+    <div class="back-btn" onclick="closePane('newsPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></div>
     <div class="pane-title">Career News</div>
   </div>
   <div class="news-tabs" id="newsTabs">
@@ -429,35 +429,35 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 <!-- PATHWAYS -->
 <div class="pane" id="pathsPane">
-  <div class="pane-head"><div class="back-btn" onclick="closePane('pathsPane')">←</div><div class="pane-title">Career Pathways</div></div>
+  <div class="pane-head"><div class="back-btn" onclick="closePane('pathsPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></div><div class="pane-title">Career Pathways</div></div>
   <div style="padding:0 20px 8px;color:var(--sub);font-size:14px;flex-shrink:0;">Real stories · How they got there</div>
   <div class="pane-body">
     <div class="path-card">
       <div class="path-hero" style="background:linear-gradient(135deg,#dce8ff,#c8d8f8);">
-        <div class="path-person"><div class="path-avatar" style="background:rgba(35,85,245,0.15);">👩‍💻</div><div><div class="path-name">Sarah K.</div><div class="path-role">Senior Product Designer · Figma</div></div></div>
+        <div class="path-person"><div class="path-avatar" style="background:rgba(35,85,245,0.15);font-family:'Clash Display',sans-serif;font-weight:700;font-size:15px;color:var(--blue);">SK</div><div><div class="path-name">Sarah K.</div><div class="path-role">Senior Product Designer · Figma</div></div></div>
       </div>
       <div class="path-body">
         <div class="tl">
           <div class="tl-item"><div class="tl-year">2018</div><div class="tl-role">Graphic Design Intern</div><div class="tl-co">Creative Agency</div></div>
           <div class="tl-item"><div class="tl-year">2019</div><div class="tl-role">Junior UX Designer</div><div class="tl-co">Series A Startup</div></div>
           <div class="tl-item"><div class="tl-year">2021</div><div class="tl-role">Product Designer</div><div class="tl-co">Spotify</div></div>
-          <div class="tl-item"><div class="tl-year">2024</div><div class="tl-role">Senior Product Designer</div><div class="tl-co">Figma ✦ Now</div></div>
+          <div class="tl-item"><div class="tl-year">2024</div><div class="tl-role">Senior Product Designer</div><div class="tl-co">Figma · Now</div></div>
         </div>
-        <div style="margin-top:12px;padding:12px;background:rgba(35,85,245,0.05);border:1px solid rgba(35,85,245,0.12);border-radius:12px;font-size:13px;color:var(--sub);line-height:1.6;">💬 "The biggest jump was going from agency to startup. You learn fast when there's no one else to do the work."</div>
+        <div style="margin-top:12px;padding:12px;background:rgba(35,85,245,0.05);border:1px solid rgba(35,85,245,0.12);border-radius:12px;font-size:13px;color:var(--sub);line-height:1.6;">"The biggest jump was going from agency to startup. You learn fast when there's no one else to do the work."</div>
       </div>
     </div>
     <div class="path-card">
       <div class="path-hero" style="background:linear-gradient(135deg,#d8eeff,#c5dff5);">
-        <div class="path-person"><div class="path-avatar" style="background:rgba(35,85,245,0.1);">👨‍💼</div><div><div class="path-name">Marcus T.</div><div class="path-role">Engineering Manager · Stripe</div></div></div>
+        <div class="path-person"><div class="path-avatar" style="background:rgba(35,85,245,0.1);font-family:'Clash Display',sans-serif;font-weight:700;font-size:15px;color:var(--blue);">MT</div><div><div class="path-name">Marcus T.</div><div class="path-role">Engineering Manager · Stripe</div></div></div>
       </div>
       <div class="path-body">
         <div class="tl">
           <div class="tl-item"><div class="tl-year">2016</div><div class="tl-role">CS Graduate</div><div class="tl-co">Imperial College London</div></div>
           <div class="tl-item"><div class="tl-year">2016</div><div class="tl-role">Software Engineer</div><div class="tl-co">Goldman Sachs</div></div>
           <div class="tl-item"><div class="tl-year">2019</div><div class="tl-role">Senior SWE</div><div class="tl-co">Monzo</div></div>
-          <div class="tl-item"><div class="tl-year">2023</div><div class="tl-role">Engineering Manager</div><div class="tl-co">Stripe ✦ Now</div></div>
+          <div class="tl-item"><div class="tl-year">2023</div><div class="tl-role">Engineering Manager</div><div class="tl-co">Stripe · Now</div></div>
         </div>
-        <div style="margin-top:12px;padding:12px;background:rgba(35,85,245,0.05);border:1px solid rgba(35,85,245,0.12);border-radius:12px;font-size:13px;color:var(--sub);line-height:1.6;">💬 "Moving from finance to fintech felt risky. Best decision I made."</div>
+        <div style="margin-top:12px;padding:12px;background:rgba(35,85,245,0.05);border:1px solid rgba(35,85,245,0.12);border-radius:12px;font-size:13px;color:var(--sub);line-height:1.6;">"Moving from finance to fintech felt risky. Best decision I made."</div>
       </div>
     </div>
   </div>
@@ -467,10 +467,10 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 <div class="pane" id="profilePane">
   <div class="prof-scroll">
     <div class="prof-hero">
-      <button class="prof-back" onclick="closePane('profilePane')">←</button>
+      <button class="prof-back" onclick="closePane('profilePane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></button>
       <div class="prof-hero-btns">
-        <button class="prof-hero-btn" onclick="openPane('editPane')">Edit</button>
-        <button class="prof-hero-btn dim" onclick="doLogout()">Log out</button>
+        <button class="prof-hero-btn" onclick="openPane('editPane')" style="display:flex;align-items:center;gap:5px;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/></svg> Edit</button>
+        <button class="prof-hero-btn dim" onclick="doLogout()" style="display:flex;align-items:center;gap:5px;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg> Log out</button>
       </div>
       <div class="prof-avatar" id="dispAvatar">?</div>
       <div class="prof-name" id="dispName"></div>
@@ -519,13 +519,13 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 <!-- EDIT PROFILE -->
 <div class="pane" id="editPane">
-  <div class="pane-head"><div class="back-btn" onclick="closePane('editPane')">←</div><div class="pane-title">Edit Profile</div></div>
+  <div class="pane-head"><div class="back-btn" onclick="closePane('editPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></div><div class="pane-title">Edit Profile</div></div>
   <div class="pane-body">
     <div class="ep-cv-section">
       <div class="ep-cv-title">Upload your CV</div>
       <div class="ep-cv-sub">We'll auto-fill your profile from your resume</div>
       <div class="ep-cv-area" onclick="document.getElementById('epCvInput').click()">
-        <div class="ep-cv-hint">Tap to upload · PDF or Word</div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"/></svg><div class="ep-cv-hint">Tap to upload · PDF or Word</div>
       </div>
       <div class="ep-cv-filename" id="epCvFilename"></div>
       <button class="ep-cv-scan-btn" id="epCvScanBtn" onclick="scanCvWithClaude()">Scan CV</button>
@@ -566,7 +566,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 
 <!-- JOB DETAIL -->
 <div class="pane" id="detailPane">
-  <div style="position:absolute;top:56px;left:22px;z-index:25;"><div class="back-btn" onclick="closePane('detailPane')">←</div></div>
+  <div style="position:absolute;top:56px;left:22px;z-index:25;"><div class="back-btn" onclick="closePane('detailPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></div></div>
   <div class="detail-hero">
     <div class="detail-hero-bg" id="detailBg"></div>
     <div class="detail-hero-grad"></div>
@@ -588,8 +588,8 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <ul class="req-list" id="detailReqs"></ul>
     <div class="section-head">Skills</div>
     <div class="pill-wrap" id="detailSkills"></div>
-    <button id="viewListingBtn" class="apply-full-btn" onclick="if(currentDetailJob&&currentDetailJob.url)window.open(currentDetailJob.url,'_blank')" style="background:var(--s1);color:var(--blue);border:1.5px solid rgba(35,85,245,0.3);box-shadow:none;display:none;">↗ View Full Listing</button>
-    <button class="apply-full-btn" onclick="applyFromDetail()">⚡ Apply Now</button>
+    <button id="viewListingBtn" class="apply-full-btn" onclick="if(currentDetailJob&&currentDetailJob.url)window.open(currentDetailJob.url,'_blank')" style="background:var(--s1);color:var(--blue);border:1.5px solid rgba(35,85,245,0.3);box-shadow:none;display:none;">View Full Listing</button>
+    <button class="apply-full-btn" onclick="applyFromDetail()">Apply Now</button>
   </div>
 </div>
 
@@ -610,37 +610,37 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <div id="listingsContainer">
       <div class="listing-card">
         <div class="listing-head"><div><div class="listing-title">Senior Product Designer</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">Posted 3 days ago</div></div><div class="listing-status ls-active">Active</div></div>
-        <div class="listing-meta"><span>📍 London / Remote</span><span>💰 $75k–$90k</span></div>
+        <div class="listing-meta"><span>London / Remote</span><span>$75k–$90k</span></div>
         <div class="listing-bar">
           <div class="lb-item"><div class="lb-n" style="color:var(--blue);">84</div><div class="lb-l">Applied</div></div>
           <div class="lb-item"><div class="lb-n" style="color:var(--blue);">23</div><div class="lb-l">Shortlisted</div></div>
           <div class="lb-item"><div class="lb-n" style="color:var(--pink);">6</div><div class="lb-l">Interviews</div></div>
         </div>
-        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('📋 Opening applicants…')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
+        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('Opening applicants')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
       </div>
       <div class="listing-card">
         <div class="listing-head"><div><div class="listing-title">Frontend Engineer</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">Posted 1 week ago</div></div><div class="listing-status ls-active">Active</div></div>
-        <div class="listing-meta"><span>📍 Remote</span><span>💰 $90k–$110k</span></div>
+        <div class="listing-meta"><span>Remote</span><span>$90k–$110k</span></div>
         <div class="listing-bar">
           <div class="lb-item"><div class="lb-n" style="color:var(--blue);">112</div><div class="lb-l">Applied</div></div>
           <div class="lb-item"><div class="lb-n" style="color:var(--blue);">31</div><div class="lb-l">Shortlisted</div></div>
           <div class="lb-item"><div class="lb-n" style="color:var(--pink);">8</div><div class="lb-l">Interviews</div></div>
         </div>
-        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('📋 Opening applicants…')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
+        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('Opening applicants')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
       </div>
     </div>
   </div>
   <div class="bnav">
-    <div class="bni" onclick="closePane('employerPane');bnavReset()"><span class="ico">←</span>Back</div>
-    <div class="bni on"><span class="ico">📊</span>Dashboard</div>
-    <div class="bni" onclick="openPane('postJobPane')"><span class="ico">+</span>Post Job</div>
-    <div class="bni"><span class="ico">👥</span>Candidates</div>
+    <div class="bni" onclick="closePane('employerPane');bnavReset()"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></span>Back</div>
+    <div class="bni on"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Dashboard</div>
+    <div class="bni" onclick="openPane('postJobPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Post Job</div>
+    <div class="bni"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg></span>Candidates</div>
   </div>
 </div>
 
 <!-- POST JOB -->
 <div class="pane" id="postJobPane">
-  <div class="pane-head"><div class="back-btn" onclick="closePane('postJobPane')">←</div><div class="pane-title">Post a Job</div></div>
+  <div class="pane-head"><div class="back-btn" onclick="closePane('postJobPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></div><div class="pane-title">Post a Job</div></div>
   <div class="pane-body">
     <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="pjCompany" value="TechCorp Ltd."></div>
     <div class="form-group"><label class="form-label">Job Title</label><input class="form-input" id="pjTitle" placeholder="e.g. Senior Product Designer"></div>
@@ -657,27 +657,27 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <div class="form-group"><label class="form-label">Key Skills (comma separated)</label><input class="form-input" id="pjSkills" placeholder="e.g. React, Figma, Python"></div>
     <div class="form-group"><label class="form-label">Job Description</label><textarea class="form-textarea" id="pjDesc" placeholder="Describe the role…"></textarea></div>
     <div class="form-group"><label class="form-label">Requirements</label><textarea class="form-textarea" id="pjReqs" placeholder="One requirement per line…"></textarea></div>
-    <button class="save-btn" onclick="postJob()">🚀 Post Job</button>
+    <button class="save-btn" onclick="postJob()">Post Job</button>
   </div>
 </div>
 
 <!-- AUTH SCREEN -->
 <div id="authScreen">
-  <div class="status" style="flex-shrink:0;"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>▲▲▲</span><span>WiFi</span><span>⬛</span></div></div>
+  <div class="status" style="flex-shrink:0;"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>WiFi</span></div></div>
   <div class="auth-hero">
     <div class="auth-glow"></div>
     <div class="auth-logo-big">path<em>ways</em></div>
     <div class="auth-tagline">Swipe your way to the career you actually want</div>
     <div class="auth-cards-preview">
-      <div class="auth-mini-card" style="background:linear-gradient(145deg,#dce8ff,#c8d8ff);"><div class="amc-co">🔲</div><div class="amc-role">Product Designer</div><div class="amc-sal">$80k</div></div>
-      <div class="auth-mini-card" style="background:linear-gradient(145deg,#d8eeff,#c5e0ff);transform:translateY(-8px);"><div class="amc-co">🎵</div><div class="amc-role">UX Researcher</div><div class="amc-sal">$75k</div></div>
-      <div class="auth-mini-card" style="background:linear-gradient(145deg,#e0e8ff,#ccd8ff);"><div class="amc-co">⚡</div><div class="amc-role">Frontend Eng.</div><div class="amc-sal">$120k</div></div>
+      <div class="auth-mini-card" style="background:linear-gradient(145deg,#dce8ff,#c8d8ff);"><div class="amc-role">Product Designer</div><div class="amc-sal">$80k</div></div>
+      <div class="auth-mini-card" style="background:linear-gradient(145deg,#d8eeff,#c5e0ff);transform:translateY(-8px);"><div class="amc-role">UX Researcher</div><div class="amc-sal">$75k</div></div>
+      <div class="auth-mini-card" style="background:linear-gradient(145deg,#e0e8ff,#ccd8ff);"><div class="amc-role">Frontend Eng.</div><div class="amc-sal">$120k</div></div>
     </div>
   </div>
   <div class="auth-bottom">
-    <button class="sso-btn" onclick="doLogin('Google', this)"><span class="sso-icon">🇬</span> Continue with Google</button>
-    <button class="sso-btn" onclick="doLogin('LinkedIn', this)"><span class="sso-icon">💼</span> Continue with LinkedIn</button>
-    <button class="sso-btn" onclick="doLogin('Meta', this)"><span class="sso-icon">🔵</span> Continue with Meta</button>
+    <button class="sso-btn" onclick="doLogin('Google', this)"><span class="sso-icon" style="font-size:13px;font-weight:800;color:var(--blue);">G</span> Continue with Google</button>
+    <button class="sso-btn" onclick="doLogin('LinkedIn', this)"><span class="sso-icon" style="font-size:11px;font-weight:800;color:var(--sub);">in</span> Continue with LinkedIn</button>
+    <button class="sso-btn" onclick="doLogin('Meta', this)"><span class="sso-icon" style="font-size:13px;font-weight:800;color:#1877f2;">f</span> Continue with Meta</button>
     <div class="auth-divider"><span>or</span></div>
     <div class="email-auth-form" id="emailForm">
       <input class="form-input" id="authEmail" placeholder="Email address" type="email">
@@ -738,10 +738,10 @@ function makeCard(job){
     <div class="stamp stamp-apply">APPLY</div>
     <div class="jcard-inner">
       <div class="jcard-header">
-        <div class="co-logo">🏢</div>
+        <div class="co-logo"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg></div>
         <div class="co-info">
           <div class="co-name">${job.company}</div>
-          <div class="co-loc">📍 ${job.location}</div>
+          <div class="co-loc">${job.location}</div>
         </div>
         <div class="match-pill">${job.match}%</div>
       </div>
@@ -857,11 +857,11 @@ function dismiss(dir){
     appliedCount++;if(job)matches.push(job);updateMatchesList();
     document.getElementById('statApplied').textContent=appliedCount;
     if(job&&job.url) window.open(job.url,'_blank');
-    if(job)showToast('⚡ Applied to '+job.company+'!');
+    if(job)showToast('Applied to '+job.company);
   } else if(dir==='right'){
     card.style.transform='translateX(160%) rotate(28deg)';
     savedCount++;document.getElementById('statSaved').textContent=savedCount;
-    showToast('★ Saved — find it in Matches');
+    showToast('Saved — find it in Matches');
   } else {
     card.style.transform='translateX(-160%) rotate(-28deg)';card.style.opacity='0.2';
   }
@@ -889,7 +889,7 @@ function undoLast(){
   if(dir==='right'){savedCount=Math.max(0,savedCount-1);document.getElementById('statSaved').textContent=savedCount;}
   refreshPositions();
   attachDrag(card);
-  showToast('↩ Undone');
+  showToast('Undone');
 }
 
 function openDetail(id){
@@ -902,7 +902,7 @@ function openDetail(id){
   document.getElementById('detailTitle').textContent=job.title;
   document.getElementById('detailSalary').textContent=job.salary;
   document.getElementById('detailType').textContent=job.type;
-  document.getElementById('detailLocation').textContent='📍 '+job.location;
+  document.getElementById('detailLocation').textContent=job.location;
   document.getElementById('detailMatch').textContent=job.match+'% match';
   document.getElementById('detailDesc').textContent=job.desc;
   document.getElementById('detailReqs').innerHTML=job.reqs.map(r=>'<li>'+r+'</li>').join('');
@@ -919,7 +919,7 @@ function applyFromDetail(){
 
 function updateMatchesList(){
   const el=document.getElementById('matchesList');
-  if(!matches.length){el.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);"><div style="font-size:44px;margin-bottom:12px;">⚡</div><div style="font-size:15px;">Swipe right to start matching</div></div>';return;}
+  if(!matches.length){el.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);"><div style="margin-bottom:12px;display:flex;justify-content:center;color:var(--blue)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="36" height="36" style="color:var(--blue)"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></div><div style="font-size:15px;">Swipe right to start matching</div></div>';return;}
   const stages=['Applied','Applied','Viewed','Interview'];
   const cls=['stage-applied','stage-applied','stage-viewed','stage-interview'];
   el.innerHTML=matches.map((j,i)=>{const si=Math.min(i,stages.length-1);return'<div class="match-row"><div class="match-logo" style="background:'+j.logoBg+'">'+j.logo+'</div><div class="match-info"><div class="match-job">'+j.title+'</div><div class="match-co">'+j.company+' · '+j.location+'</div><span class="match-stage '+cls[si]+'">'+stages[si]+'</span></div><div class="match-score">'+j.match+'%</div></div>';}).join('');
@@ -1100,12 +1100,12 @@ function postJob(){
   const skillsRaw=document.getElementById('pjSkills').value.trim();
   const deptEl=document.getElementById('pjDept');
   const tag=deptEl.options[deptEl.selectedIndex].value||'tech';
-  if(!title){showToast('⚠ Add a job title first');return;}
+  if(!title){showToast('Add a job title first');return;}
   const skills=skillsRaw?skillsRaw.split(',').map(s=>s.trim()).filter(Boolean).slice(0,4):['Team Player','Communication'];
   const reqs=reqsRaw?reqsRaw.split('\n').map(r=>r.trim()).filter(Boolean).slice(0,4):['See job description'];
   const salDisplay=salary.split('–')[0].trim();
   const palettes=['linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)','linear-gradient(145deg,#d8e8ff,#c0d4ff,#aac4ff)','linear-gradient(145deg,#e0eaff,#ccdaff,#b8ccff)'];
-  const logos=['🏢','🚀','💡','🌟'];
+  const logos=['','','',''];
   const newId='emp_'+Date.now();
   const newJob={id:newId,title,company,logo:logos[JOBS.length%logos.length],logoBg:'#dce4ff',salary:salDisplay,location,type:type==='On-site'?'Office':type,match:Math.floor(Math.random()*20)+75,tag,bg:palettes[JOBS.length%palettes.length],skills,desc:desc||title+' role at '+company,reqs,isNew:true};
   JOBS.unshift(newJob);
@@ -1125,13 +1125,13 @@ function postJob(){
     const card2=document.createElement('div');
     card2.className='listing-card';
     card2.style.borderColor='rgba(35,85,245,0.4)';
-    card2.innerHTML='<div class="listing-head"><div><div class="listing-title">'+title+'</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">'+company+' · Just posted</div></div><div class="listing-status ls-active">Active</div></div><div class="listing-meta"><span>📍 '+location+'</span><span>💰 '+salary+'</span><span>🏢 '+type+'</span></div><div class="listing-bar"><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Applied</div></div><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Shortlisted</div></div><div class="lb-item"><div class="lb-n" style="color:var(--pink);">0</div><div class="lb-l">Interviews</div></div></div><div class="listing-actions"><button class="la-btn la-primary" onclick="showToast(\'📋 No applicants yet\')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>';
+    card2.innerHTML='<div class="listing-head"><div><div class="listing-title">'+title+'</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">'+company+' · Just posted</div></div><div class="listing-status ls-active">Active</div></div><div class="listing-meta"><span>'+location+'</span><span>'+salary+'</span><span>'+type+'</span></div><div class="listing-bar"><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Applied</div></div><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Shortlisted</div></div><div class="lb-item"><div class="lb-n" style="color:var(--pink);">0</div><div class="lb-l">Interviews</div></div></div><div class="listing-actions"><button class="la-btn la-primary" onclick="showToast(\'📋 No applicants yet\')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>';
     lc.prepend(card2);
   }
   ['pjTitle','pjLocation','pjSkills','pjDesc','pjReqs'].forEach(id=>{document.getElementById(id).value='';});
   closePane('postJobPane');
   closePane('employerPane');
-  showToast('🚀 "'+title+'" is now live in the feed!');
+  showToast('"'+title+'" is live in the feed!');
   db.from('jobs').insert({
     title,company,salary:salDisplay,location,type,tag,
     match:String(newJob.match),description:newJob.desc,
@@ -1141,12 +1141,12 @@ function postJob(){
 
 // NEWS
 const NEWS=[
-  {id:1,cat:'market',catLabel:'Job Market',emoji:'📊',bg:'linear-gradient(135deg,#c8d8ff,#b5caff)',title:'Tech hiring surges 34% in Q1 2026 as AI roles dominate demand',source:'TechCrunch',time:'2h ago',featured:true,excerpt:'Demand for AI engineers and ML ops has driven the strongest quarter for tech hiring since 2021, with salaries up 18% year-on-year.'},
-  {id:2,cat:'salary',catLabel:'Salaries',emoji:'💰',bg:'linear-gradient(135deg,#c8e8ff,#b5daff)',title:'Product designers now earning $15k more than 2024 average',source:'Glassdoor',time:'4h ago',featured:false,excerpt:'A new salary benchmark report shows design compensation hitting record highs, driven by competition from US tech giants.'},
-  {id:3,cat:'ai',catLabel:'AI & Work',emoji:'🤖',bg:'linear-gradient(135deg,#d5ddff,#c0ccff)',title:'LinkedIn reports 60% of job seekers now use AI to write CVs',source:'LinkedIn News',time:'6h ago',featured:false,excerpt:'A major shift in how candidates present themselves is forcing recruiters to update screening processes.'},
-  {id:4,cat:'skills',catLabel:'Skills',emoji:'🎓',bg:'linear-gradient(135deg,#ccd8ff,#b8c8ff)',title:'The 10 skills employers want most in 2026',source:'Pathways Editorial',time:'1d ago',featured:false,excerpt:'From AI literacy to systems thinking, we break down what hiring managers are really looking for.'},
-  {id:5,cat:'market',catLabel:'Job Market',emoji:'📈',bg:'linear-gradient(135deg,#d0dcff,#bdd0ff)',title:'Remote work rebounds: 48% of new tech roles now fully remote',source:'BBC Worklife',time:'1d ago',featured:false,excerpt:'After two years of return-to-office pressure, data shows a clear shift back towards remote-first hiring.'},
-  {id:6,cat:'ai',catLabel:'AI & Work',emoji:'⚡',bg:'linear-gradient(135deg,#d8e0ff,#c4d2ff)',title:'How Figma, Notion and Stripe are restructuring teams around AI',source:'The Verge',time:'2d ago',featured:false,excerpt:'Three of the most talent-competitive companies share how they\'re reshaping job roles as AI tools become standard.'}
+  {id:1,cat:'market',catLabel:'Job Market',emoji:'',bg:'linear-gradient(135deg,#c8d8ff,#b5caff)',title:'Tech hiring surges 34% in Q1 2026 as AI roles dominate demand',source:'TechCrunch',time:'2h ago',featured:true,excerpt:'Demand for AI engineers and ML ops has driven the strongest quarter for tech hiring since 2021, with salaries up 18% year-on-year.'},
+  {id:2,cat:'salary',catLabel:'Salaries',emoji:'',bg:'linear-gradient(135deg,#c8e8ff,#b5daff)',title:'Product designers now earning $15k more than 2024 average',source:'Glassdoor',time:'4h ago',featured:false,excerpt:'A new salary benchmark report shows design compensation hitting record highs, driven by competition from US tech giants.'},
+  {id:3,cat:'ai',catLabel:'AI & Work',emoji:'',bg:'linear-gradient(135deg,#d5ddff,#c0ccff)',title:'LinkedIn reports 60% of job seekers now use AI to write CVs',source:'LinkedIn News',time:'6h ago',featured:false,excerpt:'A major shift in how candidates present themselves is forcing recruiters to update screening processes.'},
+  {id:4,cat:'skills',catLabel:'Skills',emoji:'',bg:'linear-gradient(135deg,#ccd8ff,#b8c8ff)',title:'The 10 skills employers want most in 2026',source:'Pathways Editorial',time:'1d ago',featured:false,excerpt:'From AI literacy to systems thinking, we break down what hiring managers are really looking for.'},
+  {id:5,cat:'market',catLabel:'Job Market',emoji:'',bg:'linear-gradient(135deg,#d0dcff,#bdd0ff)',title:'Remote work rebounds: 48% of new tech roles now fully remote',source:'BBC Worklife',time:'1d ago',featured:false,excerpt:'After two years of return-to-office pressure, data shows a clear shift back towards remote-first hiring.'},
+  {id:6,cat:'ai',catLabel:'AI & Work',emoji:'',bg:'linear-gradient(135deg,#d8e0ff,#c4d2ff)',title:'How Figma, Notion and Stripe are restructuring teams around AI',source:'The Verge',time:'2d ago',featured:false,excerpt:'Three of the most talent-competitive companies share how they\'re reshaping job roles as AI tools become standard.'}
 ];
 
 let currentNewsFilter='all';
@@ -1158,10 +1158,10 @@ function renderNews(filter){
   let html='';
   const featured=filter==='all'?items.find(n=>n.featured):null;
   if(featured){
-    html+='<div class="news-hero-card" onclick="showToast(\'📰 Opening article…\')"><div class="news-hero-img" style="background:'+featured.bg+'"><div class="news-hero-img-grad"></div><div class="news-cat">'+featured.catLabel+'</div><div class="news-hero-title">'+featured.title+'</div></div><div class="news-hero-body"><div class="news-meta"><span class="news-source">'+featured.source+'</span><span class="news-time">'+featured.time+'</span></div><div class="news-excerpt">'+featured.excerpt+'</div></div></div>';
+    html+='<div class="news-hero-card" onclick="showToast(\'Opening article\')"><div class="news-hero-img" style="background:'+featured.bg+'"><div class="news-hero-img-grad"></div><div class="news-cat">'+featured.catLabel+'</div><div class="news-hero-title">'+featured.title+'</div></div><div class="news-hero-body"><div class="news-meta"><span class="news-source">'+featured.source+'</span><span class="news-time">'+featured.time+'</span></div><div class="news-excerpt">'+featured.excerpt+'</div></div></div>';
   }
   const rest=featured?items.filter(n=>!n.featured):items;
-  rest.forEach(item=>{html+='<div class="news-row" onclick="showToast(\'📰 Opening article…\')"><div class="news-row-icon" style="background:'+item.bg+'">'+item.emoji+'</div><div class="news-row-content"><div class="news-row-title">'+item.title+'</div><div class="news-row-meta"><span class="news-row-source">'+item.source+'</span><span class="news-row-time">'+item.time+'</span></div></div></div>';});
+  rest.forEach(item=>{html+='<div class="news-row" onclick="showToast(\'Opening article\')"><div class="news-row-icon" style="background:'+item.bg+'">'+item.emoji+'</div><div class="news-row-content"><div class="news-row-title">'+item.title+'</div><div class="news-row-meta"><span class="news-row-source">'+item.source+'</span><span class="news-row-time">'+item.time+'</span></div></div></div>';});
   body.innerHTML=html;
 }
 function setNewsTab(btn,filter){
@@ -1189,14 +1189,14 @@ async function doLogin(provider, btn) {
     } else if(provider === 'Email') {
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPass').value.trim();
-      if(!email || !password){ showToast('⚠ Enter email and password'); btn.innerHTML=orig; btn.style.opacity='1'; btn.disabled=false; return; }
+      if(!email || !password){ showToast('Enter email and password'); btn.innerHTML=orig; btn.style.opacity='1'; btn.disabled=false; return; }
       const { error } = await db.auth.signInWithPassword({ email, password });
       if(error){
         const { error: signUpError } = await db.auth.signUp({ email, password });
         if(signUpError) throw signUpError;
       }
       document.getElementById('authScreen').classList.add('hidden');
-      showToast('👋 Welcome to Pathways!');
+      showToast('Welcome to Pathways!');
       { const { data:{ session:s } } = await db.auth.getSession();
         if(s) await loadProfile(s.user.id); }
     } else {
@@ -1209,7 +1209,7 @@ async function doLogin(provider, btn) {
     btn.innerHTML = orig;
     btn.style.opacity = '1';
     btn.disabled = false;
-    showToast('⚠ Login failed — try again');
+    showToast('Sign in failed — try again');
     console.error(err);
   }
 }
@@ -1316,7 +1316,7 @@ async function fetchJSearchJobs(query = 'jobs in United States') {
           id: 'js_' + i,
           title: cleanTitle(r.job_title),
           company: r.employer_name || 'Company',
-          logo: '🏢',
+          logo: '',
           logoBg: '#dce4ff',
           salary,
           location,
@@ -1479,7 +1479,7 @@ async function loadAndInit() {
           id: String(job.id),
           title: job.title || 'Untitled',
           company: job.company || 'Company',
-          logo: '🏢',
+          logo: '',
           logoBg: '#dce4ff',
           salary: job.salary || 'Competitive',
           location: job.location || 'Remote',
