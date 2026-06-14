@@ -498,7 +498,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     </div>
     <div class="prof-section">
       <div class="prof-section-title">What drives me</div>
-      <div class="prof-share-box" id="dispDrivesMe">—</div>
+      <div class="prof-share-box" id="dispDrivesMe"></div>
     </div>
     <div class="prof-section">
       <div class="prof-section-title">What I can share</div>
@@ -958,6 +958,7 @@ async function saveProfile(){
   const currently=document.getElementById('editCurrently').value.trim();
   const figuringOut=document.getElementById('editFiguringOut').value.trim();
   const canShare=document.getElementById('editCanShare').value.trim();
+  const drivesMe=document.getElementById('editDrivesMe').value.trim();
   const salary=document.getElementById('editSalary').value;
   const wt=document.getElementById('editWorkType').value;
   const openTo=document.getElementById('editOpenTo').classList.contains('on');
@@ -977,6 +978,7 @@ async function saveProfile(){
   document.getElementById('dispCurrently').textContent=currently||'—';
   document.getElementById('dispFiguringOut').textContent=figuringOut||'—';
   document.getElementById('dispCanShare').textContent=canShare||'—';
+  document.getElementById('dispDrivesMe').textContent=drivesMe||'—';
   document.getElementById('dispSalary').textContent=salary;
   document.getElementById('dispType').textContent=wt;
   const badge=document.getElementById('dispOpenTo');
@@ -1002,7 +1004,7 @@ async function saveProfile(){
       open_to_opportunities:openTo,
       experience:JSON.stringify(expEntries),
       skills:skills.join(', '),
-      drives_me:document.getElementById('editDrivesMe').value.trim()
+      drives_me:drivesMe
     });
     if(error) console.error('Profile save error:',error.message);
   }
