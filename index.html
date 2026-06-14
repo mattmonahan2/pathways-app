@@ -709,6 +709,7 @@ const SUPABASE_URL = 'https://fvvpopakwamakicyocbq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dnBvcGFrd2FtYWtpY3lvY2JxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMDc4OTgsImV4cCI6MjA5NTY4Mzg5OH0.R5cYecMaiYpHr-tY19yY8K7HkPLEOBbHRBL9qB428zw';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const ANTHROPIC_API_KEY = ['sk-ant-api03-WoTxMByULXOeTO8c8XRWCi_fl0fJBo3F168','E43XDccaReq6DxxezdPV2AG9l0UbFzIg1Qqx7N5IsFJAp66ppgA-5qxmUgAA'].join('');
+const GUARDIAN_API_KEY = 'd8a96487-8238-4dab-a052-c4db86dda420';
 
 const JOBS = [];
 
@@ -1196,29 +1197,69 @@ function postJob(){
 }
 
 // NEWS
-const NEWS=[
-  {id:1,cat:'market',catLabel:'Job Market',emoji:'',bg:'linear-gradient(135deg,#c8d8ff,#b5caff)',title:'Tech hiring surges 34% in Q1 2026 as AI roles dominate demand',source:'TechCrunch',time:'2h ago',featured:true,excerpt:'Demand for AI engineers and ML ops has driven the strongest quarter for tech hiring since 2021, with salaries up 18% year-on-year.'},
-  {id:2,cat:'salary',catLabel:'Salaries',emoji:'',bg:'linear-gradient(135deg,#c8e8ff,#b5daff)',title:'Product designers now earning $15k more than 2024 average',source:'Glassdoor',time:'4h ago',featured:false,excerpt:'A new salary benchmark report shows design compensation hitting record highs, driven by competition from US tech giants.'},
-  {id:3,cat:'ai',catLabel:'AI & Work',emoji:'',bg:'linear-gradient(135deg,#d5ddff,#c0ccff)',title:'LinkedIn reports 60% of job seekers now use AI to write CVs',source:'LinkedIn News',time:'6h ago',featured:false,excerpt:'A major shift in how candidates present themselves is forcing recruiters to update screening processes.'},
-  {id:4,cat:'skills',catLabel:'Skills',emoji:'',bg:'linear-gradient(135deg,#ccd8ff,#b8c8ff)',title:'The 10 skills employers want most in 2026',source:'Pathways Editorial',time:'1d ago',featured:false,excerpt:'From AI literacy to systems thinking, we break down what hiring managers are really looking for.'},
-  {id:5,cat:'market',catLabel:'Job Market',emoji:'',bg:'linear-gradient(135deg,#d0dcff,#bdd0ff)',title:'Remote work rebounds: 48% of new tech roles now fully remote',source:'BBC Worklife',time:'1d ago',featured:false,excerpt:'After two years of return-to-office pressure, data shows a clear shift back towards remote-first hiring.'},
-  {id:6,cat:'ai',catLabel:'AI & Work',emoji:'',bg:'linear-gradient(135deg,#d8e0ff,#c4d2ff)',title:'How Figma, Notion and Stripe are restructuring teams around AI',source:'The Verge',time:'2d ago',featured:false,excerpt:'Three of the most talent-competitive companies share how they\'re reshaping job roles as AI tools become standard.'}
+const GUARDIAN_PALETTES=[
+  'linear-gradient(135deg,#c8d8ff,#b5caff)',
+  'linear-gradient(135deg,#c8e8ff,#b5daff)',
+  'linear-gradient(135deg,#d5ddff,#c0ccff)',
+  'linear-gradient(135deg,#ccd8ff,#b8c8ff)',
+  'linear-gradient(135deg,#d0dcff,#bdd0ff)',
+  'linear-gradient(135deg,#d8e0ff,#c4d2ff)'
 ];
+const GUARDIAN_QUERIES={
+  all:'section=business|money|technology&q=careers|jobs|workplace|AI|salary',
+  market:'section=money&q=jobs',
+  salary:'section=money&q=salary',
+  skills:'q=workplace+skills',
+  ai:'q=artificial+intelligence+work'
+};
+
+function timeAgo(dateStr){
+  const diff=Date.now()-new Date(dateStr).getTime();
+  const mins=Math.floor(diff/60000);
+  if(mins<60) return mins+'m ago';
+  const hrs=Math.floor(mins/60);
+  if(hrs<24) return hrs+'h ago';
+  return Math.floor(hrs/24)+'d ago';
+}
 
 let currentNewsFilter='all';
-function renderNews(filter){
+async function renderNews(filter){
   currentNewsFilter=filter;
   const body=document.getElementById('newsBody');
-  const items=filter==='all'?NEWS:NEWS.filter(n=>n.cat===filter);
-  if(!items.length){body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">No news in this category yet</div>';return;}
-  let html='';
-  const featured=filter==='all'?items.find(n=>n.featured):null;
-  if(featured){
-    html+='<div class="news-hero-card" onclick="showToast(\'Opening article\')"><div class="news-hero-img" style="background:'+featured.bg+'"><div class="news-hero-img-grad"></div><div class="news-cat">'+featured.catLabel+'</div><div class="news-hero-title">'+featured.title+'</div></div><div class="news-hero-body"><div class="news-meta"><span class="news-source">'+featured.source+'</span><span class="news-time">'+featured.time+'</span></div><div class="news-excerpt">'+featured.excerpt+'</div></div></div>';
+  body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">Loading…</div>';
+  try{
+    const qs=GUARDIAN_QUERIES[filter]||GUARDIAN_QUERIES.all;
+    const url=`https://content.guardianapis.com/search?${qs}&page-size=10&show-fields=headline,trailText&api-key=${GUARDIAN_API_KEY}`;
+    const res=await fetch(url);
+    if(!res.ok) throw new Error('Guardian '+res.status);
+    const json=await res.json();
+    const results=json.response.results;
+    if(!results.length){body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">No stories found</div>';return;}
+    let html='';
+    const featured=filter==='all'?results[0]:null;
+    if(featured){
+      const bg=GUARDIAN_PALETTES[0];
+      const t=featured.fields.headline||featured.webTitle;
+      const ex=featured.fields.trailText||'';
+      const src=featured.sectionName;
+      const time=timeAgo(featured.webPublicationDate);
+      const webUrl=featured.webUrl;
+      html+=`<div class="news-hero-card" onclick="window.open('${webUrl}','_blank')" style="cursor:pointer"><div class="news-hero-img" style="background:${bg}"><div class="news-hero-img-grad"></div><div class="news-cat">${src}</div><div class="news-hero-title">${t}</div></div><div class="news-hero-body"><div class="news-meta"><span class="news-source">The Guardian</span><span class="news-time">${time}</span></div><div class="news-excerpt">${ex}</div></div></div>`;
+    }
+    const rest=featured?results.slice(1):results;
+    rest.forEach((item,i)=>{
+      const bg=GUARDIAN_PALETTES[(i+1)%GUARDIAN_PALETTES.length];
+      const t=item.fields.headline||item.webTitle;
+      const src=item.sectionName;
+      const time=timeAgo(item.webPublicationDate);
+      const webUrl=item.webUrl;
+      html+=`<div class="news-row" onclick="window.open('${webUrl}','_blank')" style="cursor:pointer"><div class="news-row-icon" style="background:${bg}"></div><div class="news-row-content"><div class="news-row-title">${t}</div><div class="news-row-meta"><span class="news-row-source">${src}</span><span class="news-row-time">${time}</span></div></div></div>`;
+    });
+    body.innerHTML=html;
+  }catch(e){
+    console.error('Guardian news error:',e);
+    body.innerHTML='<div style="text-align:center;padding:50px 20px;color:var(--sub);">Couldn\'t load news right now</div>';
   }
-  const rest=featured?items.filter(n=>!n.featured):items;
-  rest.forEach(item=>{html+='<div class="news-row" onclick="showToast(\'Opening article\')"><div class="news-row-icon" style="background:'+item.bg+'">'+item.emoji+'</div><div class="news-row-content"><div class="news-row-title">'+item.title+'</div><div class="news-row-meta"><span class="news-row-source">'+item.source+'</span><span class="news-row-time">'+item.time+'</span></div></div></div>';});
-  body.innerHTML=html;
 }
 function setNewsTab(btn,filter){
   document.querySelectorAll('.news-tab').forEach(b=>b.classList.remove('on'));
