@@ -1084,10 +1084,14 @@ async function doLogin(provider, btn) {
 }
 
 async function doLogout() {
-  await db.auth.signOut();
+  await db.auth.signOut({ scope: 'global' });
   matches = []; appliedCount = 0; savedCount = 0;
   document.getElementById('statApplied').textContent = '0';
   document.getElementById('statSaved').textContent = '0';
+  document.getElementById('dispName').textContent = '';
+  document.getElementById('dispRole').textContent = '';
+  document.getElementById('dispBio').textContent = '';
+  document.getElementById('dispSkills').innerHTML = '';
   updateMatchesList();
   closePane('profilePane');
   document.getElementById('authScreen').classList.remove('hidden');
