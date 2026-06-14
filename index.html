@@ -493,6 +493,10 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
       <div class="prof-tl" id="dispExperience"><div style="font-size:14px;color:var(--sub);">No experience added yet</div></div>
     </div>
     <div class="prof-section">
+      <div class="prof-section-title">Education</div>
+      <div class="prof-tl" id="dispEducation"><div style="font-size:14px;color:var(--sub);">No education added yet</div></div>
+    </div>
+    <div class="prof-section">
       <div class="prof-section-title">Skills</div>
       <div class="pill-wrap" id="dispSkills"></div>
     </div>
@@ -547,6 +551,9 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <span class="ep-section-label">Experience</span>
     <div id="editExpList"></div>
     <button class="ep-add-exp" onclick="addExperience()">+ Add Experience</button>
+    <span class="ep-section-label">Education</span>
+    <div id="editEduList"></div>
+    <button class="ep-add-exp" onclick="addEducation()">+ Add Education</button>
     <span class="ep-section-label">Skills</span>
     <div class="skill-input-row" style="margin-bottom:10px;"><input class="form-input" id="editSkillInput" placeholder="Add a skill…"><button class="add-skill-btn" onclick="addSkill()">+</button></div>
     <div class="pill-wrap" id="editSkillList" style="margin-bottom:4px;min-height:32px;"></div>
@@ -969,6 +976,12 @@ async function saveProfile(){
     start:entry.querySelector('.ep-exp-start').value.trim(),
     end:entry.querySelector('.ep-exp-end').value.trim()
   })).filter(e=>e.role||e.company);
+  const eduEntries=[...document.querySelectorAll('#editEduList .ep-exp-entry')].map(entry=>({
+    degree:entry.querySelector('.ep-edu-degree').value,
+    field:entry.querySelector('.ep-edu-field').value.trim(),
+    school:entry.querySelector('.ep-edu-school').value.trim(),
+    year:entry.querySelector('.ep-edu-year').value.trim()
+  })).filter(e=>e.school||e.field);
   const initials=name.split(' ').filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('dispAvatar').textContent=initials||'?';
   document.getElementById('dispName').textContent=name;
@@ -986,6 +999,7 @@ async function saveProfile(){
   badge.className='prof-badge '+(openTo?'open':'closed');
   document.getElementById('dispSkills').innerHTML=skills.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
   renderProfileExperience(expEntries);
+  renderProfileEducation(eduEntries);
   closePane('editPane');
   const { data:{ session } }=await db.auth.getSession();
   if(session){
@@ -1003,6 +1017,7 @@ async function saveProfile(){
       work_type:wt,
       open_to_opportunities:openTo,
       experience:JSON.stringify(expEntries),
+      education:JSON.stringify(eduEntries),
       skills:skills.join(', '),
       drives_me:drivesMe
     });
@@ -1059,6 +1074,13 @@ async function loadProfile(userId){
       renderEditExperience(expArr);
     }catch(e){console.error('Experience parse error:',e);}
   }
+  if(data.education){
+    try{
+      const eduArr=typeof data.education==='string'?JSON.parse(data.education):data.education;
+      renderProfileEducation(eduArr);
+      renderEditEducation(eduArr);
+    }catch(e){console.error('Education parse error:',e);}
+  }
 }
 
 function addSkill(){
@@ -1084,6 +1106,31 @@ function renderProfileExperience(expArr){
 function renderEditExperience(expArr){
   document.getElementById('editExpList').innerHTML='';
   (expArr||[]).forEach(e=>addExperience(e));
+}
+
+function renderProfileEducation(eduArr){
+  const container=document.getElementById('dispEducation');
+  if(!eduArr||!eduArr.length){container.innerHTML='<div style="font-size:14px;color:var(--sub);">No education added yet</div>';return;}
+  container.innerHTML=eduArr.map(e=>`<div class="prof-tl-item"><div class="prof-tl-dot"></div><div class="prof-tl-role">${e.degree||''}</div><div class="prof-tl-co">${[e.field,e.school].filter(Boolean).join(' · ')}</div><div class="prof-tl-years">${e.year||''}</div></div>`).join('');
+}
+
+function renderEditEducation(eduArr){
+  document.getElementById('editEduList').innerHTML='';
+  (eduArr||[]).forEach(e=>addEducation(e));
+}
+
+function addEducation(data){
+  const container=document.getElementById('editEduList');
+  const entry=document.createElement('div');
+  entry.className='ep-exp-entry';
+  const deg=(data&&data.degree)||'';
+  const field=(data&&data.field)||'';
+  const school=(data&&data.school)||'';
+  const year=(data&&data.year)||'';
+  const degreeOptions=["High School Diploma","Associate's","Bachelor's","Master's","PhD","Bootcamp","Certificate","Self-taught","Other"];
+  const opts=degreeOptions.map(o=>`<option${deg===o?' selected':''}>${o}</option>`).join('');
+  entry.innerHTML=`<button class="ep-exp-remove" onclick="this.closest('.ep-exp-entry').remove()">×</button><div class="form-group" style="margin-bottom:10px;"><label class="form-label">Degree</label><select class="form-select ep-edu-degree">${opts}</select></div><div class="form-group" style="margin-bottom:10px;"><label class="form-label">Field of Study</label><input class="form-input ep-edu-field" value="${field}" placeholder="e.g. Computer Science"></div><div class="form-group" style="margin-bottom:10px;"><label class="form-label">School</label><input class="form-input ep-edu-school" value="${school}" placeholder="e.g. University of London"></div><div class="form-group" style="margin-bottom:0;"><label class="form-label">Graduation Year</label><input class="form-input ep-edu-year" value="${year}" placeholder="2020"></div>`;
+  container.appendChild(entry);
 }
 
 function addExperience(data){
