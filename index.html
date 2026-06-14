@@ -221,6 +221,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 @keyframes newCardPulse{0%,100%{box-shadow:0 0 0 3px rgba(35,85,245,0.5)}50%{box-shadow:0 0 0 6px rgba(35,85,245,0.1)}}
 @keyframes recordingPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(239,68,68,0)}}
 .recording-pulse{animation:recordingPulse 1.2s ease-in-out infinite}
+.resume-tip-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.04);}
 .cv-scan-spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:7px;position:relative;top:-1px}
 
 /* AUTH */
@@ -523,6 +524,13 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <div class="prof-section">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div class="prof-section-title" style="margin-bottom:0;">My ideal work life</div><button onclick="openEditWithAI('ideal_work_life')" style="font-size:12px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;">Edit with AI</button></div>
       <div class="prof-share-box" id="dispIdealWork"></div>
+    </div>
+    <div class="prof-section" id="resumeTipsSection" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="prof-section-title" style="margin-bottom:0;">Resume Tips</div>
+        <button onclick="generateResumeSuggestions(true)" style="font-size:12px;font-weight:700;color:var(--blue);background:none;border:none;cursor:pointer;">Refresh</button>
+      </div>
+      <div id="dispResumeTips"></div>
     </div>
     <div class="prof-section">
       <div class="prof-section-title">Preferences</div>
@@ -1042,7 +1050,8 @@ async function saveProfile(){
       education:JSON.stringify(eduEntries),
       skills:skills.join(', '),
       drives_me:drivesMe,
-      ideal_work_life:idealWorkLife
+      ideal_work_life:idealWorkLife,
+      ...(_resumeSuggestions&&_resumeSuggestions.length?{resume_suggestions:JSON.stringify(_resumeSuggestions)}:{})
     });
     if(error) console.error('Profile save error:',error.message);
   }
@@ -1070,6 +1079,7 @@ async function loadProfile(userId){
   if(data.can_share){document.getElementById('dispCanShare').textContent=data.can_share;document.getElementById('editCanShare').value=data.can_share;}
   if(data.drives_me){document.getElementById('dispDrivesMe').textContent=data.drives_me;document.getElementById('editDrivesMe').value=data.drives_me;}
   if(data.ideal_work_life){document.getElementById('dispIdealWork').textContent=data.ideal_work_life;document.getElementById('editIdealWork').value=data.ideal_work_life;}
+  if(data.resume_suggestions){try{const suggs=typeof data.resume_suggestions==='string'?JSON.parse(data.resume_suggestions):data.resume_suggestions;if(suggs&&suggs.length){_resumeSuggestions=suggs;renderResumeTips(suggs);}}catch(e){console.error('Resume suggestions parse error:',e);}}
   if(data.salary_expectation){
     document.getElementById('dispSalary').textContent=data.salary_expectation;
     const sel=document.getElementById('editSalary');
@@ -1691,12 +1701,121 @@ function finishOnboarding(){
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="#fff" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
       </div>
       <div style="font-size:22px;font-weight:800;color:var(--text);margin-bottom:10px;">Profile complete</div>
-      <div style="font-size:15px;color:var(--sub);margin-bottom:28px;line-height:1.5;">Your profile has been built from your CV and personalised with your answers.</div>
-      <button onclick="closeOnboarding()" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;">View my profile</button>
+      <div style="font-size:15px;color:var(--sub);margin-bottom:24px;line-height:1.5;">Your profile has been built from your CV and personalised with your answers.</div>
+      <button onclick="generateResumeSuggestions(false)" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:12px;">See your Resume Tips</button>
+      <button onclick="closeOnboarding()" style="width:100%;padding:14px;background:none;color:var(--sub);border:1.5px solid var(--border);border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Skip for now</button>
     </div>
   `;
 }
 function closeOnboarding(){stopObVoice();document.getElementById('aiOnboardingModal').style.display='none';}
+
+// ==================== RESUME SUGGESTIONS ====================
+let _resumeSuggestions=[];
+
+async function generateResumeSuggestions(fromProfile){
+  const modalBody=document.getElementById('onboardingBody');
+  const profileContainer=document.getElementById('dispResumeTips');
+  const loadingHtml=`<div style="text-align:center;padding:50px 20px;"><div style="width:32px;height:32px;border:3px solid #dce4ff;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div><div style="color:var(--sub);font-size:15px;">Generating your Resume Tips…</div></div>`;
+  if(fromProfile){
+    document.getElementById('resumeTipsSection').style.display='block';
+    if(profileContainer) profileContainer.innerHTML=loadingHtml;
+  } else {
+    if(modalBody) modalBody.innerHTML=loadingHtml;
+  }
+  // Gather context from DOM
+  const name=document.getElementById('dispName')?.textContent||'';
+  const role=document.getElementById('dispRole')?.textContent||'';
+  const bio=document.getElementById('editBio')?.value||'';
+  const skills=document.getElementById('editSkillList')?[...document.querySelectorAll('#editSkillList .skill-pill')].map(s=>s.textContent.replace(' ×','').trim()).join(', '):'';
+  const figuringOut=(document.getElementById('dispFiguringOut')?.textContent||'').replace('—','').trim();
+  const canShare=(document.getElementById('dispCanShare')?.textContent||'').replace('—','').trim();
+  const drivesMe=(document.getElementById('dispDrivesMe')?.textContent||'').replace('—','').trim();
+  const idealWork=(document.getElementById('dispIdealWork')?.textContent||'').replace('—','').trim();
+  const cvContext=_cvData?`Full CV data: ${JSON.stringify(_cvData)}`:`Name: ${name}\nCurrent role: ${role}\nBio: ${bio}\nSkills: ${skills}`;
+  const prompt=`You are a senior career coach and resume expert. Analyze this person's professional background and authentic career story to generate 3-5 specific, actionable resume improvement suggestions that bridge the gap between who they really are and how they present themselves on paper.
+
+${cvContext}
+
+Their authentic career story (from coaching questions):
+- What they're figuring out: "${figuringOut||'not provided'}"
+- What they can teach/share: "${canShare||'not provided'}"
+- What drives them: "${drivesMe||'not provided'}"
+- Their ideal work life: "${idealWork||'not provided'}"
+
+Generate suggestions that are specific to THIS person — not generic advice. Reference their actual role, skills, or experiences where possible. Include concrete before/after rewrite examples where helpful.
+
+Return ONLY a valid JSON array with 3-5 objects, each having exactly these fields:
+- heading: short title summarising the issue (max 8 words)
+- advice: specific actionable advice referencing their background (2-3 sentences)
+- example: concrete before/after rewrite example (empty string if not applicable)
+
+Return only the JSON array, no other text.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok)throw new Error('API error');
+    const raw=(await res.json()).content[0].text.trim().replace(/^```json\s*/,'').replace(/\s*```$/,'');
+    const suggestions=JSON.parse(raw);
+    _resumeSuggestions=suggestions;
+    // Save to Supabase
+    const {data:{session}}=await db.auth.getSession();
+    if(session) await db.from('profiles').upsert({id:session.user.id,resume_suggestions:JSON.stringify(suggestions)});
+    // Always render in profile
+    renderResumeTips(suggestions);
+    // Show in modal if coming from onboarding
+    if(!fromProfile) showResumeTipsInModal(suggestions);
+  }catch(e){
+    console.error('Resume suggestions error:',e);
+    const errHtml='<div style="text-align:center;padding:30px 20px;color:var(--sub);font-size:14px;">Couldn\'t generate tips right now. Try refreshing from your profile.</div>';
+    if(fromProfile&&profileContainer) profileContainer.innerHTML=errHtml;
+    else if(modalBody) modalBody.innerHTML=errHtml+'<button onclick="closeOnboarding()" style="width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:16px;">Done</button>';
+  }
+}
+
+function renderResumeTips(suggestions){
+  const section=document.getElementById('resumeTipsSection');
+  const container=document.getElementById('dispResumeTips');
+  if(!section||!container)return;
+  if(!suggestions||!suggestions.length){section.style.display='none';return;}
+  section.style.display='block';
+  container.innerHTML=suggestions.map((s,i)=>`
+    <div class="resume-tip-card" id="resumeTip_${i}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text);line-height:1.3;">${s.heading}</div>
+        <button onclick="dismissResumeTip(${i})" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:20px;line-height:1;padding:0;flex-shrink:0;">×</button>
+      </div>
+      <div style="font-size:14px;color:var(--sub);line-height:1.55;${s.example?'margin-bottom:10px;':''}">${s.advice}</div>
+      ${s.example?`<div style="background:#f0f4ff;border-radius:10px;padding:12px;font-size:13px;color:var(--text);line-height:1.5;font-style:italic;">${s.example}</div>`:''}
+    </div>
+  `).join('');
+}
+
+function dismissResumeTip(i){
+  _resumeSuggestions=_resumeSuggestions.filter((_,idx)=>idx!==i);
+  renderResumeTips(_resumeSuggestions);
+  db.auth.getSession().then(({data:{session}})=>{if(session)db.from('profiles').upsert({id:session.user.id,resume_suggestions:JSON.stringify(_resumeSuggestions)});});
+}
+
+function showResumeTipsInModal(suggestions){
+  document.getElementById('onboardingBody').innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div style="font-size:18px;font-weight:800;color:var(--text);">Resume Tips</div>
+      <button onclick="closeOnboarding()" style="background:none;border:none;cursor:pointer;color:var(--sub);font-size:26px;line-height:1;padding:0;">×</button>
+    </div>
+    <div style="font-size:14px;color:var(--sub);margin-bottom:18px;line-height:1.5;">Based on your CV and answers — here's how to sharpen your resume:</div>
+    ${suggestions.map(s=>`
+      <div class="resume-tip-card">
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">${s.heading}</div>
+        <div style="font-size:14px;color:var(--sub);line-height:1.55;${s.example?'margin-bottom:10px;':''}">${s.advice}</div>
+        ${s.example?`<div style="background:#f0f4ff;border-radius:10px;padding:12px;font-size:13px;color:var(--text);line-height:1.5;font-style:italic;">${s.example}</div>`:''}
+      </div>
+    `).join('')}
+    <button onclick="closeOnboarding()" style="width:100%;padding:16px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;">Done — view my profile</button>
+  `;
+}
 
 async function _claudeRefine(question,answer){
   const res=await fetch('https://api.anthropic.com/v1/messages',{
