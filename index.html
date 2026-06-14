@@ -1521,14 +1521,21 @@ async function scanCvWithClaude(){
   btn.innerHTML='<span class="cv-scan-spinner"></span>Reading your CV…';
   btn.disabled=true;
   try{
-    const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(epCvFile);});
-    const mediaType=epCvFile.type||'application/pdf';
+    const isWord=/\.(doc|docx)$/i.test(epCvFile.name)||epCvFile.type==='application/msword'||epCvFile.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    let userContent;
+    if(isWord){
+      const text=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsText(epCvFile);});
+      userContent=`Extract information from this CV/resume and return the JSON object.\n\n${text}`;
+    }else{
+      const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(epCvFile);});
+      userContent=[{type:'document',source:{type:'base64',media_type:'application/pdf',data:base64}},{type:'text',text:'Extract information from this CV and return the JSON object.'}];
+    }
     const apiRes=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'x-api-key':ANTHROPIC_API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true','content-type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2048,
         system:'You are a profile builder for a career platform called Pathways. Extract information from this CV/resume and return ONLY a valid JSON object with these exact fields: full_name, current_role, company, location, bio (2 sentence professional summary), skills (comma separated string), experience (JSON array of objects with role, company, start_year, end_year), education (JSON array of objects with degree, field, school, grad_year), hidden_skills (comma separated string of skills inferred from their experience that they didn\'t explicitly list). Return only the JSON, no other text.',
-        messages:[{role:'user',content:[{type:'document',source:{type:'base64',media_type:mediaType,data:base64}},{type:'text',text:'Extract information from this CV and return the JSON object.'}]}]})
+        messages:[{role:'user',content:userContent}]})
     });
     if(!apiRes.ok){const err=await apiRes.text();throw new Error(err);}
     const apiData=await apiRes.json();
