@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Pathways</title>
@@ -1524,14 +1525,14 @@ async function scanCvWithClaude(){
     const isWord=/\.(doc|docx)$/i.test(epCvFile.name)||epCvFile.type==='application/msword'||epCvFile.type==='application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     let userContent;
     if(isWord){
-      const raw=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsArrayBuffer(epCvFile);});
-      const bytes=new Uint8Array(raw);
-      let str='';
-      for(let i=0;i<bytes.length;i++)str+=String.fromCharCode(bytes[i]);
-      const clean=str
+      const arrayBuffer=await new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsArrayBuffer(epCvFile);});
+      const zip=await JSZip.loadAsync(arrayBuffer);
+      const docXml=zip.file('word/document.xml');
+      if(!docXml)throw new Error('Could not find document.xml in Word file');
+      const xmlStr=await docXml.async('string');
+      const clean=xmlStr
         .replace(/<[^>]+>/g,' ')
         .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&nbsp;/g,' ').replace(/&#\d+;/g,' ')
-        .replace(/[a-z]+:[a-z]+="[^"]*"/gi,' ')
         .replace(/\s+/g,' ')
         .trim()
         .slice(0,8000);
