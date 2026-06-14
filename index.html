@@ -497,6 +497,10 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
       <div class="pill-wrap" id="dispSkills"></div>
     </div>
     <div class="prof-section">
+      <div class="prof-section-title">What drives me</div>
+      <div class="prof-share-box" id="dispDrivesMe">—</div>
+    </div>
+    <div class="prof-section">
       <div class="prof-section-title">What I can share</div>
       <div class="prof-share-box" id="dispCanShare">—</div>
     </div>
@@ -546,6 +550,8 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <span class="ep-section-label">Skills</span>
     <div class="skill-input-row" style="margin-bottom:10px;"><input class="form-input" id="editSkillInput" placeholder="Add a skill…"><button class="add-skill-btn" onclick="addSkill()">+</button></div>
     <div class="pill-wrap" id="editSkillList" style="margin-bottom:4px;min-height:32px;"></div>
+    <span class="ep-section-label">What Drives Me</span>
+    <div class="form-group"><textarea class="form-textarea" id="editDrivesMe" placeholder="What actually motivates you underneath the job titles..."></textarea></div>
     <span class="ep-section-label">What I Can Share</span>
     <div class="form-group"><textarea class="form-textarea" id="editCanShare" placeholder="What experience, advice or connections can you offer?"></textarea></div>
     <span class="ep-section-label">Preferences</span>
@@ -995,7 +1001,8 @@ async function saveProfile(){
       work_type:wt,
       open_to_opportunities:openTo,
       experience:JSON.stringify(expEntries),
-      skills:skills.join(', ')
+      skills:skills.join(', '),
+      drives_me:document.getElementById('editDrivesMe').value.trim()
     });
     if(error) console.error('Profile save error:',error.message);
   }
@@ -1021,6 +1028,7 @@ async function loadProfile(userId){
   if(data.currently){document.getElementById('dispCurrently').textContent=data.currently;document.getElementById('editCurrently').value=data.currently;}
   if(data.figuring_out){document.getElementById('dispFiguringOut').textContent=data.figuring_out;document.getElementById('editFiguringOut').value=data.figuring_out;}
   if(data.can_share){document.getElementById('dispCanShare').textContent=data.can_share;document.getElementById('editCanShare').value=data.can_share;}
+  if(data.drives_me){document.getElementById('dispDrivesMe').textContent=data.drives_me;document.getElementById('editDrivesMe').value=data.drives_me;}
   if(data.salary_expectation){
     document.getElementById('dispSalary').textContent=data.salary_expectation;
     const sel=document.getElementById('editSalary');
