@@ -223,6 +223,22 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 /* AUTH */
 #authScreen{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;background:var(--bg);transition:opacity 0.5s,transform 0.5s cubic-bezier(0.32,0.72,0,1)}
 #authScreen.hidden{opacity:0;transform:scale(0.96) translateY(20px);pointer-events:none}
+#cvScreen{position:absolute;inset:0;z-index:110;display:flex;flex-direction:column;background:var(--bg);transition:opacity 0.4s,transform 0.4s cubic-bezier(0.32,0.72,0,1)}
+#cvScreen.hidden{opacity:0;transform:scale(0.96) translateY(20px);pointer-events:none}
+.cv-body{flex:1;display:flex;flex-direction:column;align-items:center;padding:56px 28px 32px;overflow-y:auto}
+.cv-wordmark{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:40px;color:var(--text)}
+.cv-wordmark em{color:var(--blue);font-style:normal}
+.cv-heading{font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;letter-spacing:-0.5px;text-align:center;margin-bottom:8px}
+.cv-sub{font-size:15px;color:var(--sub);text-align:center;margin-bottom:32px;line-height:1.5}
+.cv-upload-area{width:100%;border:2px dashed var(--border);border-radius:20px;padding:40px 20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;transition:border-color .2s,background .2s;text-align:center;background:var(--s1);box-sizing:border-box}
+.cv-upload-area:hover,.cv-upload-area.drag-over{border-color:var(--blue);background:rgba(35,85,245,0.04)}
+.cv-upload-icon{font-size:44px;line-height:1}
+.cv-upload-hint{font-size:13px;color:var(--sub);line-height:1.6}
+.cv-filename{font-size:14px;font-weight:600;color:var(--blue);text-align:center;margin-top:16px;display:none}
+.cv-btn{width:100%;padding:15px;border-radius:16px;border:none;background:var(--blue);color:#fff;font-family:'Cabinet Grotesk',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-top:16px;transition:opacity .2s}
+.cv-btn:hover{opacity:0.88}
+.cv-skip{margin-top:20px;font-size:14px;color:var(--sub);cursor:pointer;text-decoration:none;display:inline-block;padding:4px}
+.cv-skip:hover{color:var(--blue)}
 .auth-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px 20px;position:relative;overflow:hidden}
 .auth-glow{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(35,85,245,0.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-60%);pointer-events:none}
 .auth-logo-big{font-family:'Clash Display',sans-serif;font-size:42px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;text-align:center}
@@ -604,6 +620,25 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   </div>
 </div>
 
+<!-- CV UPLOAD ONBOARDING -->
+<div id="cvScreen" class="hidden">
+  <div class="status" style="flex-shrink:0;"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>▲▲▲</span><span>WiFi</span><span>⬛</span></div></div>
+  <div class="cv-body">
+    <div class="cv-wordmark">path<em>ways</em></div>
+    <h2 class="cv-heading">Let's build your profile</h2>
+    <p class="cv-sub">Upload your CV and we'll do the rest</p>
+    <div class="cv-upload-area" id="cvUploadArea" onclick="document.getElementById('cvFileInput').click()">
+      <div class="cv-upload-icon">📄</div>
+      <div class="cv-upload-hint">Drag and drop your CV or tap to upload<br>PDF or Word</div>
+    </div>
+    <div class="cv-filename" id="cvFilename"></div>
+    <button class="cv-btn" id="cvUploadBtn" onclick="document.getElementById('cvFileInput').click()">Upload CV</button>
+    <button class="cv-btn" id="cvContinueBtn" onclick="hideCvScreen()" style="display:none;">Continue</button>
+    <a class="cv-skip" onclick="hideCvScreen()">Skip for now</a>
+    <input type="file" id="cvFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="handleCvFile(this)">
+  </div>
+</div>
+
 </div><!-- /phone -->
 <script>
 // Supabase setup
@@ -894,7 +929,8 @@ async function saveProfile(){
 
 async function loadProfile(userId){
   const { data, error } = await db.from('profiles').select('*').eq('id', userId).maybeSingle();
-  if(error || !data) return;
+  if(error || !data) return true; // new user — no profile yet
+  const isNew = !data.role && !data.bio;
   if(data.full_name){
     document.getElementById('dispName').textContent=data.full_name;
     document.getElementById('editName').value=data.full_name;
@@ -923,6 +959,7 @@ async function loadProfile(userId){
     document.getElementById('dispSkills').innerHTML=arr.map(s=>'<span class="skill-pill">'+s+'</span>').join('');
     document.getElementById('editSkillList').innerHTML=arr.map(s=>'<span class="skill-pill removable" onclick="removeSkill(this)">'+s+'</span>').join('');
   }
+  return isNew;
 }
 
 function addSkill(){
@@ -1044,6 +1081,8 @@ async function doLogin(provider, btn) {
       }
       document.getElementById('authScreen').classList.add('hidden');
       showToast('👋 Welcome to Pathways!');
+      { const { data:{ session:s } } = await db.auth.getSession();
+        if(s){ const isNew = await loadProfile(s.user.id); if(isNew) showCvScreen(); } }
     } else {
       btn.innerHTML = orig;
       btn.style.opacity = '1';
@@ -1172,6 +1211,34 @@ async function fetchJSearchJobs(query = 'jobs in United States') {
   }
 }
 
+// CV onboarding screen
+function showCvScreen(){ document.getElementById('cvScreen').classList.remove('hidden'); }
+function hideCvScreen(){ document.getElementById('cvScreen').classList.add('hidden'); }
+function handleCvFile(input){
+  if(!input.files || !input.files[0]) return;
+  document.getElementById('cvFilename').textContent='📎 '+input.files[0].name;
+  document.getElementById('cvFilename').style.display='block';
+  document.getElementById('cvUploadBtn').style.display='none';
+  document.getElementById('cvContinueBtn').style.display='block';
+}
+(function(){
+  const area=document.getElementById('cvUploadArea');
+  area.addEventListener('dragover',e=>{e.preventDefault();area.classList.add('drag-over');});
+  area.addEventListener('dragleave',()=>area.classList.remove('drag-over'));
+  area.addEventListener('drop',e=>{
+    e.preventDefault();area.classList.remove('drag-over');
+    const f=e.dataTransfer.files[0];
+    if(f){
+      // assign to file input via DataTransfer where supported
+      try{ const dt=new DataTransfer();dt.items.add(f);document.getElementById('cvFileInput').files=dt.files; }catch(e){}
+      document.getElementById('cvFilename').textContent='📎 '+f.name;
+      document.getElementById('cvFilename').style.display='block';
+      document.getElementById('cvUploadBtn').style.display='none';
+      document.getElementById('cvContinueBtn').style.display='block';
+    }
+  });
+})();
+
 // Check if user is already logged in
 db.auth.getSession().then(async ({ data: { session } }) => {
   if(session) {
@@ -1181,7 +1248,8 @@ db.auth.getSession().then(async ({ data: { session } }) => {
     document.getElementById('dispName').textContent = realName;
     document.getElementById('editName').value = realName;
     showToast('👋 Welcome back, ' + realName + '!');
-    await loadProfile(session.user.id);
+    const isNew = await loadProfile(session.user.id);
+    if(isNew) showCvScreen();
   }
 });
 
