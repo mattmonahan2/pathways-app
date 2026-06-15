@@ -356,7 +356,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <div class="wordmark">path<em>ways</em></div>
     <div class="topbar-group">
       <div class="icon-btn" onclick="showToast('2 new matches!')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><div class="badge"></div></div>
-      <div class="icon-btn" onclick="openPane('profilePane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></div>
+      <div class="icon-btn" onclick="if(isGuest){showGuestToast();return;}openPane('profilePane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></div>
     </div>
   </div>
   <div class="mode-toggle">
@@ -401,14 +401,18 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   </div>
   <div class="bnav">
     <div class="bni on"  onclick="bnavClick(this)"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Discover</div>
-    <div class="bni"     onclick="bnavClick(this);openPane('matchesPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg></span>Matches</div>
+    <div class="bni"     onclick="if(isGuest){showGuestToast();return;}bnavClick(this);openPane('matchesPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg></span>Matches</div>
     <div class="bni"     onclick="bnavClick(this);openPane('newsPane');renderNews('all')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg></span>News</div>
     <div class="bni"     onclick="bnavClick(this);openPane('pathsPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg></span>Pathways</div>
-    <div class="bni"     onclick="bnavClick(this);openPane('profilePane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Profile</div>
+    <div class="bni"     onclick="if(isGuest){showGuestToast();return;}bnavClick(this);openPane('profilePane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Profile</div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="guestBanner" style="display:none;position:absolute;top:90px;left:50%;transform:translateX(-50%) translateY(-10px);background:#fff;border:1px solid rgba(35,85,245,0.2);border-radius:16px;padding:14px 18px;font-size:14px;font-weight:600;color:var(--text);text-align:center;z-index:999;box-shadow:0 4px 20px rgba(35,85,245,0.15);width:260px;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:auto;">
+  <div style="margin-bottom:10px;">Sign up to save your progress</div>
+  <button onclick="exitGuestMode()" style="width:100%;padding:9px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Sign Up</button>
+</div>
 
 <!-- MATCHES -->
 <div class="pane" id="matchesPane">
@@ -724,6 +728,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
       <button class="auth-submit" onclick="doLogin('Email', this)">Continue with Email</button>
     </div>
     <div class="email-toggle" onclick="toggleEmailForm()">Use email instead <span id="emailToggleLabel">↓ Show</span></div>
+    <button onclick="enterGuestMode()" style="width:100%;padding:12px;background:none;border:none;color:var(--sub);font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;font-family:inherit;">Browse as Guest →</button>
     <div class="auth-terms">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
   </div>
 </div>
@@ -901,8 +906,8 @@ function dismiss(dir){
     if(job)showToast('Applied to '+job.company);
   } else if(dir==='right'){
     card.style.transform='translateX(160%) rotate(28deg)';
-    savedCount++;document.getElementById('statSaved').textContent=savedCount;
-    showToast('Saved — find it in Matches');
+    if(isGuest){ showGuestToast(); }
+    else{ savedCount++;document.getElementById('statSaved').textContent=savedCount;showToast('Saved — find it in Matches'); }
   } else {
     card.style.transform='translateX(-160%) rotate(-28deg)';card.style.opacity='0.2';
   }
@@ -1337,6 +1342,34 @@ function setNewsTab(btn,filter){
     document.getElementById('newsSearchClear').style.display='none';
   }
   renderNews(filter);
+}
+
+// GUEST MODE
+let isGuest = false;
+let _guestBannerTimer;
+function enterGuestMode(){
+  isGuest = true;
+  document.getElementById('authScreen').classList.add('hidden');
+}
+function exitGuestMode(){
+  isGuest = false;
+  clearTimeout(_guestBannerTimer);
+  const b = document.getElementById('guestBanner');
+  b.style.transform = 'translateX(-50%) translateY(-10px)';
+  setTimeout(()=>{ b.style.display='none'; }, 300);
+  document.getElementById('authScreen').classList.remove('hidden');
+}
+function showGuestToast(){
+  const b = document.getElementById('guestBanner');
+  b.style.display = 'block';
+  // Force reflow so transition fires
+  b.offsetHeight;
+  b.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(_guestBannerTimer);
+  _guestBannerTimer = setTimeout(()=>{
+    b.style.transform = 'translateX(-50%) translateY(-10px)';
+    setTimeout(()=>{ b.style.display='none'; }, 300);
+  }, 4000);
 }
 
 // AUTH
