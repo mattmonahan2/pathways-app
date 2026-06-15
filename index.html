@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -645,34 +645,13 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   </div>
   <div class="emp-body" id="empBody">
     <div class="emp-stat-row">
-      <div class="emp-stat"><div class="emp-stat-n">247</div><div class="emp-stat-l">Total Applicants</div><div class="emp-stat-d">↑ 18% this week</div></div>
-      <div class="emp-stat"><div class="emp-stat-n" id="empListingCount">4</div><div class="emp-stat-l">Active Listings</div><div class="emp-stat-d">2 expiring soon</div></div>
-      <div class="emp-stat"><div class="emp-stat-n">89%</div><div class="emp-stat-l">Avg Match Score</div><div class="emp-stat-d">↑ top 10%</div></div>
-      <div class="emp-stat"><div class="emp-stat-n">12</div><div class="emp-stat-l">Interviews Set</div><div class="emp-stat-d">3 this week</div></div>
+      <div class="emp-stat"><div class="emp-stat-n" id="empApplicantCount">0</div><div class="emp-stat-l">Total Applicants</div><div class="emp-stat-d">—</div></div>
+      <div class="emp-stat"><div class="emp-stat-n" id="empListingCount">0</div><div class="emp-stat-l">Active Listings</div><div class="emp-stat-d">—</div></div>
+      <div class="emp-stat"><div class="emp-stat-n" id="empMatchScore">—</div><div class="emp-stat-l">Avg Match Score</div><div class="emp-stat-d">—</div></div>
+      <div class="emp-stat"><div class="emp-stat-n" id="empInterviewCount">0</div><div class="emp-stat-l">Interviews Set</div><div class="emp-stat-d">—</div></div>
     </div>
     <div style="font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:12px;">Active Listings</div>
-    <div id="listingsContainer">
-      <div class="listing-card">
-        <div class="listing-head"><div><div class="listing-title">Senior Product Designer</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">Posted 3 days ago</div></div><div class="listing-status ls-active">Active</div></div>
-        <div class="listing-meta"><span>London / Remote</span><span>$75k–$90k</span></div>
-        <div class="listing-bar">
-          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">84</div><div class="lb-l">Applied</div></div>
-          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">23</div><div class="lb-l">Shortlisted</div></div>
-          <div class="lb-item"><div class="lb-n" style="color:var(--pink);">6</div><div class="lb-l">Interviews</div></div>
-        </div>
-        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('Opening applicants')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
-      </div>
-      <div class="listing-card">
-        <div class="listing-head"><div><div class="listing-title">Frontend Engineer</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">Posted 1 week ago</div></div><div class="listing-status ls-active">Active</div></div>
-        <div class="listing-meta"><span>Remote</span><span>$90k–$110k</span></div>
-        <div class="listing-bar">
-          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">112</div><div class="lb-l">Applied</div></div>
-          <div class="lb-item"><div class="lb-n" style="color:var(--blue);">31</div><div class="lb-l">Shortlisted</div></div>
-          <div class="lb-item"><div class="lb-n" style="color:var(--pink);">8</div><div class="lb-l">Interviews</div></div>
-        </div>
-        <div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('Opening applicants')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>
-      </div>
-    </div>
+    <div id="listingsContainer"></div>
   </div>
   <div class="bnav">
     <div class="bni" onclick="closePane('employerPane');bnavReset()"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></span>Back</div>
@@ -983,8 +962,30 @@ function closePane(id){
 function setMode(btn,mode){
   document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  if(mode==='employer') openPane('employerPane');
+  if(mode==='employer'){ openPane('employerPane'); loadEmployerDashboard(); }
   else closePane('employerPane');
+}
+
+async function loadEmployerDashboard(){
+  if(!db||!currentUser) return;
+  const {data:jobs,error}=await db.from('jobs').select('*').eq('source','employer').order('created_at',{ascending:false});
+  if(error){ console.error('Employer dashboard error:',error); return; }
+  const listingEl=document.getElementById('empListingCount');
+  if(listingEl) listingEl.textContent=jobs?jobs.length:0;
+  const lc=document.getElementById('listingsContainer');
+  if(!lc) return;
+  lc.innerHTML='';
+  if(!jobs||!jobs.length){
+    lc.innerHTML='<div style="text-align:center;color:var(--sub);padding:32px 0;font-size:14px;">No listings yet — post your first job above.</div>';
+    return;
+  }
+  jobs.forEach(job=>{
+    const postedAt=job.created_at?new Date(job.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'Recently';
+    const card=document.createElement('div');
+    card.className='listing-card';
+    card.innerHTML=`<div class="listing-head"><div><div class="listing-title">${job.title||'Untitled'}</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">${job.company||''} · Posted ${postedAt}</div></div><div class="listing-status ls-active">Active</div></div><div class="listing-meta"><span>${job.location||'—'}</span><span>${job.salary||'—'}</span><span>${job.type||'—'}</span></div><div class="listing-bar"><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Applied</div></div><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Shortlisted</div></div><div class="lb-item"><div class="lb-n" style="color:var(--pink);">0</div><div class="lb-l">Interviews</div></div></div><div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('No applicants yet')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>`;
+    lc.appendChild(card);
+  });
 }
 
 function bnavClick(el){document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
