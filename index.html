@@ -742,6 +742,14 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     </div>
     <div class="email-toggle" onclick="toggleEmailForm()">Use email instead <span id="emailToggleLabel">↓ Show</span></div>
     <button onclick="enterGuestMode()" style="width:100%;padding:12px;background:none;border:none;color:var(--sub);font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;font-family:inherit;">Browse as Guest →</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:4px 0 2px;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <div style="font-size:11px;color:var(--sub);white-space:nowrap;">or</div>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+    <div style="text-align:center;padding:4px 0 2px;">
+      <span onclick="openPane('employerLoginPane')" style="font-size:13px;color:var(--sub);cursor:pointer;">Are you an employer? <span style="color:var(--blue);font-weight:600;">Sign in here</span></span>
+    </div>
     <div class="auth-terms">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
   </div>
 </div>
