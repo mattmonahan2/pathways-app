@@ -713,7 +713,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <span onclick="exitEmployerMode()" style="font-size:13px;color:var(--sub);cursor:pointer;font-weight:600;">← Job Seeker</span>
-      <button style="background:var(--blue);color:#fff;border:none;padding:9px 16px;border-radius:12px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:13px;cursor:pointer;" onclick="openPane('postJobPane')">+ Post Job</button>
+      <button style="background:var(--blue);color:#fff;border:none;padding:9px 16px;border-radius:12px;font-family:'Clash Display',sans-serif;font-weight:700;font-size:13px;cursor:pointer;" onclick="document.getElementById('pjCompany').value=currentEmployerCompany||'';openPane('postJobPane')">+ Post Job</button>
     </div>
   </div>
   <div class="emp-body" id="empBody">
@@ -729,7 +729,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   <div class="bnav">
     <div class="bni" onclick="closePane('employerPane');bnavReset()"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></span>Back</div>
     <div class="bni on"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Dashboard</div>
-    <div class="bni" onclick="openPane('postJobPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Post Job</div>
+    <div class="bni" onclick="document.getElementById('pjCompany').value=currentEmployerCompany||'';openPane('postJobPane')"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Post Job</div>
     <div class="bni"><span class="ico"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg></span>Candidates</div>
   </div>
 </div>
@@ -738,7 +738,7 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 <div class="pane" id="postJobPane">
   <div class="pane-head"><div class="back-btn" onclick="closePane('postJobPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></div><div class="pane-title">Post a Job</div></div>
   <div class="pane-body">
-    <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="pjCompany" value="TechCorp Ltd."></div>
+    <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" id="pjCompany" placeholder="Company name"></div>
     <div class="form-group"><label class="form-label">Job Title</label><input class="form-input" id="pjTitle" placeholder="e.g. Senior Product Designer"></div>
     <div class="form-group"><label class="form-label">Department</label>
       <select class="form-select" id="pjDept"><option value="design">Design</option><option value="tech">Engineering</option><option value="tech">Product</option><option value="finance">Finance</option><option value="tech">Operations</option></select>
@@ -1289,7 +1289,7 @@ function addExperience(data){
 
 function postJob(){
   const title=document.getElementById('pjTitle').value.trim();
-  const company=document.getElementById('pjCompany').value.trim()||'TechCorp Ltd.';
+  const company=document.getElementById('pjCompany').value.trim()||currentEmployerCompany||'Your Company';
   const salary=document.getElementById('pjSalary').value;
   const type=document.getElementById('pjType').value;
   const location=document.getElementById('pjLocation').value.trim()||'New York';
