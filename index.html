@@ -35,10 +35,15 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .icon-btn{width:38px;height:38px;background:var(--s1);border:1px solid var(--border);border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--sub);transition:all .2s;position:relative}
 .badge{position:absolute;top:5px;right:5px;width:8px;height:8px;background:var(--blue);border-radius:50%;border:2px solid var(--bg)}
 .topbar-group{display:flex;gap:10px}
+.hamburger-menu{position:absolute;top:68px;right:14px;width:230px;background:var(--bg);border:1px solid var(--border);border-radius:18px;box-shadow:0 8px 40px rgba(0,0,0,0.12);z-index:900;overflow:hidden;transform:translateY(-8px) scale(0.97);opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease}
+.hamburger-menu.open{transform:translateY(0) scale(1);opacity:1;pointer-events:auto}
+.hm-item{display:flex;align-items:center;gap:12px;padding:13px 18px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;transition:background .15s;-webkit-tap-highlight-color:transparent}
+.hm-item:hover{background:var(--s1)}
+.hm-item:not(:last-child){border-bottom:1px solid var(--border)}
+.hm-item svg{flex-shrink:0;color:var(--sub)}
+.hm-item.hm-danger{color:#e03}
+.hm-item.hm-danger svg{color:#e03}
 
-.mode-toggle{display:flex;margin:0 22px 12px;background:var(--s2);border:1px solid var(--border);border-radius:14px;padding:4px;flex-shrink:0}
-.mode-btn{flex:1;padding:9px;border-radius:10px;font-family:'Cabinet Grotesk',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--sub);transition:all .2s}
-.mode-btn.on{background:var(--blue);color:#fff}
 
 .chips{display:flex;gap:8px;padding:0 22px 14px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
 .chips::-webkit-scrollbar{display:none}
@@ -355,14 +360,18 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   <div class="topbar">
     <div class="wordmark">path<em>ways</em></div>
     <div class="topbar-group">
-      <div class="icon-btn" onclick="showToast('2 new matches!')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><div class="badge"></div></div>
+      <div class="icon-btn" id="hamburgerBtn" onclick="toggleHamburger(event)"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg></div>
       <div class="icon-btn" onclick="if(isGuest){showGuestToast();return;}openPane('profilePane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></div>
     </div>
+    <div class="hamburger-menu" id="hamburgerMenu">
+      <div class="hm-item" onclick="closeHamburger();if(isGuest){showGuestToast();return;}openPane('profilePane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>My Profile</div>
+      <div class="hm-item" onclick="closeHamburger();openPane('employerLoginPane')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>Switch to Employer Mode</div>
+      <div class="hm-item" onclick="closeHamburger();showToast('Settings coming soon')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>Settings</div>
+      <div class="hm-item" onclick="closeHamburger();showToast('Help coming soon')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg>Help</div>
+      <div class="hm-item hm-danger" onclick="closeHamburger();doLogout()"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"/></svg>Log Out</div>
+    </div>
   </div>
-  <div class="mode-toggle">
-    <button class="mode-btn on" onclick="setMode(this,'seeker')">Job Seeker</button>
-    <button class="mode-btn" onclick="setMode(this,'employer')">Employer</button>
-  </div>
+
   <div class="loc-search-row">
     <div class="loc-input-wrap">
       <input class="loc-input" id="locInput" type="text" placeholder="City, state or zip"
@@ -634,6 +643,29 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     <div class="pill-wrap" id="detailSkills"></div>
     <button id="viewListingBtn" class="apply-full-btn" onclick="if(currentDetailJob&&currentDetailJob.url)window.open(currentDetailJob.url,'_blank')" style="background:var(--s1);color:var(--blue);border:1.5px solid rgba(35,85,245,0.3);box-shadow:none;display:none;">View Full Listing</button>
     <button class="apply-full-btn" onclick="applyFromDetail()">Apply Now</button>
+  </div>
+</div>
+
+<!-- EMPLOYER LOGIN -->
+<div class="pane" id="employerLoginPane">
+  <div style="display:flex;align-items:center;padding:52px 22px 0;flex-shrink:0;">
+    <button onclick="closePane('employerLoginPane')" style="background:var(--s1);border:1px solid var(--border);border-radius:12px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:14px;flex-shrink:0;"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg></button>
+    <div>
+      <div style="font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;">Employer Access</div>
+      <div style="font-size:13px;color:var(--sub);margin-top:3px;">Sign in with your company account</div>
+    </div>
+  </div>
+  <div style="padding:32px 22px;display:flex;flex-direction:column;gap:16px;">
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">Company Email</div>
+      <input id="empLoginEmail" type="email" placeholder="you@company.com" style="width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-size:15px;background:var(--s1);color:var(--text);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;">Password</div>
+      <input id="empLoginPassword" type="password" placeholder="••••••••" style="width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-size:15px;background:var(--s1);color:var(--text);outline:none;box-sizing:border-box;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'">
+    </div>
+    <button onclick="showToast('Employer accounts coming soon — contact matt.monahan2@gmail.com to get set up')" style="width:100%;padding:15px;background:var(--blue);color:#fff;border:none;border-radius:14px;font-family:'Cabinet Grotesk',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;">Sign In</button>
+    <div style="text-align:center;font-size:13px;color:var(--sub);line-height:1.5;">Don't have an employer account?<br>Email <a href="mailto:matt.monahan2@gmail.com" style="color:var(--blue);font-weight:600;">matt.monahan2@gmail.com</a> to get set up.</div>
   </div>
 </div>
 
@@ -959,11 +991,21 @@ function closePane(id){
   setTimeout(()=>{ if(cards.length){ refreshPositions(); attachDrag(cards[0]); } }, 420);
 }
 
+function toggleHamburger(e){
+  e.stopPropagation();
+  document.getElementById('hamburgerMenu').classList.toggle('open');
+}
+function closeHamburger(){
+  document.getElementById('hamburgerMenu').classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  const menu=document.getElementById('hamburgerMenu');
+  const btn=document.getElementById('hamburgerBtn');
+  if(menu&&btn&&!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove('open');
+});
+
 function setMode(btn,mode){
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
   if(mode==='employer'){ openPane('employerPane'); loadEmployerDashboard(); }
-  else closePane('employerPane');
 }
 
 async function loadEmployerDashboard(){
