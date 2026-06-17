@@ -1758,7 +1758,7 @@ async function captureApplication(job){
     const loc=document.getElementById('dispLocation').textContent||'';
     const bio=document.getElementById('dispBio').textContent||'';
     const skills=Array.from(document.getElementById('dispSkills').querySelectorAll('.skill-pill')).map(el=>el.textContent).join(', ');
-    await db.from('applications').insert({
+    const payload={
       job_id:String(job.id),
       job_source:job.source==='employer'?'pathways':'jsearch',
       applicant_id:session.user.id,
@@ -1772,8 +1772,12 @@ async function captureApplication(job){
       applicant_bio:bio,
       stage:'applied',
       match_score:job.match||0
-    });
-  }catch(e){console.error('captureApplication error:',e);}
+    };
+    console.log('captureApplication payload:', payload);
+    const {error}=await db.from('applications').insert(payload);
+    if(error) console.error('captureApplication insert error:', error);
+    else console.log('captureApplication insert OK');
+  }catch(e){console.error('captureApplication exception:', e);}
 }
 
 // Save a swipe to Supabase (fire-and-forget)
