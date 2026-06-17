@@ -195,6 +195,25 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .emp-stat-n{font-family:'Clash Display',sans-serif;font-size:32px;font-weight:700;color:var(--blue)}
 .emp-stat-l{font-size:13px;color:var(--sub);margin-top:4px}
 .emp-stat-d{font-size:11px;color:rgba(35,85,245,0.7);margin-top:6px;font-weight:600}
+.pipeline-cols{display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pipeline-cols::-webkit-scrollbar{display:none}
+.pipeline-col{min-width:210px;background:var(--s1);border-radius:16px;padding:14px;border:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column}
+.pipeline-col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pipeline-col-name{font-family:'Clash Display',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.pipeline-count{background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;min-width:20px;text-align:center}
+.pipeline-card{background:var(--bg);border-radius:12px;padding:12px;border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:box-shadow .15s}
+.pipeline-card:last-child{margin-bottom:0}
+.pipeline-card:hover{box-shadow:0 4px 16px rgba(35,85,245,0.1)}
+.pipeline-card-name{font-size:14px;font-weight:700;color:var(--text)}
+.pipeline-card-role{font-size:12px;color:var(--sub);margin-top:2px}
+.pipeline-card-loc{font-size:11px;color:var(--sub);margin-top:3px}
+.pipeline-match{font-size:11px;font-weight:700;color:var(--blue);background:rgba(35,85,245,0.1);padding:2px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+.pipeline-expanded{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.pipeline-bio{font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:6px}
+.pipeline-skills{font-size:11px;color:var(--blue);margin-bottom:10px;line-height:1.5}
+.pipeline-actions{display:flex;gap:8px}
+.pipeline-fwd{flex:1;padding:8px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.pipeline-pass{flex:1;padding:8px;background:var(--s2);color:var(--sub);border:1px solid var(--border);border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .listing-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:12px}
 .listing-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
 .listing-title{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:600}
@@ -723,7 +742,9 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
       <div class="emp-stat"><div class="emp-stat-n" id="empMatchScore">—</div><div class="emp-stat-l">Avg Match Score</div><div class="emp-stat-d">—</div></div>
       <div class="emp-stat"><div class="emp-stat-n" id="empInterviewCount">0</div><div class="emp-stat-l">Interviews Set</div><div class="emp-stat-d">—</div></div>
     </div>
-    <div style="font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:12px;">Active Listings</div>
+    <div style="font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:12px;">Candidate Pipeline</div>
+    <div class="pipeline-cols" id="pipelineContainer"></div>
+    <div style="font-family:'Clash Display',sans-serif;font-size:15px;font-weight:600;margin-bottom:12px;margin-top:20px;">Active Listings</div>
     <div id="listingsContainer"></div>
   </div>
   <div class="bnav">
@@ -974,6 +995,7 @@ function dismiss(dir){
     document.getElementById('statApplied').textContent=appliedCount;
     if(job&&job.url) window.open(job.url,'_blank');
     if(job)showToast('Applied to '+job.company);
+    if(job) captureApplication(job);
   } else if(dir==='right'){
     card.style.transform='translateX(160%) rotate(28deg)';
     if(isGuest){ showGuestToast(); }
@@ -1067,12 +1089,25 @@ function setMode(btn,mode){
   if(mode==='employer'){ openPane('employerPane'); loadEmployerDashboard(); }
 }
 
+const PIPELINE_STAGES=['applied','reviewed','interview','hired'];
+const PIPELINE_LABELS={applied:'Applied',reviewed:'Reviewed',interview:'Interview',hired:'Hired'};
+
 async function loadEmployerDashboard(){
-  if(!db||!currentUser) return;
-  const {data:jobs,error}=await db.from('jobs').select('*').eq('source','employer').order('created_at',{ascending:false});
-  if(error){ console.error('Employer dashboard error:',error); return; }
+  if(!db) return;
+  // Jobs
+  const {data:jobs}=await db.from('jobs').select('*').eq('source','employer').order('created_at',{ascending:false});
   const listingEl=document.getElementById('empListingCount');
   if(listingEl) listingEl.textContent=jobs?jobs.length:0;
+  // Applications — one query feeds both stat and pipeline
+  let applications=[];
+  if(currentEmployerUserId){
+    const {data:apps}=await db.from('applications').select('*').eq('employer_owner_id',currentEmployerUserId);
+    if(apps) applications=apps;
+  }
+  const appCountEl=document.getElementById('empApplicantCount');
+  if(appCountEl) appCountEl.textContent=applications.length;
+  renderPipeline(applications);
+  // Listings
   const lc=document.getElementById('listingsContainer');
   if(!lc) return;
   lc.innerHTML='';
@@ -1087,6 +1122,80 @@ async function loadEmployerDashboard(){
     card.innerHTML=`<div class="listing-head"><div><div class="listing-title">${job.title||'Untitled'}</div><div style="font-size:13px;color:var(--sub);margin-top:3px;">${job.company||''} · Posted ${postedAt}</div></div><div class="listing-status ls-active">Active</div></div><div class="listing-meta"><span>${job.location||'—'}</span><span>${job.salary||'—'}</span><span>${job.type||'—'}</span></div><div class="listing-bar"><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Applied</div></div><div class="lb-item"><div class="lb-n" style="color:var(--blue);">0</div><div class="lb-l">Shortlisted</div></div><div class="lb-item"><div class="lb-n" style="color:var(--pink);">0</div><div class="lb-l">Interviews</div></div></div><div class="listing-actions"><button class="la-btn la-primary" onclick="showToast('No applicants yet')">View Applicants</button><button class="la-btn la-sec">Edit</button></div>`;
     lc.appendChild(card);
   });
+}
+
+function renderPipeline(applications){
+  const container=document.getElementById('pipelineContainer');
+  if(!container) return;
+  const grouped={};
+  PIPELINE_STAGES.forEach(s=>grouped[s]=[]);
+  applications.forEach(app=>{ if(PIPELINE_STAGES.includes(app.stage)) grouped[app.stage].push(app); });
+  container.innerHTML='';
+  PIPELINE_STAGES.forEach(stage=>{
+    const apps=grouped[stage];
+    const col=document.createElement('div');
+    col.className='pipeline-col';
+    const head=document.createElement('div');
+    head.className='pipeline-col-head';
+    head.innerHTML=`<span class="pipeline-col-name">${PIPELINE_LABELS[stage]}</span><span class="pipeline-count">${apps.length}</span>`;
+    col.appendChild(head);
+    if(!apps.length){
+      const empty=document.createElement('div');
+      empty.style.cssText='text-align:center;color:var(--sub);font-size:12px;padding:20px 0;';
+      empty.textContent='No candidates yet';
+      col.appendChild(empty);
+    } else {
+      apps.forEach(app=>col.appendChild(createPipelineCard(app)));
+    }
+    container.appendChild(col);
+  });
+}
+
+function createPipelineCard(app){
+  const card=document.createElement('div');
+  card.className='pipeline-card';
+  const stageIdx=PIPELINE_STAGES.indexOf(app.stage);
+  const nextStage=stageIdx<PIPELINE_STAGES.length-1?PIPELINE_STAGES[stageIdx+1]:null;
+  const nextLabel=nextStage?PIPELINE_LABELS[nextStage]:null;
+  const expId='exp-'+app.id;
+  const fwdBtn=nextStage
+    ?`<button class="pipeline-fwd" onclick="event.stopPropagation();movePipelineApp('${app.id}','${nextStage}')">→ ${nextLabel}</button>`
+    :`<button class="pipeline-fwd" style="opacity:0.5;cursor:default;" onclick="event.stopPropagation()">Hired ✓</button>`;
+  card.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+      <div style="min-width:0;">
+        <div class="pipeline-card-name">${app.applicant_name||'Unknown'}</div>
+        <div class="pipeline-card-role">${app.applicant_role||''}</div>
+        <div class="pipeline-card-loc">${app.applicant_location||''}</div>
+      </div>
+      <span class="pipeline-match">${app.match_score||0}%</span>
+    </div>
+    <div class="pipeline-expanded" id="${expId}" style="display:none;">
+      <div class="pipeline-bio">${app.applicant_bio||'No bio provided'}</div>
+      <div class="pipeline-skills">${app.applicant_skills||'No skills listed'}</div>
+      <div class="pipeline-actions">${fwdBtn}<button class="pipeline-pass" onclick="event.stopPropagation();passPipelineApp('${app.id}')">Pass</button></div>
+    </div>`;
+  card.addEventListener('click',()=>{
+    const exp=document.getElementById(expId);
+    if(!exp) return;
+    const showing=exp.style.display==='block';
+    exp.style.display=showing?'none':'block';
+  });
+  return card;
+}
+
+async function movePipelineApp(appId, nextStage){
+  try{
+    await db.from('applications').update({stage:nextStage}).eq('id',appId);
+    loadEmployerDashboard();
+  }catch(e){console.error('movePipelineApp error:',e);}
+}
+
+async function passPipelineApp(appId){
+  try{
+    await db.from('applications').update({stage:'rejected'}).eq('id',appId);
+    loadEmployerDashboard();
+  }catch(e){console.error('passPipelineApp error:',e);}
 }
 
 function bnavClick(el){document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));el.classList.add('on');}
@@ -1449,6 +1558,7 @@ function setNewsTab(btn,filter){
 // EMPLOYER MODE
 let isEmployer = false;
 let currentEmployerCompany = '';
+let currentEmployerUserId = null;
 
 function switchEmpTab(tab){
   document.getElementById('empSignInTab').classList.toggle('on', tab==='signin');
@@ -1473,7 +1583,7 @@ async function doEmployerSignIn(btn){
       return;
     }
     const { data: co } = await db.from('companies').select('company_name').eq('owner_id', data.user.id).maybeSingle();
-    enterEmployerMode(co?.company_name || email.split('@')[1] || 'Your Company');
+    enterEmployerMode(co?.company_name || email.split('@')[1] || 'Your Company', data.user.id);
   } catch(err){
     btn.innerHTML = orig; btn.disabled = false;
     showToast('Sign in failed — check your details');
@@ -1496,7 +1606,7 @@ async function doEmployerSignUp(btn){
     const userId = data.user.id;
     await db.from('companies').insert({ company_name: companyName, owner_id: userId });
     await db.from('profiles').upsert({ id: userId, account_type: 'employer', full_name: companyName }, { onConflict: 'id' });
-    enterEmployerMode(companyName);
+    enterEmployerMode(companyName, userId);
   } catch(err){
     btn.innerHTML = orig; btn.disabled = false;
     showToast('Account creation failed — try again');
@@ -1504,9 +1614,10 @@ async function doEmployerSignUp(btn){
   }
 }
 
-function enterEmployerMode(companyName){
+function enterEmployerMode(companyName, userId = null){
   isEmployer = true;
   currentEmployerCompany = companyName;
+  currentEmployerUserId = userId;
   document.getElementById('empCompanyName').textContent = companyName;
   document.getElementById('authScreen').classList.add('hidden');
   closePane('employerLoginPane');
@@ -1635,6 +1746,34 @@ function toggleEmailForm(){
   const label=document.getElementById('emailToggleLabel');
   const showing=form.classList.toggle('show');
   label.textContent=showing?'↑ Hide':'↓ Show';
+}
+
+// Save application row when user swipes up
+async function captureApplication(job){
+  try{
+    const {data:{session}}=await db.auth.getSession();
+    if(!session||!job) return;
+    const name=document.getElementById('dispName').textContent||'';
+    const role=(document.getElementById('dispRole').textContent||'').replace(/\s·.*$/,'').trim();
+    const loc=document.getElementById('dispLocation').textContent||'';
+    const bio=document.getElementById('dispBio').textContent||'';
+    const skills=Array.from(document.getElementById('dispSkills').querySelectorAll('.skill-pill')).map(el=>el.textContent).join(', ');
+    await db.from('applications').insert({
+      job_id:String(job.id),
+      job_source:job.source==='employer'?'pathways':'jsearch',
+      applicant_id:session.user.id,
+      employer_owner_id:job.employer_owner_id||null,
+      job_title:job.title||'',
+      company:job.company||'',
+      applicant_name:name,
+      applicant_role:role,
+      applicant_location:loc,
+      applicant_skills:skills,
+      applicant_bio:bio,
+      stage:'applied',
+      match_score:job.match||0
+    });
+  }catch(e){console.error('captureApplication error:',e);}
 }
 
 // Save a swipe to Supabase (fire-and-forget)
@@ -2177,7 +2316,7 @@ db.auth.getSession().then(async ({ data: { session } }) => {
     const { data: profile } = await db.from('profiles').select('account_type').eq('id', session.user.id).maybeSingle();
     if(profile?.account_type === 'employer'){
       const { data: co } = await db.from('companies').select('company_name').eq('owner_id', session.user.id).maybeSingle();
-      enterEmployerMode(co?.company_name || session.user.email.split('@')[1] || 'Your Company');
+      enterEmployerMode(co?.company_name || session.user.email.split('@')[1] || 'Your Company', session.user.id);
       return;
     }
     document.getElementById('authScreen').classList.add('hidden');
