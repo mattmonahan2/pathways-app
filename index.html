@@ -824,6 +824,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const ANTHROPIC_API_KEY = ['sk-ant-api03-WoTxMByULXOeTO8c8XRWCi_fl0fJBo3F168','E43XDccaReq6DxxezdPV2AG9l0UbFzIg1Qqx7N5IsFJAp66ppgA-5qxmUgAA'].join('');
 const GUARDIAN_API_KEY = 'd8a96487-8238-4dab-a052-c4db86dda420';
 const NEWSAPI_KEY = 'e7c75424d2644146962b02e145f34590';
+const DEV_EMPLOYER_ID = '00000000-0000-0000-0000-000000000001'; /* DEV ONLY - REMOVE BEFORE LAUNCH */
 
 const JOBS = [];
 
@@ -1443,7 +1444,7 @@ function postJob(){
     title,company,salary:salDisplay,location,type,tag,
     match:String(newJob.match),description:newJob.desc,
     skills:skills.join(','),source:'employer',
-    employer_owner_id:currentEmployerUserId||null
+    employer_owner_id:currentEmployerUserId||DEV_EMPLOYER_ID
   }).then(({error})=>{if(error) console.error('Job save error:',error);});
 }
 
@@ -1645,7 +1646,7 @@ function devEmployerLogin(){
   let isEmployerMode = true;
   const devCompany = { name: 'Pathways Dev', industry: 'Technology', size: '1-10' };
   closePane('employerLoginPane');
-  enterEmployerMode(devCompany.name);
+  enterEmployerMode(devCompany.name, DEV_EMPLOYER_ID);
 }
 
 // GUEST MODE
