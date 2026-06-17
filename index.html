@@ -1442,7 +1442,8 @@ function postJob(){
   db.from('jobs').insert({
     title,company,salary:salDisplay,location,type,tag,
     match:String(newJob.match),description:newJob.desc,
-    skills:skills.join(','),source:'employer'
+    skills:skills.join(','),source:'employer',
+    employer_owner_id:currentEmployerUserId||null
   }).then(({error})=>{if(error) console.error('Job save error:',error);});
 }
 
