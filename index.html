@@ -2437,7 +2437,9 @@ async function loadAndInit() {
           bg: 'linear-gradient(145deg,#dce8ff,#c5d8ff,#b0ccff)',
           skills: job.skills ? job.skills.split(',').map(s => s.trim()) : ['See listing'],
           desc: job.description || '',
-          reqs: ['See job description']
+          reqs: ['See job description'],
+          employer_owner_id: job.employer_owner_id || null,
+          source: job.source || ''
         });
       });
     } else {
