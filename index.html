@@ -263,6 +263,11 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .cv-scan-spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:7px;position:relative;top:-1px}
 
 /* AUTH */
+#employerLoginPane{z-index:150}
+.auth-path-tabs{display:flex;gap:8px;padding:14px 22px 0;flex-shrink:0}
+.auth-path-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border-radius:16px;border:1.5px solid var(--border);background:var(--s1);color:var(--sub);font-family:'Cabinet Grotesk',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.auth-path-tab svg{flex-shrink:0}
+.auth-path-tab.on{background:var(--blue);border-color:var(--blue);color:#fff}
 #authScreen{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;background:var(--bg);transition:opacity 0.5s,transform 0.5s cubic-bezier(0.32,0.72,0,1)}
 #authScreen.hidden{opacity:0;transform:scale(0.96) translateY(20px);pointer-events:none}
 .ep-cv-section{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px;margin-bottom:22px}
@@ -783,6 +788,10 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 <!-- AUTH SCREEN -->
 <div id="authScreen">
   <div class="status" style="flex-shrink:0;"><span>9:41</span><div style="display:flex;gap:6px;align-items:center;font-size:11px;"><span>WiFi</span></div></div>
+  <div class="auth-path-tabs">
+    <button class="auth-path-tab on" id="pathSeekerTab" onclick="setAuthPath('seeker')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>Job Seeker</button>
+    <button class="auth-path-tab" id="pathEmployerTab" onclick="setAuthPath('employer')"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>Employer</button>
+  </div>
   <div class="auth-hero">
     <div class="auth-glow"></div>
     <div class="auth-logo-big">path<em>ways</em></div>
@@ -804,14 +813,6 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
     </div>
     <div class="email-toggle" onclick="toggleEmailForm()">Use email instead <span id="emailToggleLabel">↓ Show</span></div>
     <button onclick="enterGuestMode()" style="width:100%;padding:12px;background:none;border:none;color:var(--sub);font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;font-family:inherit;">Browse as Guest →</button>
-    <div style="display:flex;align-items:center;gap:10px;margin:4px 0 2px;">
-      <div style="flex:1;height:1px;background:var(--border);"></div>
-      <div style="font-size:11px;color:var(--sub);white-space:nowrap;">or</div>
-      <div style="flex:1;height:1px;background:var(--border);"></div>
-    </div>
-    <div style="text-align:center;padding:4px 0 2px;">
-      <span onclick="openPane('employerLoginPane')" style="font-size:13px;color:var(--sub);cursor:pointer;">Are you an employer? <span style="color:var(--blue);font-weight:600;">Sign in here</span></span>
-    </div>
     <div class="auth-terms">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
   </div>
 </div>
@@ -1075,6 +1076,11 @@ function closePane(id){
   setTimeout(()=>{ if(cards.length){ refreshPositions(); attachDrag(cards[0]); } }, 420);
 }
 
+function setAuthPath(path){
+  document.getElementById('pathSeekerTab').classList.toggle('on', path==='seeker');
+  document.getElementById('pathEmployerTab').classList.toggle('on', path==='employer');
+  if(path==='employer') openPane('employerLoginPane');
+}
 function toggleHamburger(e){
   e.stopPropagation();
   document.getElementById('hamburgerMenu').classList.toggle('open');
