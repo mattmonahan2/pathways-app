@@ -1108,7 +1108,7 @@ const PIPELINE_LABELS={applied:'Applied',reviewed:'Reviewed',interview:'Intervie
 async function loadEmployerDashboard(){
   if(!db) return;
   // Jobs
-  const {data:jobs}=await db.from('jobs').select('*').eq('source','employer').order('created_at',{ascending:false});
+  const {data:jobs}=await db.from('jobs').select('*').eq('source','employer').eq('employer_owner_id',currentEmployerUserId).order('created_at',{ascending:false});
   const listingEl=document.getElementById('empListingCount');
   if(listingEl) listingEl.textContent=jobs?jobs.length:0;
   // Applications — one query feeds both stat and pipeline
@@ -1139,7 +1139,7 @@ async function loadEmployerDashboard(){
 
 async function deleteJob(id){
   if(!confirm('Delete this job posting?')) return;
-  const {error}=await db.from('jobs').delete().eq('id',id);
+  const {error}=await db.from('jobs').delete().eq('id',id).eq('employer_owner_id',currentEmployerUserId);
   if(error){console.error('deleteJob error:',error);showToast('Delete failed');return;}
   showToast('Job deleted');
   loadEmployerDashboard();
