@@ -195,9 +195,9 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
 .emp-stat-n{font-family:'Clash Display',sans-serif;font-size:32px;font-weight:700;color:var(--blue)}
 .emp-stat-l{font-size:13px;color:var(--sub);margin-top:4px}
 .emp-stat-d{font-size:11px;color:rgba(35,85,245,0.7);margin-top:6px;font-weight:600}
-.pipeline-cols{display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pipeline-cols{display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;scrollbar-width:none;-webkit-overflow-scrolling:touch;align-items:flex-start}
 .pipeline-cols::-webkit-scrollbar{display:none}
-.pipeline-col{min-width:210px;background:var(--s1);border-radius:16px;padding:14px;border:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column}
+.pipeline-col{min-width:210px;background:var(--s1);border-radius:16px;padding:14px;border:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;max-height:340px;overflow-y:auto}
 .pipeline-col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .pipeline-col-name{font-family:'Clash Display',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
 .pipeline-count{background:var(--blue);color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:100px;min-width:20px;text-align:center}
@@ -1803,6 +1803,8 @@ async function captureApplication(job){
   try{
     const {data:{session}}=await db.auth.getSession();
     if(!session||!job) return;
+    const {data:existing}=await db.from('applications').select('id').eq('applicant_id',session.user.id).eq('job_id',String(job.id)).maybeSingle();
+    if(existing){ console.log('Already applied to this job, skipping duplicate insert'); return; }
     const name=document.getElementById('dispName').textContent||'';
     const role=(document.getElementById('dispRole').textContent||'').replace(/\s·.*$/,'').trim();
     const loc=document.getElementById('dispLocation').textContent||'';
