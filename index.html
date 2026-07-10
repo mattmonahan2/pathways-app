@@ -1638,8 +1638,8 @@ function enterEmployerMode(companyName, userId = null){
 
 /* DEV ONLY - REMOVE BEFORE LAUNCH */
 async function devEmployerLogin(){
-  const devEmail = 'devemployer@usepathways.app';
-  const devPassword = 'Path';
+  const devEmail = 'matt@dev.com';
+  const devPassword = 'Matt';
   closePane('employerLoginPane');
   try {
     const { data, error } = await db.auth.signInWithPassword({ email: devEmail, password: devPassword });
