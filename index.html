@@ -695,6 +695,8 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   </div>
   <!-- SIGN IN FORM -->
   <div id="empSignInForm" style="display:flex;flex-direction:column;gap:16px;padding:24px 22px 32px;overflow-y:auto;">
+    <button class="sso-btn google-btn" onclick="doEmployerGoogleLogin()" style="background:#fff;border:1px solid #dadce0;color:#3c4043;position:relative;justify-content:center;"><svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" style="position:absolute;left:16px;flex-shrink:0"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Continue with Google</button>
+    <div class="auth-divider"><span>or</span></div>
     <div class="emp-login-field">
       <div class="emp-login-label">Company Email</div>
       <input id="empSignInEmail" class="emp-login-input" type="email" placeholder="you@company.com">
@@ -707,6 +709,8 @@ html,body{width:100%;height:100%;background:#d8e3ff;display:flex;align-items:cen
   </div>
   <!-- CREATE ACCOUNT FORM -->
   <div id="empCreateForm" style="display:none;flex-direction:column;gap:16px;padding:24px 22px 32px;overflow-y:auto;">
+    <button class="sso-btn google-btn" onclick="doEmployerGoogleLogin()" style="background:#fff;border:1px solid #dadce0;color:#3c4043;position:relative;justify-content:center;"><svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg" style="position:absolute;left:16px;flex-shrink:0"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>Continue with Google</button>
+    <div class="auth-divider"><span>or</span></div>
     <div class="emp-login-field">
       <div class="emp-login-label">Company Name</div>
       <input id="empSignUpCompany" class="emp-login-input" type="text" placeholder="Acme Corp">
@@ -1632,6 +1636,17 @@ async function doEmployerSignUp(btn){
   }
 }
 
+async function doEmployerGoogleLogin(){
+  const { error } = await db.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: 'https://usepathways.app?intent=employer',
+      queryParams: { prompt: 'select_account' }
+    }
+  });
+  if(error) showToast('Sign in failed — try again');
+}
+
 function enterEmployerMode(companyName, userId = null){
   isEmployer = true;
   currentEmployerCompany = companyName;
@@ -1718,10 +1733,19 @@ async function doLogin(provider, btn) {
         const { error: signUpError } = await db.auth.signUp({ email, password });
         if(signUpError) throw signUpError;
       }
-      document.getElementById('authScreen').classList.add('hidden');
-      showToast('Welcome to Pathways!');
       { const { data:{ session:s } } = await db.auth.getSession();
-        if(s) await loadProfile(s.user.id); }
+        if(s) {
+          const { data: profile } = await db.from('profiles').select('account_type').eq('id', s.user.id).maybeSingle();
+          if(profile?.account_type === 'employer'){
+            const { data: co } = await db.from('companies').select('company_name').eq('owner_id', s.user.id).maybeSingle();
+            enterEmployerMode(co?.company_name || s.user.email.split('@')[1] || 'Your Company', s.user.id);
+          } else {
+            document.getElementById('authScreen').classList.add('hidden');
+            showToast('Welcome to Pathways!');
+            await loadProfile(s.user.id);
+          }
+        }
+      }
     } else {
       btn.innerHTML = orig;
       btn.style.opacity = '1';
@@ -2336,11 +2360,28 @@ function closeEditAi(){stopAiEditVoice();document.getElementById('editAiModal').
 db.auth.getSession().then(async ({ data: { session } }) => {
   if(session) {
     const { data: profile } = await db.from('profiles').select('account_type').eq('id', session.user.id).maybeSingle();
+    const intentEmployer = new URLSearchParams(window.location.search).get('intent') === 'employer';
+
     if(profile?.account_type === 'employer'){
       const { data: co } = await db.from('companies').select('company_name').eq('owner_id', session.user.id).maybeSingle();
+      if(intentEmployer) history.replaceState(null, '', window.location.pathname);
       enterEmployerMode(co?.company_name || session.user.email.split('@')[1] || 'Your Company', session.user.id);
       return;
     }
+
+    if(intentEmployer){
+      history.replaceState(null, '', window.location.pathname);
+      if(profile?.account_type && profile.account_type !== 'employer'){
+        showToast('This Google account is already registered as a job seeker');
+      } else {
+        const companyName = window.prompt("What's your company name?") || session.user.email.split('@')[1] || 'My Company';
+        await db.from('profiles').upsert({ id: session.user.id, account_type: 'employer' }, { onConflict: 'id' });
+        await db.from('companies').insert({ owner_id: session.user.id, company_name: companyName });
+        enterEmployerMode(companyName, session.user.id);
+        return;
+      }
+    }
+
     document.getElementById('authScreen').classList.add('hidden');
     const realName = (session.user.user_metadata && session.user.user_metadata.full_name)
       || session.user.email || 'friend';
