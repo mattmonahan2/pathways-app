@@ -1673,11 +1673,19 @@ function exitEmployerMode(){
 }
 
 /* DEV ONLY - REMOVE BEFORE LAUNCH */
-function devEmployerLogin(){
-  let isEmployerMode = true;
-  const devCompany = { name: 'Pathways Dev', industry: 'Technology', size: '1-10' };
+async function devEmployerLogin(){
+  const devEmail = 'devemployer@usepathways.app';
+  const devPassword = 'Path';
   closePane('employerLoginPane');
-  enterEmployerMode(devCompany.name, DEV_EMPLOYER_ID);
+  try {
+    const { data, error } = await db.auth.signInWithPassword({ email: devEmail, password: devPassword });
+    if(error) throw error;
+    const { data: co } = await db.from('companies').select('company_name').eq('owner_id', data.user.id).maybeSingle();
+    enterEmployerMode(co?.company_name || 'Pathways Dev', data.user.id);
+  } catch(err){
+    console.error('Dev employer login failed:', err);
+    showToast('Dev login failed — check console');
+  }
 }
 
 // GUEST MODE
